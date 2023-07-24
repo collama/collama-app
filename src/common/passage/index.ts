@@ -28,7 +28,8 @@ const newRequest = (token: string): Request => {
 }
 
 const authenticateRequest = TE.tryCatchK(
-  (req: Request) => passage.authenticateRequest(req),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  (req: Request) => passage.authenticateRequest(req as any),
   () => TokenNotFound
 )
 const getUser = TE.tryCatchK(

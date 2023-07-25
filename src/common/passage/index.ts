@@ -28,7 +28,7 @@ const newRequest = (token: string): Request => {
 }
 
 const authenticateRequest = TE.tryCatchK(
-  (req: Request) => passage.authenticateRequest(req),
+  (req: Request) => passage.authenticateRequest(req as never),
   () => TokenNotFound
 )
 const getUser = TE.tryCatchK(

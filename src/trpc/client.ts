@@ -1,13 +1,14 @@
 "use client"
 
 import { getUrl, transformer } from "./shared"
-import { httpBatchLink, loggerLink } from "@trpc/client"
+import { loggerLink } from "@trpc/client"
 import {
   experimental_createActionHook,
   experimental_createTRPCNextAppDirClient,
   experimental_serverActionLink,
 } from "@trpc/next/app-dir/client"
 import { type AppRouter } from "~/server/api/root"
+import { experimental_nextHttpLink } from "@trpc/next/app-dir/links/nextHttp"
 
 export const api = experimental_createTRPCNextAppDirClient<AppRouter>({
   config() {
@@ -19,7 +20,8 @@ export const api = experimental_createTRPCNextAppDirClient<AppRouter>({
             process.env.NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
-        httpBatchLink({
+        experimental_nextHttpLink({
+          batch: true,
           url: getUrl(),
           headers() {
             return {
@@ -38,4 +40,4 @@ export const useAction = experimental_createActionHook({
 })
 
 /** Export type helpers */
-export type * from "./shared"
+export * from "./shared"

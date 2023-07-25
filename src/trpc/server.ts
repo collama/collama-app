@@ -1,7 +1,8 @@
 "use server"
 
 import { getUrl, transformer } from "./shared"
-import { httpBatchLink, loggerLink } from "@trpc/client"
+import { loggerLink } from "@trpc/client"
+import { experimental_nextHttpLink } from "@trpc/next/app-dir/links/nextHttp"
 import { experimental_createTRPCNextAppDirServer } from "@trpc/next/app-dir/server"
 import { headers } from "next/headers"
 import { type AppRouter } from "~/server/api/root"
@@ -16,7 +17,8 @@ export const api = experimental_createTRPCNextAppDirServer<AppRouter>({
             process.env.NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
-        httpBatchLink({
+        experimental_nextHttpLink({
+          batch: true,
           url: getUrl(),
           headers() {
             // Forward headers from the browser to the API
@@ -30,5 +32,3 @@ export const api = experimental_createTRPCNextAppDirServer<AppRouter>({
     }
   },
 })
-
-// export const createAction =

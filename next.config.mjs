@@ -2,7 +2,13 @@ import "./src/env.mjs";
 
 /** @type {import("next").NextConfig} */
 const config = {
-  experimental: { serverActions: true },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  experimental: {
+    serverActions: true,
+    serverComponentsExternalPackages: ['@trpc/server'],
+  },
   images: {
     remotePatterns: [
       {

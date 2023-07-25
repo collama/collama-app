@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { match } from "ts-pattern"
 
 const updateScrollView = (container: HTMLElement, item: HTMLElement) => {
   const containerHeight = container.offsetHeight
@@ -51,20 +50,26 @@ export const CommandList = ({ items, command }: CommandListProps) => {
   )
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent): boolean => {
       e.preventDefault()
 
-      return match(e.key)
-        .with(Key.ArrowUp, () => {
-          setSelectedIndex((selectedIndex + items.length - 1) % items.length)
-          return true
-        })
-        .with(Key.ArrowDown, () => {
-          setSelectedIndex((selectedIndex + 1) % items.length)
-          return true
-        })
-        .with(Key.Enter, () => selectItem(selectedIndex))
-        .otherwise(() => false)
+      const key = e.key as Key
+      if (key === Key.ArrowUp) {
+        setSelectedIndex((selectedIndex + items.length - 1) % items.length)
+        return true
+      }
+
+      if (key === Key.ArrowDown) {
+        setSelectedIndex((selectedIndex + 1) % items.length)
+        return true
+      }
+
+      if (key === Key.Enter) {
+        selectItem(selectedIndex)
+        return true
+      }
+
+      return false
     }
 
     document.addEventListener("keydown", onKeyDown)

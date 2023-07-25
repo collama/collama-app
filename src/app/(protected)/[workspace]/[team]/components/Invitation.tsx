@@ -37,7 +37,8 @@ export default function Invitation({ team }: InvitationProps) {
             onSubmit={form.handleSubmit((data) => {
               mutation.mutate({
                 ...data,
-                team,
+                workspaceId: "",
+                teamName: team,
               })
             })}
           >

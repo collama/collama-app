@@ -5,7 +5,10 @@ import { IconPawFilled } from "@tabler/icons-react"
 const Variable = (props: NodeViewProps) => {
   return (
     <NodeViewWrapper className="inline">
-      <button className="px-1 border bg-gray-100 inline-block rounded leading-4">
+      <button
+        type="button"
+        className="px-1 border bg-gray-100 inline-block rounded leading-4"
+      >
         <span className="inline-block pr-1 relative w-4 h-3">
           <span className="absolute left-0 inline-flex items-center text-center">
             <IconPawFilled

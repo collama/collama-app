@@ -26,7 +26,6 @@ export const createWorkspace = protectedProcedure
     const workspace = await ctx.prisma.workspace.create({
       data: {
         name: input.workspaceName,
-        planId: "",
         ownerId: user.id,
       },
     })

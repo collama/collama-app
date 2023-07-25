@@ -21,6 +21,7 @@ export const createTask = protectedProcedure
       data: {
         name: input.name,
         prompt: input.prompt,
+        chat: [],
         owner: {
           connect: {
             email,

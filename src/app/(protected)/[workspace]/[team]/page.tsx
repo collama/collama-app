@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import Loading from "~/ui/loading"
 import type { PageProps } from "~/common/types/props"
 import Hello from "~/app/(empty)/empty/components/Example"
+import { Tasks } from "~/app/(protected)/[workspace]/[team]/components/Tasks"
 
 interface TeamProps {
   workspace: string
@@ -12,8 +13,11 @@ export default function TeamPage({ params }: PageProps<TeamProps>) {
   return (
     <div>
       <h3>{params.team}</h3>
+
       <section>
-        <Suspense fallback={<Loading />}></Suspense>
+        <Suspense fallback={<Loading />}>
+          <Tasks />
+        </Suspense>
       </section>
     </div>
   )

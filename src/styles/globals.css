@@ -2,39 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
-  }
-}
-
-.resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 5px;
-  background: rgba(0, 0, 0, 0.5);
-  cursor: col-resize;
-  user-select: none;
-  touch-action: none;
-}
-
-.resizer.isResizing {
-  background: blue;
-  opacity: 1;
-}
-
-@media (hover: hover) {
-  .resizer {
-    opacity: 0;
-  }
-
-  *:hover > .resizer {
-    opacity: 1;
+@layer  {
+  .shot-table > thead > tr > th,
+  .shot-table > tbody > tr > td {
+    @apply text-start !border p-2 first:!border-l-0 last:!border-r-0 hover:bg-gray-100
   }
 }

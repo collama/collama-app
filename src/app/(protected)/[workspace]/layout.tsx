@@ -1,7 +1,6 @@
 import Link from "next/link"
 import {
   IconBox,
-  IconChevronsUp,
   IconInbox,
   IconSettings2,
   IconSmartHome,
@@ -9,7 +8,6 @@ import {
 } from "@tabler/icons-react"
 import Loading from "~/ui/loading"
 import { type PropsWithChildren, Suspense } from "react"
-import { NavHeader } from "~/app/(protected)/[workspace]/components/NavHeader"
 import NavItem from "~/app/(protected)/[workspace]/components/NavItem"
 import Teams from "~/app/(protected)/[workspace]/components/Teams"
 import { type PageProps } from "~/common/types/props"
@@ -40,7 +38,7 @@ export default async function RootLayout({
 
   return (
     <div className="flex h-screen">
-      <aside className="flex flex-col w-[300px] bg-gray-50 border-r">
+      <aside className="flex w-[300px] flex-col border-r bg-gray-50">
         {/*<NavHeader />*/}
         <div className="border-b py-2">
           <NavItem

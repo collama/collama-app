@@ -1,18 +1,11 @@
-import Link from "next/link"
-import {
-  IconBox,
-  IconInbox,
-  IconSettings2,
-  IconSmartHome,
-  IconUsers,
-} from "@tabler/icons-react"
-import { type PropsWithChildren, Suspense } from "react"
+import { IconSettings2, IconSmartHome, IconUsers } from "@tabler/icons-react"
+import { type PropsWithChildren } from "react"
 import NavItem from "~/app/(protected)/[workspace]/components/NavItem"
 import { type PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server-invoker"
-import Loading from "~/ui/loading"
-import Teams from "~/app/(protected)/[workspace]/components/Teams"
-import { redirect } from "next/navigation"
+import { getSession } from "~/common/passage"
+import * as E from "fp-ts/Either"
+import TeamGroup from "~/app/(protected)/[workspace]/components/TeamGroup"
+import Login from "~/app/(protected)/[workspace]/components/Login"
 
 interface Props {
   workspace: string
@@ -22,13 +15,7 @@ export default async function RootLayout({
   children,
   params,
 }: PageProps<Props> & PropsWithChildren) {
-  const workspace = await api.workspace.getByName.query({
-    workspaceName: params.workspace,
-  })
-
-  if (!workspace) {
-    redirect("/empty")
-  }
+  const session = await getSession()()
 
   return (
     <div className="flex h-screen">
@@ -40,33 +27,23 @@ export default async function RootLayout({
             title="Home"
             href={`/${params.workspace}`}
           />
-          <NavItem
-            icon={<IconUsers size={18} color="#4b5563" />}
-            title="Members"
-            href={`/${params.workspace}/members`}
-          />
-          <NavItem
-            icon={<IconSettings2 size={18} color="#4b5563" />}
-            title="Settings"
-            href={`/${params.workspace}/settings`}
-          />
+          {E.isRight(session) && (
+            <NavItem
+              icon={<IconUsers size={18} color="#4b5563" />}
+              title="Members"
+              href={`/${params.workspace}/members`}
+            />
+          )}
+          {E.isRight(session) && (
+            <NavItem
+              icon={<IconSettings2 size={18} color="#4b5563" />}
+              title="Settings"
+              href={`/${params.workspace}/settings`}
+            />
+          )}
         </div>
-        <div className="py-2">
-          <div className="p-2">
-            <span className="text-xs font-medium">Teams</span>
-            <div>
-              <Link
-                className="underline"
-                href={`/${params.workspace}/teams/new`}
-              >
-                New Team
-              </Link>
-            </div>
-            <Suspense fallback={<Loading />}>
-              <Teams workspace={params.workspace} />
-            </Suspense>
-          </div>
-        </div>
+        {E.isRight(session) && <TeamGroup workspace={params.workspace} />}
+        {E.isLeft(session) && <Login />}
       </aside>
       <main className="w-full">
         <div className="">{children}</div>

@@ -6,12 +6,14 @@
     "build": "next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
+    "generate": "prisma generate",
     "lint": "next lint",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@aws-sdk/client-s3": "^3.374.0",
     "@aws-sdk/s3-presigned-post": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.375.0",
@@ -39,6 +41,7 @@
     "classnames": "^2.3.2",
     "cookie": "^0.5.0",
     "cryptr": "^6.2.0",
+    "D": "^1.0.0",
     "fp-ts": "^2.16.0",
     "js-base64": "^3.7.5",
     "mime-types": "^2.1.35",

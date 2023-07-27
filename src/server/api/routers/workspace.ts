@@ -1,7 +1,11 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
-import { UserNotFound, WorkspaceNotFound } from "~/common/errors"
+import { UserNotFound } from "~/common/errors"
 import { InviteStatus, Role } from "@prisma/client"
 
 export const createWorkspace = protectedProcedure
@@ -124,6 +128,20 @@ export const workspaceRouter = createTRPCRouter({
       },
     })
   }),
+  getByNamePublic: publicProcedure
+    .input(
+      z.object({
+        workspaceName: z.string().nonempty(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.workspace.findFirst({
+        where: {
+          name: input.workspaceName,
+          private: false,
+        },
+      })
+    }),
   getByName: protectedProcedure
     .input(
       z.object({

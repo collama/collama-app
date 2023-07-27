@@ -68,7 +68,7 @@ export default function AccountPage() {
     <div>
       <h3>Account page</h3>
       <input type="file" onChange={onSelectFile} accept=".jpg,.jpeg,.png" />
-      {user?.avatar && <img src={user?.avatar} alt="avatar" />}
+      {user?.avatar && !selectedFile && <img src={user?.avatar} alt="avatar" />}
       {selectedFile && <img src={preview} alt="avatar" />}
       <button
         onClick={() => {

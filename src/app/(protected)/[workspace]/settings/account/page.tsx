@@ -1,14 +1,16 @@
 "use client"
 
-import { type ChangeEvent, useEffect, useState } from "react"
-import { useAction } from "~/trpc/client"
+import { type ChangeEvent, useEffect, useState, use } from "react"
+import { api, useAction } from "~/trpc/client"
 import {
   createPresignedUrlAction,
   updateUserAvatarAction,
 } from "~/app/(protected)/[workspace]/settings/account/actions"
 import useAsyncEffect from "use-async-effect"
+import useQuery from "~/hooks/useQuery"
 
 export default function AccountPage() {
+  const user = useQuery(api.user.getUser.query())
   const [selectedFile, setSelectedFile] = useState<File>()
   const [preview, setPreview] = useState<string>()
 
@@ -34,7 +36,7 @@ export default function AccountPage() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const key = presignedUrlData.fields.key!
     updateUserAvatarMutation({
-      avatar: `https://pulsa-public-image.s3.ap-southeast-1.amazonaws.com/${key}`,
+      avatar: `https://collama-public-image.s3.ap-southeast-1.amazonaws.com/${key}`,
     })
   }, [presignedUrlData, selectedFile])
 
@@ -66,6 +68,7 @@ export default function AccountPage() {
     <div>
       <h3>Account page</h3>
       <input type="file" onChange={onSelectFile} accept=".jpg,.jpeg,.png" />
+      {user?.avatar && <img src={user?.avatar} alt="avatar" />}
       {selectedFile && <img src={preview} alt="avatar" />}
       <button
         onClick={() => {

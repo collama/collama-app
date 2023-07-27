@@ -48,9 +48,19 @@ export const updateUserAvatar = protectedProcedure
     })
   })
 
+export const getUser = protectedProcedure.query(async ({ ctx }) => {
+  const session = ctx.session.right
+  return ctx.prisma.user.findUnique({
+    where: {
+      email: session.email,
+    },
+  })
+})
+
 export const userRouter = createTRPCRouter({
   createIfNotExists: createUserIfNotExists,
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany()
   }),
+  getUser,
 })

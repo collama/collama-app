@@ -17,7 +17,9 @@ export default async function MemberSettingsPage({ params }: PageProps<Props>) {
       <h1>Members</h1>
       <ul>
         {members.map((m) => (
-          <li key={m.id}>{m.user.email}</li>
+          <li key={m.id}>
+            {m.user.email} - {m.role}
+          </li>
         ))}
       </ul>
     </div>

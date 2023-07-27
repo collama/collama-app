@@ -1,5 +1,5 @@
 import type { PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
 
 interface TaskProps {
   task: string

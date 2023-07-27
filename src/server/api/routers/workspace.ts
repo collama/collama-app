@@ -3,7 +3,6 @@ import { z } from "zod"
 import { zId } from "~/common/validation"
 import { UserNotFound } from "~/common/errors"
 import { InviteStatus, Role } from "@prisma/client"
-import { createUserIfNotExists } from "~/server/api/routers/user"
 
 export const createWorkspace = protectedProcedure
   .input(

@@ -1,7 +1,6 @@
 import { Suspense } from "react"
 import Loading from "~/ui/loading"
 import type { PageProps } from "~/common/types/props"
-import Hello from "~/app/(empty)/empty/components/Example"
 import { Tasks } from "~/app/(protected)/[workspace]/[team]/components/Tasks"
 
 interface TeamProps {

@@ -1,7 +1,7 @@
 import { getSession } from "~/common/passage"
 import * as E from "fp-ts/Either"
 import { redirect } from "next/navigation"
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
 
 interface Props {
   children: React.ReactNode

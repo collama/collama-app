@@ -1,11 +1,11 @@
 "use server"
 
 import { getUrl, transformer } from "./shared"
-import { loggerLink } from "@trpc/client"
-import { experimental_nextHttpLink } from "@trpc/next/app-dir/links/nextHttp"
 import { experimental_createTRPCNextAppDirServer } from "@trpc/next/app-dir/server"
-import { headers } from "next/headers"
+import { cookies } from "next/headers"
 import { type AppRouter } from "~/server/api/root"
+import { experimental_nextHttpLink } from "@trpc/next/app-dir/links/nextHttp"
+import { loggerLink } from "@trpc/client"
 
 export const api = experimental_createTRPCNextAppDirServer<AppRouter>({
   config() {
@@ -21,10 +21,9 @@ export const api = experimental_createTRPCNextAppDirServer<AppRouter>({
           batch: true,
           url: getUrl(),
           headers() {
-            // Forward headers from the browser to the API
             return {
-              ...Object.fromEntries(headers()),
-              "x-trpc-source": "rsc",
+              cookie: cookies().toString(),
+              "x-trpc-source": "rsc-http",
             }
           },
         }),

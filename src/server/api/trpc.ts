@@ -140,4 +140,4 @@ const validateSession = t.middleware(({ ctx, next }) => {
  */
 export const publicProcedure = t.procedure
 
-export const protectedProcedure = t.procedure.use(validateSession)
+export const protectedProcedure = publicProcedure.use(validateSession)

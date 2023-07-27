@@ -1,4 +1,4 @@
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
 import Link from "next/link"
 
 interface TeamsProps {

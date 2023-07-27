@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
 
 interface Props {
   workspace: string

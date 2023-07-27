@@ -6,19 +6,13 @@ import {
   IconSmartHome,
   IconUsers,
 } from "@tabler/icons-react"
-import Loading from "~/ui/loading"
 import { type PropsWithChildren, Suspense } from "react"
 import NavItem from "~/app/(protected)/[workspace]/components/NavItem"
-import Teams from "~/app/(protected)/[workspace]/components/Teams"
 import { type PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
+import Loading from "~/ui/loading"
+import Teams from "~/app/(protected)/[workspace]/components/Teams"
 import { redirect } from "next/navigation"
-
-export const metadata = {
-  title: "Pulsa",
-  description: "Make AI is easier",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
-}
 
 interface Props {
   workspace: string

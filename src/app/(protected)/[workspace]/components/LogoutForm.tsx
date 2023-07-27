@@ -2,7 +2,6 @@
 
 import { PassageUser } from "@passageidentity/passage-elements/passage-user"
 import { useRouter } from "next/navigation"
-import { api } from "~/trpc/client"
 
 export default function LogoutForm() {
   const router = useRouter()

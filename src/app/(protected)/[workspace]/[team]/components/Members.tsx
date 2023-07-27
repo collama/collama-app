@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { api } from "~/trpc/server"
+import { api } from "~/trpc/server-invoker"
 
 interface MembersProps {
   team: string

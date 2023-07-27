@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
-import { UserNotFound } from "~/common/errors"
+import { UserNotFound, WorkspaceNotFound } from "~/common/errors"
 import { InviteStatus, Role } from "@prisma/client"
 
 export const createWorkspace = protectedProcedure
@@ -41,6 +41,70 @@ export const createWorkspace = protectedProcedure
     return workspace
   })
 
+export const renameWorkspace = protectedProcedure
+  .input(
+    z.object({
+      oldName: zId,
+      newName: zId,
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const email = ctx.session.right.email
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    })
+
+    if (!user) {
+      throw UserNotFound
+    }
+
+    return ctx.prisma.workspace.update({
+      where: {
+        name: input.oldName,
+        ownerId: user.id,
+      },
+      data: {
+        name: input.newName,
+      },
+    })
+  })
+
+const getMembers = protectedProcedure
+  .input(
+    z.object({
+      workspaceName: zId,
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const email = ctx.session.right.email
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    })
+
+    if (!user) {
+      throw UserNotFound
+    }
+
+    return ctx.prisma.membersOnWorkspaces.findMany({
+      where: {
+        workspace: {
+          name: input.workspaceName,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    })
+  })
+
 export const workspaceRouter = createTRPCRouter({
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.count({
@@ -76,4 +140,14 @@ export const workspaceRouter = createTRPCRouter({
         },
       })
     }),
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.workspace.findMany({
+      where: {
+        owner: {
+          email: ctx.session.right.email,
+        },
+      },
+    })
+  }),
+  getMembers,
 })

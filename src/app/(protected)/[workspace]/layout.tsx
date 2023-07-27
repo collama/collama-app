@@ -41,16 +41,6 @@ export default async function RootLayout({
             href={`/${params.workspace}`}
           />
           <NavItem
-            icon={<IconInbox size={18} color="#4b5563" />}
-            title="Inbox"
-            href={`/${params.workspace}/inbox`}
-          />
-          <NavItem
-            icon={<IconBox size={18} color="#4b5563" />}
-            title="Sandbox"
-            href={`/${params.workspace}/sandbox`}
-          />
-          <NavItem
             icon={<IconUsers size={18} color="#4b5563" />}
             title="Members"
             href={`/${params.workspace}/members`}

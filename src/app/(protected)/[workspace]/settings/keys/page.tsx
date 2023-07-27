@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { PageProps } from "~/common/types/props"
+import { type PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-invoker"
 
 interface Props {

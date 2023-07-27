@@ -12,10 +12,12 @@ export default function SettingLayout({
 }: PageProps<Props> & PropsWithChildren) {
   return (
     <div className="flex h-screen">
-      <aside className="flex flex-col w-[300px] bg-gray-50 border-r">
+      <aside className="flex w-[300px] flex-col border-r bg-gray-50">
         <h3>Settings</h3>
+        <Link href={`/${params.workspace}/settings`}>General</Link>
         <Link href={`/${params.workspace}/settings/account`}>Account</Link>
         <Link href={`/${params.workspace}/settings/keys`}>API Keys</Link>
+        <Link href={`/${params.workspace}/settings/members`}>Members</Link>
       </aside>
       <div className="w-full">{children}</div>
     </div>

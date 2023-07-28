@@ -1,11 +1,10 @@
 "use client"
 
 import React from "react"
-import { useParams, useRouter } from "next/navigation"
-import urlJoin from "url-join"
-import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "~/ui/Button"
+import { type ColumnDef } from "@tanstack/react-table"
 import { Table } from "~/ui/Table"
+import { Tag } from "~/ui/Tag"
+import { IconX } from "@tabler/icons-react"
 
 const data: Task[] = [
   {
@@ -68,15 +67,14 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "status",
     cell: (info) => {
       const cell = info.getValue()
-      return <span className="bg-green-300">{cell as string}</span>
+      return (
+        <Tag color={cell === "Enable" ? "green" : "red"}>{cell as string}</Tag>
+      )
     },
   },
 ]
 
 export const Tasks = () => {
-  const params = useParams()
-  const router = useRouter()
-
   const onDelete = (id: string) => {
     console.log(id)
   }
@@ -86,24 +84,21 @@ export const Tasks = () => {
     accessorKey: "id",
     cell: (info) => {
       const id = info.getValue()
-      return <span onClick={() => onDelete(id as string)}>delete</span>
+      return (
+        <span
+          className="text-gray-400 hover:bg-gray-600 rounded-full"
+          onClick={() => onDelete(id as string)}
+        >
+          <span>
+            <IconX size={16} />
+          </span>
+        </span>
+      )
     },
   }
 
   return (
     <div>
-      <div className="flex px-4 space-x-4 py-6">
-        <Button
-          type="primary"
-          onClick={() =>
-            router.push(urlJoin(params.team as string, "tasks/new"))
-          }
-        >
-          Create new task
-        </Button>
-        <Button>Filter</Button>
-        <Button>Sort</Button>
-      </div>
       <Table data={data} columns={[...columns, actionColumn]} />
     </div>
   )

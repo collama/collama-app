@@ -1,10 +1,16 @@
+"use client"
+
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { DynamicForm } from "~/ui/DynamicForm/DynamicForm"
+import { Button } from "~/ui/Button"
+import urlJoin from "url-join"
+import { Filter } from "~/ui/Table/components/Filter"
+import React from "react"
+import { useParams, useRouter } from "next/navigation"
 
 type TableProps<T> = {
   data: T[]
@@ -17,10 +23,22 @@ export function Table<T>({ data, columns }: TableProps<T>) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
-
+  const params = useParams()
+  const router = useRouter()
   return (
     <div className="w-full px-4">
-      <DynamicForm columns={table.getFlatHeaders()} />
+      <div className="flex px-4 space-x-4 py-6">
+        <Button
+          type="primary"
+          onClick={() =>
+            router.push(urlJoin(params.team as string, "tasks/new"))
+          }
+        >
+          Create new task
+        </Button>
+        <Filter columns={table.getFlatHeaders()} />
+        <Button>Sort</Button>
+      </div>
       <table className="w-full shot-table">
         <thead>
           <tr>

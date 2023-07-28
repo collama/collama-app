@@ -1,17 +1,11 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import { zId } from "~/common/validation"
 
 export const createTask = protectedProcedure
   .input(
     z.object({
-      name: z
-        .string()
-        .max(20)
-        .min(3)
-        .refine(
-          (v) => /^(\w+-)*\w+$/.test(v),
-          "Name should contain only alphabets and -"
-        ),
+      name: zId,
       prompt: z.string().optional(),
     })
   )
@@ -51,7 +45,7 @@ export const taskRouter = createTRPCRouter({
         },
       })
     }),
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
     return ctx.prisma.task.findMany({
       where: {
         owner: {

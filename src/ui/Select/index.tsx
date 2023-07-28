@@ -22,7 +22,7 @@ import {
   FloatingFocusManager,
   useListItem,
 } from "@floating-ui/react"
-import { UseFormRegisterReturn } from "react-hook-form"
+import { type UseFormRegisterReturn } from "react-hook-form"
 import cx from "classnames"
 
 export interface SelectOption {
@@ -35,6 +35,7 @@ type SelectProps = {
   width?: number
   popupHeight?: number
   form?: UseFormRegisterReturn<string>
+  defaultValue?: SelectOption
 }
 
 interface SelectContextValue {
@@ -53,12 +54,13 @@ export function Select({
   width = 200,
   popupHeight = 250,
   form,
+  defaultValue,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [selectedLabel, setSelectedLabel] = useState<string | null | undefined>(
-    null
+    defaultValue?.value
   )
 
   const { refs, floatingStyles, context } = useFloating({
@@ -127,7 +129,7 @@ export function Select({
         value={selectedLabel ?? ""}
         placeholder="Select ..."
         style={{ width, maxHeight: popupHeight }}
-        className="border"
+        className="border rounded px-2"
         {...form}
         ref={(ref) => {
           refs.setReference(ref)

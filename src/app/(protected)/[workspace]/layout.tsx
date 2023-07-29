@@ -6,6 +6,8 @@ import { getSession } from "~/common/passage"
 import * as E from "fp-ts/Either"
 import TeamGroup from "~/app/(protected)/[workspace]/components/TeamGroup"
 import Login from "~/app/(protected)/[workspace]/components/Login"
+import TaskGroup from "~/app/(protected)/[workspace]/components/TaskGroup"
+import WorkspaceGroup from "~/app/(protected)/[workspace]/components/WorkspaceGroup"
 
 interface Props {
   workspace: string
@@ -16,12 +18,11 @@ export default async function RootLayout({
   params,
 }: PageProps<Props> & PropsWithChildren) {
   const session = await getSession()()
-  console.log("params.workspace", params.workspace)
 
   return (
     <div className="flex h-screen">
       <aside className="flex w-[300px] flex-col border-r bg-gray-50">
-        {/*<NavHeader />*/}
+        {E.isRight(session) && <WorkspaceGroup />}
         <div className="border-b py-2">
           <NavItem
             icon={<IconSmartHome size={18} color="#4b5563" />}
@@ -43,6 +44,7 @@ export default async function RootLayout({
             />
           )}
         </div>
+        {E.isRight(session) && <TaskGroup />}
         {E.isRight(session) && <TeamGroup workspace={params.workspace} />}
         {E.isLeft(session) && <Login />}
       </aside>

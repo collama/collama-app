@@ -13,20 +13,10 @@ export default async function Page() {
 
   const workspaces = await api.workspace.getAll.query()
 
-  if (workspaces.length === 0) {
-    return (
-      <div>
-        <h1>Dashboard</h1>
-        <section>
-          <CreateWorkspaceForm />
-        </section>
-      </div>
-    )
-  }
-
   return (
     <div>
       <h1>Dashboard</h1>
+      <CreateWorkspaceForm />
       <ul>
         {workspaces.map((w) => (
           <li key={w.id}>

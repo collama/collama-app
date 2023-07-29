@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { passage } from "~/common/passage"
-import { UserNotFound } from "~/common/errors"
+import { GetResult } from "@prisma/client/runtime/library"
 
 export const createUserIfNotExists = protectedProcedure
   .input(
@@ -13,34 +13,33 @@ export const createUserIfNotExists = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
+    console.log("ctx.session.right.email", ctx.session.right.email)
+
+    let user
     if (ctx.session.right.email) {
-      const user = await ctx.prisma.user.findUnique({
+      user = await ctx.prisma.user.findUnique({
         where: {
           email: input.email,
         },
       })
-
-      if (!user) {
-        throw UserNotFound
-      }
-
-      await passage.user.update(input.passageId, {
-        user_metadata: {
-          user_id: user.id,
-          role: "admin",
-        },
-      })
-
-      if (user) {
-        return user
-      }
     }
 
-    const user = await ctx.prisma.user.create({
-      data: {
+    if (user) {
+      return user
+    }
+
+    user = await ctx.prisma.user.upsert({
+      where: {
+        username: input.username,
+        email: input.email,
+      },
+      create: {
         username: input.username,
         email: input.email,
         phone: input.phone,
+      },
+      update: {
+        email: input.email,
       },
     })
 

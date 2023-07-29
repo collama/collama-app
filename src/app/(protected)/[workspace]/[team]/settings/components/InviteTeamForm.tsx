@@ -1,25 +1,21 @@
 "use client"
 
-import { FormProvider } from "react-hook-form"
+import { z } from "zod"
 import { useAction } from "~/trpc/client"
 import useZodForm from "~/common/form"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { zId } from "~/common/validation"
-import { createTeamAction } from "~/app/(protected)/[workspace]/teams/new/actionts"
-import { type PageProps } from "~/common/types/props"
+import { FormProvider } from "react-hook-form"
+import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/[team]/settings/actions"
 
 const schema = z.object({
-  teamName: zId,
+  email: z.string().email(),
 })
 
-interface NewTeamProps {
-  workspace: string
+interface Props {
+  teamName: string
 }
 
-export default function NewTeamPage({ params }: PageProps<NewTeamProps>) {
-  const router = useRouter()
-  const mutation = useAction(createTeamAction)
+export default function InviteTeamForm({ teamName }: Props) {
+  const mutation = useAction(inviteMemberToTeamAction)
   const form = useZodForm({
     schema,
   })
@@ -33,11 +29,9 @@ export default function NewTeamPage({ params }: PageProps<NewTeamProps>) {
           <form
             onSubmit={form.handleSubmit((data) => {
               mutation.mutate({
-                ...data,
-                workspaceName: params.workspace,
+                teamName,
+                email: data.email,
               })
-
-              router.push(`/${params.workspace}`)
             })}
           >
             <div>
@@ -46,9 +40,9 @@ export default function NewTeamPage({ params }: PageProps<NewTeamProps>) {
                 id="create-team-name"
                 className="border"
                 type="text"
-                {...form.register("teamName")}
+                {...form.register("email")}
               />
-              {errors.teamName && <p>{errors.teamName.message}</p>}
+              {errors.email && <p>{errors.email.message}</p>}
             </div>
             <button type="submit">Create</button>
           </form>

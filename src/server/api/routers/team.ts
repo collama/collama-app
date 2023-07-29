@@ -58,7 +58,6 @@ export const inviteMemberToTeam = protectedProcedure
     z.object({
       teamName: z.string().nonempty(),
       email: z.string().email(),
-      workspaceId: zId,
     })
   )
   .mutation(async ({ ctx, input }) => {
@@ -77,7 +76,6 @@ export const inviteMemberToTeam = protectedProcedure
     const team = await ctx.prisma.team.findFirst({
       where: {
         name: input.teamName,
-        workspaceId: input.workspaceId,
       },
       select: {
         id: true,

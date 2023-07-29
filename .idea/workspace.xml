@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/actions.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/components/InviteTeamForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/collama.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/collama.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/new/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/team.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/team.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/db.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/db.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": -1
+}]]></component>
+  <component name="ProjectId" id="2TFX1woQqpNNhDotIjVvLhi1hmg" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feat/impl-permission",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "prettierjs.PrettierConfiguration.Package": "/Users/linh/Projects/collama/node_modules/prettier",
+    "settings.editor.selected.configurable": "settings.javascript.prettier",
+    "ts.external.directory.path": "/Users/linh/Projects/collama/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
+    ]
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvelteServiceSettings">
+    <option name="innerServiceMode" value="DISABLED" />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VueSettings">
+    <option name="innerServiceType" value="DISABLED" />
+  </component>
+</project>

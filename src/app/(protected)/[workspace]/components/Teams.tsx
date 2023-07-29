@@ -6,7 +6,9 @@ interface TeamsProps {
 }
 
 export default async function Teams({ workspace }: TeamsProps) {
-  const teams = await api.team.getAll.query()
+  const teams = await api.team.getAll.query({
+    workspaceName: workspace,
+  })
 
   return (
     <div>

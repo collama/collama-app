@@ -9,7 +9,7 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
   const workspace = await api.workspace.getByNamePublic.query({
     workspaceName: params.workspace,
   })
-
+  console.log("workspace", workspace)
   if (!workspace) {
     return <h1>Not found</h1>
   }

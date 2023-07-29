@@ -118,16 +118,25 @@ export const getMembersByTeam = protectedProcedure
 
 export const teamRouter = createTRPCRouter({
   getMembersByTeam,
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.membersOnTeams.findMany({
-      where: {
-        user: {
-          email: ctx.session.right.email,
+  getAll: protectedProcedure
+    .input(
+      z.object({
+        workspaceName: zId,
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.membersOnTeams.findMany({
+        where: {
+          userId: ctx.session.right.userId,
+          team: {
+            workspace: {
+              name: input.workspaceName,
+            },
+          },
         },
-      },
-      include: {
-        team: true,
-      },
-    })
-  }),
+        include: {
+          team: true,
+        },
+      })
+    }),
 })

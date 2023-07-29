@@ -30,6 +30,7 @@ export const createWorkspace = protectedProcedure
       data: {
         name: input.workspaceName,
         ownerId: user.id,
+        private: false,
       },
     })
 
@@ -113,25 +114,21 @@ export const workspaceRouter = createTRPCRouter({
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.count({
       where: {
-        owner: {
-          email: ctx.session.right.email,
-        },
+        ownerId: ctx.session.right.userId,
       },
     })
   }),
   getFirst: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.findFirst({
       where: {
-        owner: {
-          email: ctx.session.right.email,
-        },
+        ownerId: ctx.session.right.userId,
       },
     })
   }),
   getByNamePublic: publicProcedure
     .input(
       z.object({
-        workspaceName: z.string().nonempty(),
+        workspaceName: zId,
       })
     )
     .query(async ({ ctx, input }) => {
@@ -152,18 +149,14 @@ export const workspaceRouter = createTRPCRouter({
       return ctx.prisma.workspace.findFirst({
         where: {
           name: input.workspaceName,
-          owner: {
-            email: ctx.session.right.email,
-          },
+          ownerId: ctx.session.right.userId,
         },
       })
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.findMany({
       where: {
-        owner: {
-          email: ctx.session.right.email,
-        },
+        ownerId: ctx.session.right.userId,
       },
     })
   }),

@@ -16,6 +16,7 @@ export default async function RootLayout({
   params,
 }: PageProps<Props> & PropsWithChildren) {
   const session = await getSession()()
+  console.log("params.workspace", params.workspace)
 
   return (
     <div className="flex h-screen">

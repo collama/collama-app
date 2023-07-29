@@ -16,7 +16,8 @@ export const passage = new Passage({
 export interface Session {
   isAuthorized: boolean
   email: string
-  phone?: string
+  userId: string
+  role: string
 }
 
 const newRequest = (token: string): Request => {
@@ -45,12 +46,14 @@ const _getSession = (
     TE.map(newRequest),
     TE.chain((req) => authenticateRequest(req)),
     TE.chain((id) => getUser(id)),
+    // TODO: check user_id and role later
     TE.map(
       (user) =>
         ({
           isAuthorized: true,
           email: user.email,
-          phone: user.phone,
+          userId: user.user_metadata?.user_id!!,
+          role: user.user_metadata?.role!!,
         } as Session)
     )
   )

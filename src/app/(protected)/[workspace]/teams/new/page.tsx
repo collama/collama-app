@@ -36,7 +36,8 @@ export default function NewTeamPage({ params }: PageProps<NewTeamProps>) {
                 ...data,
                 workspaceName: params.workspace,
               })
-              router.push(params.workspace)
+
+              router.push(`/${params.workspace}`)
             })}
           >
             <div>

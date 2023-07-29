@@ -3,6 +3,7 @@ import * as E from "fp-ts/Either"
 import { redirect } from "next/navigation"
 import { api } from "~/trpc/server-invoker"
 import Link from "next/link"
+import CreateWorkspaceForm from "~/app/component/CreateWorkspaceForm"
 
 export default async function Page() {
   const session = await getSession()()
@@ -12,14 +13,25 @@ export default async function Page() {
 
   const workspaces = await api.workspace.getAll.query()
 
+  if (workspaces.length === 0) {
+    return (
+      <div>
+        <h1>Dashboard</h1>
+        <section>
+          <CreateWorkspaceForm />
+        </section>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1>Dashboard</h1>
       <ul>
         {workspaces.map((w) => (
-          <Link href={`/${w.name}`} key={w.id}>
-            {w.name}
-          </Link>
+          <li key={w.id}>
+            <Link href={`/${w.name}`}>{w.name}</Link>
+          </li>
         ))}
       </ul>
     </div>

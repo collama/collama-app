@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import useAsyncEffect from "use-async-effect"
 
 interface AwaitedResult<T> {
   data: T | null | undefined
   error: Error | null
   loading: boolean
+  setData: Dispatch<SetStateAction<T | null | undefined>>
 }
 
 export default function useAwaited<T>(fn: Promise<T>): AwaitedResult<T> {
@@ -26,5 +27,5 @@ export default function useAwaited<T>(fn: Promise<T>): AwaitedResult<T> {
     }
   }, [])
 
-  return { data, error, loading }
+  return { data, error, loading, setData }
 }

@@ -4,39 +4,78 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/actions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/components/InviteTeamForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/collama.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/collama.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/new/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/api/routers/team.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/team.ts" afterDir="false" />
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jest.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/actions.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Tasks.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/access-control.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/access-control.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/extended-ac.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/role.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/extensions/rbac/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/55d7b5b6-fe95-4885-b62f-3e8eac857170.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/55d7b5b6-fe95-4885-b62f-3e8eac857170.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/[task]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/actions.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/components/Invitation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/components/Invitation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/components/Members.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/components/Tasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/components/Tasks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/loading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/loading.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/settings/actions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/components/InviteTeamForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/settings/components/InviteTeamForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/settings/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/settings/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/tasks/new/actionts.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/new/actionts.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]/tasks/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/new/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/NavHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/NavHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/TaskGroup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/TaskGroup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/TeamGroup.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Teams.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/WorkspaceGroup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/WorkspaceGroup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/members/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/common/errors/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/common/errors/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useAwaited.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useAwaited.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/root.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/root.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/task.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/team.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/api/routers/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/user.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/db.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/db.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/RichText/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/RichText/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": -1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2TFX1woQqpNNhDotIjVvLhi1hmg" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -45,31 +84,129 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feat/impl-permission",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/linh/Projects/collama/node_modules/prettier",
-    "settings.editor.selected.configurable": "settings.javascript.prettier",
-    "ts.external.directory.path": "/Users/linh/Projects/collama/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/impl-permission&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/linh/Projects/collama/src/server/extensions/rbac&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/linh/Projects/collama/node_modules/jest&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/linh/Projects/collama/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/linh/Projects/collama/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;
     ]
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/server/extensions/rbac" />
+      <recent name="$PROJECT_DIR$/src/server/extensions" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/(protected)/[workspaceName]" />
+      <recent name="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]" />
+      <recent name="$PROJECT_DIR$/src/server/extensions/rbac" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Jest.Given the team/member.When checking READ permission for a team.Then I expect the ac granted to be true">
+    <configuration name="Given the team/member.When checking READ permission for a team.Then I expect the ac granted to be false" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/server/api/routers/access-control.spec.ts" />
+      <test-names>
+        <test-name value="Given the team/member" />
+        <test-name value="When checking READ permission for a team" />
+        <test-name value="Then I expect the ac granted to be false" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Given the team/member.When checking READ permission for a team.Then I expect the ac granted to be true" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/server/extensions/rbac/access-control.spec.ts" />
+      <test-names>
+        <test-name value="Given the team/member" />
+        <test-name value="When checking READ permission for a team" />
+        <test-name value="Then I expect the ac granted to be true" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Given the team/member.When checking UPDATE permission for a team.Then I expect the ac granted to be true" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/server/api/routers/access-control.spec.ts" />
+      <test-names>
+        <test-name value="Given the team/member" />
+        <test-name value="When checking UPDATE permission for a team" />
+        <test-name value="Then I expect the ac granted to be true" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Given the workspace/owner" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/server/api/routers/access-control.spec.ts" />
+      <test-names>
+        <test-name value="Given the workspace/owner" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Given the workspace/owner.When checking UPDATE permission for a workspace.Then I expect the ac granted to be true" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/server/api/routers/access-control.spec.ts" />
+      <test-names>
+        <test-name value="Given the workspace/owner" />
+        <test-name value="When checking UPDATE permission for a workspace" />
+        <test-name value="Then I expect the ac granted to be true" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.Given the team/member.When checking READ permission for a team.Then I expect the ac granted to be true" />
+        <item itemvalue="Jest.Given the workspace/owner.When checking UPDATE permission for a workspace.Then I expect the ac granted to be true" />
+        <item itemvalue="Jest.Given the team/member.When checking READ permission for a team.Then I expect the ac granted to be false" />
+        <item itemvalue="Jest.Given the team/member.When checking UPDATE permission for a team.Then I expect the ac granted to be true" />
+        <item itemvalue="Jest.Given the workspace/owner" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvelteServiceSettings">
     <option name="innerServiceMode" value="DISABLED" />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <MESSAGE value="feat: impl permissions checkpoint" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

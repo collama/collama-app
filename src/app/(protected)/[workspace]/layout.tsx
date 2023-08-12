@@ -1,16 +1,12 @@
-import { IconSettings2, IconSmartHome, IconUsers } from "@tabler/icons-react"
 import { type PropsWithChildren } from "react"
-import NavItem from "~/app/(protected)/[workspace]/components/NavItem"
 import { type PageProps } from "~/common/types/props"
 import { getSession } from "~/common/passage"
+import Link from "next/link"
 import * as E from "fp-ts/Either"
-import TeamGroup from "~/app/(protected)/[workspace]/components/TeamGroup"
-import Login from "~/app/(protected)/[workspace]/components/Login"
-import TaskGroup from "~/app/(protected)/[workspace]/components/TaskGroup"
-import WorkspaceGroup from "~/app/(protected)/[workspace]/components/WorkspaceGroup"
 
 interface Props {
   workspace: string
+  team: string
 }
 
 export default async function RootLayout({
@@ -22,31 +18,31 @@ export default async function RootLayout({
   return (
     <div className="flex h-screen">
       <aside className="flex w-[300px] flex-col border-r bg-gray-50">
-        {E.isRight(session) && <WorkspaceGroup />}
-        <div className="border-b py-2">
-          <NavItem
-            icon={<IconSmartHome size={18} color="#4b5563" />}
-            title="Home"
-            href={`/${params.workspace}`}
-          />
-          {E.isRight(session) && (
-            <NavItem
-              icon={<IconUsers size={18} color="#4b5563" />}
-              title="Members"
-              href={`/${params.workspace}/members`}
-            />
-          )}
-          {E.isRight(session) && (
-            <NavItem
-              icon={<IconSettings2 size={18} color="#4b5563" />}
-              title="Settings"
-              href={`/${params.workspace}/settings`}
-            />
-          )}
+        <div>
+          <div>
+            {E.isRight(session) ? (
+              <span>Linh Tran</span>
+            ) : (
+              <Link href={`/auth`}>Login</Link>
+            )}
+          </div>
+
+          <hr />
+          <div>
+            <div>
+              <Link href={`/${params.workspace}`}>Home</Link>
+            </div>
+            <div>
+              <Link href={`/${params.workspace}/explore`}>Explore</Link>
+            </div>
+            <div>
+              <Link href={`/${params.workspace}/tasks`}>Tasks</Link>
+            </div>
+            <div>
+              <Link href={`/${params.workspace}/settings`}>Settings</Link>
+            </div>
+          </div>
         </div>
-        {E.isRight(session) && <TaskGroup />}
-        {E.isRight(session) && <TeamGroup workspace={params.workspace} />}
-        {E.isLeft(session) && <Login />}
       </aside>
       <main className="w-full">
         <div className="">{children}</div>

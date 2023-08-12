@@ -7,20 +7,33 @@ export const createTask = protectedProcedure
     z.object({
       name: zId,
       prompt: z.string().optional(),
+      workspaceName: zId,
+      teamName: zId,
     })
   )
   .mutation(async ({ ctx, input }) => {
-    return ctx.prisma.task.create({
-      data: {
-        name: input.name,
-        prompt: input.prompt,
-        owner: {
-          connect: {
-            id: ctx.session.right.userId,
-          },
-        },
+    const workspace = await ctx.prisma.workspace.findUnique({
+      where: {
+        name: input.workspaceName,
       },
     })
+
+    if (!workspace) {
+      throw new Error("workspace not found")
+    }
+
+    try {
+      return ctx.prisma.task.create({
+        data: {
+          name: input.name,
+          prompt: input.prompt,
+          ownerId: ctx.session.right.userId,
+          workspaceId: workspace.id,
+        },
+      })
+    } catch (e) {
+      console.log(e)
+    }
   })
 
 export const taskRouter = createTRPCRouter({

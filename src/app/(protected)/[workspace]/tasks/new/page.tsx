@@ -7,10 +7,10 @@ import { z } from "zod"
 import { useRouter } from "next/navigation"
 import type { PageProps } from "~/common/types/props"
 import { zId } from "~/common/validation"
-import { createTaskAction } from "~/app/(protected)/[workspace]/[team]/tasks/new/actionts"
 import { TipTap } from "~/ui/RichText"
 import { useState } from "react"
 import { type Editor } from "@tiptap/core"
+import { createTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 
 const schema = z.object({
   name: zId,
@@ -37,11 +37,14 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit((data) => {
+              console.log(data)
               mutation.mutate({
                 name: data.name,
                 prompt: JSON.stringify(prompt?.getJSON()),
+                teamName: params.team,
+                workspaceName: params.workspace,
               })
-              router.push(`${params.workspace}/${params.team}`)
+              router.push(`/${params.workspace}/${params.team}`)
             })}
           >
             <div>

@@ -5,7 +5,7 @@ import {
 } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
-import { UserNotFound } from "~/common/errors"
+import { CanNotRemoveOwner, Unauthorized, UserNotFound } from "~/common/errors"
 import { InviteStatus, Role } from "@prisma/client"
 
 export const createWorkspace = protectedProcedure
@@ -83,10 +83,10 @@ const getMembers = protectedProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    const email = ctx.session.right.email
+    const userId = ctx.session.right.userId
     const user = await ctx.prisma.user.findUnique({
       where: {
-        email,
+        id: userId,
       },
     })
 
@@ -106,6 +106,149 @@ const getMembers = protectedProcedure
             email: true,
           },
         },
+      },
+    })
+  })
+
+export const inviteMember = protectedProcedure
+  .input(
+    z.object({
+      name: zId,
+      email: z.string(),
+      role: z.nativeEnum(Role),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const member = await ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        workspace: {
+          name: input.name,
+        },
+        user: {
+          email: input.email,
+        },
+      },
+    })
+
+    if (member) {
+      throw new Error("member has already invited")
+    }
+
+    return ctx.prisma.membersOnWorkspaces.create({
+      data: {
+        role: input.role,
+        workspace: {
+          connect: {
+            name: input.name,
+          },
+        },
+        user: {
+          connectOrCreate: {
+            where: {
+              email: input.email,
+            },
+            create: {
+              email: input.email,
+              username: "",
+            },
+          },
+        },
+      },
+    })
+  })
+
+export const updateRole = protectedProcedure
+  .input(
+    z.object({
+      id: z.string(),
+      role: z.nativeEnum(Role),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const member = await ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        id: input.id,
+      },
+    })
+
+    if (!member) {
+      throw new Error("member not found")
+    }
+
+    const userId = ctx.session.right.userId
+    const owner = await ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        userId,
+      },
+    })
+
+    if (!owner) {
+      throw UserNotFound
+    }
+
+    if (owner.role !== Role.Owner) {
+      throw Unauthorized
+    }
+
+    if (owner.role === Role.Owner) {
+      const member = await ctx.prisma.membersOnWorkspaces.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+
+      if (member?.userId === userId) {
+        throw new Error(`can not update owner's role`)
+      }
+    }
+
+    return ctx.prisma.membersOnWorkspaces.update({
+      where: {
+        id: input.id,
+      },
+      data: {
+        role: input.role,
+      },
+    })
+  })
+
+export const removeMember = protectedProcedure
+  .input(
+    z.object({
+      id: z.string(),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session.right.userId
+    const owner = await ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        userId,
+      },
+    })
+
+    if (!owner) {
+      throw UserNotFound
+    }
+
+    if (owner.role !== Role.Owner) {
+      throw Unauthorized
+    }
+
+    if (owner.role === Role.Owner) {
+      const member = await ctx.prisma.membersOnWorkspaces.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+
+      if (member?.userId === userId) {
+        throw CanNotRemoveOwner
+      }
+    }
+
+    return ctx.prisma.membersOnWorkspaces.delete({
+      where: {
+        id: input.id,
       },
     })
   })
@@ -154,6 +297,7 @@ export const workspaceRouter = createTRPCRouter({
       })
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    console.log("userId", ctx.session.right.userId)
     return ctx.prisma.workspace.findMany({
       where: {
         ownerId: ctx.session.right.userId,
@@ -161,4 +305,5 @@ export const workspaceRouter = createTRPCRouter({
     })
   }),
   getMembers,
+  inviteMember,
 })

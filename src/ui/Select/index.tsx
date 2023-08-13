@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  forwardRef,
   useCallback,
   useContext,
   useMemo,
@@ -10,20 +11,23 @@ import {
 } from "react"
 import {
   autoUpdate,
-  FloatingList,
   flip,
+  FloatingFocusManager,
+  FloatingList,
   useClick,
   useDismiss,
   useFloating,
   useInteractions,
+  useListItem,
   useListNavigation,
+  useMergeRefs,
   useRole,
   useTypeahead,
-  FloatingFocusManager,
-  useListItem,
 } from "@floating-ui/react"
-import { type UseFormRegisterReturn } from "react-hook-form"
+import { type ControllerRenderProps } from "react-hook-form"
 import cx from "classnames"
+import { noop } from "~/common/utils"
+import { Input } from "~/ui/input"
 
 export interface SelectOption {
   value: string
@@ -34,9 +38,9 @@ type SelectProps = {
   options: SelectOption[]
   width?: number
   popupHeight?: number
-  form?: UseFormRegisterReturn<string>
   defaultValue?: SelectOption
-}
+  defaultOpen?: boolean
+} & Partial<ControllerRenderProps>
 
 interface SelectContextValue {
   activeIndex: number | null
@@ -49,118 +53,132 @@ const SelectContext = createContext<SelectContextValue>(
   {} as SelectContextValue
 )
 
-export function Select({
-  options,
-  width = 200,
-  popupHeight = 250,
-  form,
-  defaultValue,
-}: SelectProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  const [selectedLabel, setSelectedLabel] = useState<string | null | undefined>(
-    defaultValue?.value
-  )
+export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
+  function Select(
+    {
+      options,
+      width = 200,
+      popupHeight = 250,
+      defaultValue,
+      onChange,
+      defaultOpen = false,
+      ...props
+    },
+    ref
+  ) {
+    const [isOpen, setIsOpen] = useState(defaultOpen)
+    const [activeIndex, setActiveIndex] = useState<number | null>(null)
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+    const [selectedLabel, setSelectedLabel] = useState<
+      string | null | undefined
+    >(defaultValue?.value)
 
-  const { refs, floatingStyles, context } = useFloating({
-    placement: "bottom-start",
-    open: isOpen,
-    onOpenChange: setIsOpen,
-    whileElementsMounted: autoUpdate,
-    middleware: [flip()],
-  })
+    const { refs, floatingStyles, context } = useFloating({
+      placement: "bottom-start",
+      open: isOpen,
+      onOpenChange: setIsOpen,
+      whileElementsMounted: autoUpdate,
+      middleware: [flip()],
+    })
 
-  const elementsRef = useRef<Array<HTMLElement | null>>([])
-  const labelsRef = useRef<Array<string | null>>([])
+    const elementsRef = useRef<Array<HTMLElement | null>>([])
+    const labelsRef = useRef<Array<string | null>>([])
 
-  const handleSelect = useCallback((index: number | null) => {
-    setSelectedIndex(index)
-    setIsOpen(false)
-    if (index !== null) {
-      setSelectedLabel(labelsRef.current[index])
+    const handleSelect = useCallback(
+      (index: number | null) => {
+        setSelectedIndex(index)
+        setIsOpen(false)
+        if (index !== null) {
+          setSelectedLabel(labelsRef.current[index])
+          onChange?.(labelsRef.current[index])
+        }
+      },
+      [onChange]
+    )
+
+    function handleTypeaheadMatch(index: number | null) {
+      if (isOpen) {
+        setActiveIndex(index)
+      } else {
+        handleSelect(index)
+      }
     }
-  }, [])
 
-  function handleTypeaheadMatch(index: number | null) {
-    if (isOpen) {
-      setActiveIndex(index)
-    } else {
-      handleSelect(index)
-    }
-  }
-
-  const listNav = useListNavigation(context, {
-    listRef: elementsRef,
-    activeIndex,
-    selectedIndex,
-    onNavigate: setActiveIndex,
-  })
-  const typeahead = useTypeahead(context, {
-    listRef: labelsRef,
-    activeIndex,
-    selectedIndex,
-    onMatch: handleTypeaheadMatch,
-  })
-
-  const click = useClick(context)
-  const dismiss = useDismiss(context)
-  const role = useRole(context, { role: "listbox" })
-
-  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-    [listNav, typeahead, click, dismiss, role]
-  )
-
-  const selectContext = useMemo(
-    () => ({
+    const listNav = useListNavigation(context, {
+      listRef: elementsRef,
       activeIndex,
       selectedIndex,
-      getItemProps,
-      handleSelect,
-    }),
-    [activeIndex, selectedIndex, getItemProps, handleSelect]
-  )
+      onNavigate: setActiveIndex,
+    })
+    const typeahead = useTypeahead(context, {
+      listRef: labelsRef,
+      activeIndex,
+      selectedIndex,
+      onMatch: handleTypeaheadMatch,
+    })
 
-  return (
-    <div>
-      <input
-        tabIndex={0}
-        {...getReferenceProps()}
-        value={selectedLabel ?? ""}
-        placeholder="Select ..."
-        style={{ width, maxHeight: popupHeight }}
-        className="border rounded px-2"
-        {...form}
-        ref={(ref) => {
-          refs.setReference(ref)
-          form && form.ref(ref)
-        }}
-      />
-      <SelectContext.Provider value={selectContext}>
-        {isOpen && (
-          <FloatingFocusManager context={context} modal={false}>
-            <div
-              ref={refs.setFloating}
-              style={{ ...floatingStyles, width }}
-              {...getFloatingProps()}
-              className="relative z-50 max-h-[200px] overflow-y-auto"
-            >
-              <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
-                {options.map((option, index) => (
-                  <Option
-                    label={option.label}
-                    value={option.value}
-                    key={index}
-                  />
-                ))}
-              </FloatingList>
-            </div>
-          </FloatingFocusManager>
-        )}
-      </SelectContext.Provider>
-    </div>
-  )
-}
+    const click = useClick(context)
+    const dismiss = useDismiss(context)
+    const role = useRole(context, { role: "listbox" })
+
+    const { getReferenceProps, getFloatingProps, getItemProps } =
+      useInteractions([listNav, typeahead, click, dismiss, role])
+
+    const selectContext = useMemo(
+      () => ({
+        activeIndex,
+        selectedIndex,
+        getItemProps,
+        handleSelect,
+      }),
+      [activeIndex, selectedIndex, getItemProps, handleSelect]
+    )
+
+    const selectLabel = options.reduce<Record<string, string>>((prev, cur) => {
+      prev[cur.value] = cur.label ?? cur.value
+      return prev
+    }, {})
+
+    return (
+      <div>
+        <Input
+          {...props}
+          tabIndex={0}
+          {...getReferenceProps()}
+          value={selectLabel[selectedLabel ?? ""]}
+          placeholder="Select ..."
+          style={{ width, maxHeight: popupHeight }}
+          className="rounded border px-2"
+          ref={useMergeRefs([refs.setReference, ref])}
+          size="sm"
+          onChange={noop}
+        />
+        <SelectContext.Provider value={selectContext}>
+          {isOpen && (
+            <FloatingFocusManager context={context} modal={false}>
+              <div
+                ref={refs.setFloating}
+                style={{ ...floatingStyles, width }}
+                {...getFloatingProps()}
+                className="relative z-50 max-h-[200px] overflow-y-auto"
+              >
+                <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
+                  {options.map((option, index) => (
+                    <Option
+                      label={option.label}
+                      value={option.value}
+                      key={index}
+                    />
+                  ))}
+                </FloatingList>
+              </div>
+            </FloatingFocusManager>
+          )}
+        </SelectContext.Provider>
+      </div>
+    )
+  }
+)
 
 function Option({ label, value }: SelectOption) {
   const { activeIndex, selectedIndex, getItemProps, handleSelect } =
@@ -181,7 +199,7 @@ function Option({ label, value }: SelectOption) {
         onClick: () => handleSelect(index),
       })}
       className={cx(
-        "block border bg-yellow-100 w-full text-start truncate",
+        "block w-full truncate border bg-yellow-100 text-start",
         { "bg-violet-100": isActive },
         { "bg-yellow-200": isSelected }
       )}

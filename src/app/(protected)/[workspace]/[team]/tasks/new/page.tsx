@@ -41,7 +41,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
                 name: data.name,
                 prompt: JSON.stringify(prompt?.getJSON()),
               })
-              router.push(`${params.workspace}/${params.team}`)
+              // router.push(`${params.workspace}/${params.team}`)
             })}
           >
             <div>

@@ -1,31 +1,29 @@
 import {
-  useFloating,
   autoUpdate,
-  offset,
   flip,
+  FloatingFocusManager,
+  FloatingPortal,
+  offset,
+  type Placement,
   shift,
   useClick,
   useDismiss,
-  useRole,
+  useFloating,
   useInteractions,
   useMergeRefs,
-  type Placement,
-  FloatingPortal,
-  FloatingFocusManager,
-  useId,
+  useRole,
 } from "@floating-ui/react"
 import {
-  type ButtonHTMLAttributes,
   cloneElement,
   createContext,
   type Dispatch,
   forwardRef,
   type HTMLProps,
   isValidElement,
+  PropsWithChildren,
   type ReactNode,
   type SetStateAction,
   useContext,
-  useLayoutEffect,
   useMemo,
   useState,
 } from "react"
@@ -130,13 +128,12 @@ export function Popover({
   )
 }
 
-interface PopoverTriggerProps {
-  children: ReactNode
+interface PopoverTriggerProps extends PropsWithChildren {
   asChild?: boolean
 }
 
 export const PopoverTrigger = forwardRef<
-  HTMLElement,
+  HTMLElement | null,
   HTMLProps<HTMLElement> & PopoverTriggerProps
 >(function PopoverTrigger({ children, asChild = false, ...props }, propRef) {
   const context = usePopoverContext()
@@ -159,20 +156,19 @@ export const PopoverTrigger = forwardRef<
   }
 
   return (
-    <button
+    <div
       ref={ref}
-      type="button"
       // The user can style the trigger based on the state
       data-state={context.open ? "open" : "closed"}
       {...context.getReferenceProps(props)}
     >
       {children}
-    </button>
+    </div>
   )
 })
 
 export const PopoverContent = forwardRef<
-  HTMLDivElement,
+  HTMLDivElement | null,
   HTMLProps<HTMLDivElement>
 >(function PopoverContent({ style, ...props }, propRef) {
   const { context: floatingContext, ...context } = usePopoverContext()
@@ -194,61 +190,5 @@ export const PopoverContent = forwardRef<
         </div>
       </FloatingFocusManager>
     </FloatingPortal>
-  )
-})
-
-export const PopoverHeading = forwardRef<
-  HTMLHeadingElement,
-  HTMLProps<HTMLHeadingElement>
->(function PopoverHeading(props, ref) {
-  const { setLabelId } = usePopoverContext()
-  const id = useId()
-
-  // Only sets `aria-labelledby` on the Popover root element
-  // if this component is mounted inside it.
-  useLayoutEffect(() => {
-    setLabelId(id)
-    return () => setLabelId(undefined)
-  }, [id, setLabelId])
-
-  return (
-    <h2 {...props} ref={ref} id={id}>
-      {props.children}
-    </h2>
-  )
-})
-
-export const PopoverDescription = forwardRef<
-  HTMLParagraphElement,
-  HTMLProps<HTMLParagraphElement>
->(function PopoverDescription(props, ref) {
-  const { setDescriptionId } = usePopoverContext()
-  const id = useId()
-
-  // Only sets `aria-describedby` on the Popover root element
-  // if this component is mounted inside it.
-  useLayoutEffect(() => {
-    setDescriptionId(id)
-    return () => setDescriptionId(undefined)
-  }, [id, setDescriptionId])
-
-  return <p {...props} ref={ref} id={id} />
-})
-
-export const PopoverClose = forwardRef<
-  HTMLButtonElement,
-  ButtonHTMLAttributes<HTMLButtonElement>
->(function PopoverClose(props, ref) {
-  const { setOpen } = usePopoverContext()
-  return (
-    <button
-      type="button"
-      ref={ref}
-      {...props}
-      onClick={(event) => {
-        props.onClick?.(event)
-        setOpen(false)
-      }}
-    />
   )
 })

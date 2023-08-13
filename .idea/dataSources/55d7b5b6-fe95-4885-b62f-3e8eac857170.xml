@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="@mongo1">
+  <database-model serializer="dbm" dbms="MONGO" family-id="MONGO" format-version="4.49">
+    <root id="1">
+      <ServerVersion>5.0.19</ServerVersion>
+    </root>
+    <schema id="2" parent="1" name="admin"/>
+    <schema id="3" parent="1" name="config"/>
+    <schema id="4" parent="1" name="local"/>
+    <schema id="5" parent="1" name="pulsa-app-prod">
+      <LocalIntrospectionTimestamp>2023-08-12.04:14:35</LocalIntrospectionTimestamp>
+    </schema>
+    <table id="6" parent="5" name="api-keys"/>
+    <table id="7" parent="5" name="members_on_teams"/>
+    <table id="8" parent="5" name="members_on_workspaces"/>
+    <table id="9" parent="5" name="tasks"/>
+    <table id="10" parent="5" name="teams"/>
+    <table id="11" parent="5" name="users"/>
+    <table id="12" parent="5" name="workspaces"/>
+    <column id="13" parent="6" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="14" parent="6" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="15" parent="6" name="hint">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="16" parent="6" name="ownerId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="17" parent="6" name="provider">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="18" parent="6" name="title">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="19" parent="6" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="20" parent="6" name="value">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="21" parent="7" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="22" parent="7" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="23" parent="7" name="role">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="24" parent="7" name="status">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="25" parent="7" name="teamId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="26" parent="7" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="27" parent="7" name="userId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="28" parent="8" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="29" parent="8" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="30" parent="8" name="role">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="31" parent="8" name="status">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="32" parent="8" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="33" parent="8" name="userId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="34" parent="8" name="workspaceId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="35" parent="9" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="36" parent="9" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="37" parent="9" name="name">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="38" parent="9" name="ownerId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="39" parent="9" name="private">
+      <DasType>Boolean|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="40" parent="9" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="41" parent="9" name="teamId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="42" parent="9" name="prompt">
+      <DasType>String|12s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="43" parent="10" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="44" parent="10" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="45" parent="10" name="name">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="46" parent="10" name="ownerId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="47" parent="10" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="48" parent="10" name="workspaceId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="49" parent="11" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="50" parent="11" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="51" parent="11" name="email">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="52" parent="11" name="phone">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="53" parent="11" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="54" parent="11" name="username">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="55" parent="11" name="avatar">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="56" parent="12" name="_id">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="57" parent="12" name="createdAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="58" parent="12" name="name">
+      <DasType>String|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="59" parent="12" name="ownerId">
+      <DasType>ObjectId|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="60" parent="12" name="private">
+      <DasType>Boolean|12s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="61" parent="12" name="updatedAt">
+      <DasType>ISODate|91s</DasType>
+      <Position>1</Position>
+    </column>
+  </database-model>
+</dataSource>

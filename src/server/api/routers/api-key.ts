@@ -26,11 +26,7 @@ export const createApiKey = protectedProcedure
         title: input.title,
         value: cryptr.encrypt(input.value),
         hint: createHint(input.value),
-        owner: {
-          connect: {
-            email: ctx.session.right.email,
-          },
-        },
+        ownerId: ctx.session.right.userId,
       },
     })
   })

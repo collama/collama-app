@@ -1,46 +1,66 @@
-import { FC, PropsWithChildren } from "react"
+import type { PropsWithChildren, ReactNode } from "react"
+import { forwardRef } from "react"
 import cx from "classnames"
 
-type ButtonType = "primary" | "default"
+type ButtonType = "primary" | "default" | "text"
+type ButtonSize = "base" | "sm"
+
 interface ButtonProps extends PropsWithChildren {
   block?: boolean
   classNames?: string
   type?: ButtonType
   ghost?: boolean
   disable?: boolean
-  icon?: any
+  icon?: ReactNode
   loading?: boolean
   onClick?: () => void
+  htmlType?: HTMLButtonElement["type"]
+  size?: ButtonSize
 }
 
-const BASE_SIZE = "text-base h-10 py-1.5 px-4 rounded-lg"
+const BASE_SIZE: Record<ButtonSize, string> = {
+  base: "text-base",
+  sm: "text-sm",
+}
 
 const BUTTON_TYPE: Record<ButtonType, string> = {
-  default: "bg-white border-stone-300 shadow-sm hover:text-violet-500",
+  default:
+    "bg-white border-stone-300 shadow-sm hover:text-violet-500 hover:border-violet-500",
   primary: "bg-violet-500 text-white shadow-sm hover:opacity-90",
+  text: "border-0 hover:bg-gray-100 ",
 }
 
-export const Button: FC<ButtonProps> = ({
-  block,
-  classNames,
-  type = "default",
-  ghost,
-  disable,
-  icon,
-  loading,
-  onClick,
-  children,
-}) => {
-  return (
-    <button
-      onClick={onClick}
-      className={cx(
-        "outline-0 relative inline-block text-center whitespace-nowrap font-normal bg-none bg-transparent border border-solid border-transparent transition-all touch-none select-none leading-6",
-        BASE_SIZE,
-        BUTTON_TYPE[type]
-      )}
-    >
-      <span>{children}</span>
-    </button>
-  )
-}
+export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
+  function Button(
+    {
+      block,
+      classNames,
+      type = "default",
+      ghost,
+      disable,
+      icon,
+      loading,
+      onClick,
+      children,
+      htmlType = "button",
+      size = "base",
+    },
+    ref
+  ) {
+    return (
+      <button
+        ref={ref}
+        onClick={onClick}
+        type={htmlType}
+        className={cx(
+          "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none px-2 py-1 text-center font-normal leading-5 outline-0  transition-all",
+          BASE_SIZE[size],
+          BUTTON_TYPE[type],
+          classNames
+        )}
+      >
+        <span>{children}</span>
+      </button>
+    )
+  }
+)

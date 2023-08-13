@@ -26,7 +26,8 @@ const config = {
     }],
     "@typescript-eslint/no-misused-promises": ["error", {
       checksVoidReturn: false
-    }]
+    }],
+    "@typescript-eslint/ban-types": "off"
   }
 };
 module.exports = config;

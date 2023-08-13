@@ -1,27 +1,46 @@
+"use client"
+
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { DynamicForm } from "~/ui/DynamicForm/DynamicForm"
+import { type ReactElement } from "react"
+
+export type ColumnsType = {
+  id: string
+  title: string
+  render: (value: never) => ReactElement
+  //declare for filter
+  type?: string
+}[]
 
 type TableProps<T> = {
   data: T[]
-  columns: ColumnDef<T>[]
+  columns: ColumnsType
+}
+
+const transformToColumnDef = <T,>(columns: ColumnsType): ColumnDef<T>[] => {
+  return columns.map<ColumnDef<T>>((col) => ({
+    header: col.title,
+    accessorKey: col.id,
+    cell: (info) => {
+      return col.render(info.getValue() as never)
+    },
+  }))
 }
 
 export function Table<T>({ data, columns }: TableProps<T>) {
   const table = useReactTable({
     data,
-    columns,
+    columns: transformToColumnDef<T>(columns),
     getCoreRowModel: getCoreRowModel(),
   })
 
   return (
     <div className="w-full px-4">
-      <DynamicForm columns={table.getFlatHeaders()} />
-      <table className="w-full shot-table">
+      <table className="shot-table w-full">
         <thead>
           <tr>
             {table.getFlatHeaders().map((header) => {

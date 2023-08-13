@@ -5,15 +5,15 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "postinstall": "ts-patch install && prisma generate",
+    "postinstall": "prisma generate",
     "generate": "prisma generate",
     "lint": "next lint",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "env": "npx dotenv-vault pull"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "@aws-sdk/client-s3": "^3.374.0",
     "@aws-sdk/s3-presigned-post": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.375.0",
@@ -42,7 +42,7 @@
     "classnames": "^2.3.2",
     "cookie": "^0.5.0",
     "cryptr": "^6.2.0",
-    "D": "^1.0.0",
+    "dayjs": "^1.11.9",
     "fp-ts": "^2.16.0",
     "immer": "^10.0.2",
     "js-base64": "^3.7.5",
@@ -61,7 +61,6 @@
     "tailwindcss-classnames": "^3.1.0",
     "tippy.js": "^6.3.7",
     "ts-pattern": "^5.0.4",
-    "typia": "^4.2.1",
     "url-join": "^5.0.0",
     "use-async-effect": "^2.2.7",
     "use-immer": "^0.9.0",
@@ -102,7 +101,6 @@
     "tailwindcss": "^3.3.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
-    "ts-patch": "^3.0.2",
     "typescript": "^5.1.6"
   },
   "ct3aMetadata": {

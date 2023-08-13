@@ -44,7 +44,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
                 teamName: params.team,
                 workspaceName: params.workspace,
               })
-              router.push(`/${params.workspace}/${params.team}`)
+              // router.push(`/${params.workspace}/${params.team}`)
             })}
           >
             <div>

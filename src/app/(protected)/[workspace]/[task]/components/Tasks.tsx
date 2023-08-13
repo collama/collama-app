@@ -1,119 +1,109 @@
 "use client"
 
-import React from "react"
-import { useParams, useRouter } from "next/navigation"
-import urlJoin from "url-join"
-import { ColumnDef } from "@tanstack/react-table"
+import React, { useState } from "react"
+import { type ColumnsType, Table } from "~/ui/Table"
+import { Tag } from "~/ui/Tag"
+import { IconX } from "@tabler/icons-react"
+import type { Task, User } from "@prisma/client"
+import { api } from "~/trpc/client"
+import { toFullDate } from "~/ults/datetime"
 import { Button } from "~/ui/Button"
-import { Table } from "~/ui/Table"
+import urlJoin from "url-join"
+import { Filter } from "~/ui/Table/components/Filter"
+import { useParams, useRouter } from "next/navigation"
+import useAsyncEffect from "use-async-effect"
+import { NoSsrWarp } from "~/components/NoSsr"
+import { Pagination } from "~/ui/Pagination"
 
-const data: Task[] = [
+const columns: ColumnsType = [
   {
-    id: "123",
-    title: "Act as an English Translator and Improver",
-    tags: ["English"],
-    owner: "Linh",
-    status: "Enable",
-    createdAt: "May 30",
+    id: "name",
+    title: "Task",
+    type: "string",
+    render: (name: string) => <span>{name}</span>,
   },
   {
-    id: "456",
-    title: "Act as a Linux Terminal",
-    tags: ["Tech", "Unix"],
-    owner: "Linh",
-    status: "Disable",
-    createdAt: "May 30",
+    id: "owner",
+    title: "Owner",
+    type: "string",
+    render: (user: User) => <span>{user.email}</span>,
   },
   {
-    id: "789",
-    title: "Act as position Interviewer",
-    tags: ["Interview"],
-    owner: "Linh",
-    status: "Enable",
-    createdAt: "May 30",
-  },
-]
-
-const columns: ColumnDef<Task>[] = [
-  {
-    header: "Task",
-    accessorKey: "title",
-    id: "title",
-    cell: (info) => {
-      const cell = info.getValue()
-      return <span key={cell as string}>{cell as string}</span>
-    },
-  },
-  {
-    header: "Owner",
-    id: "user",
-    accessorKey: "owner",
-    cell: (info) => {
-      const cell = info.getValue()
-      return <span>{cell as string}</span>
-    },
-  },
-  {
-    header: "Create at",
     id: "createdAt",
-    accessorKey: "createdAt",
-    cell: (info) => {
-      const cell = info.getValue()
-      return <span>{cell as string}</span>
-    },
+    title: "Created At",
+    type: "date",
+    render: (date: Date) => <span>{toFullDate(date)}</span>,
   },
   {
-    header: "Status",
-    id: "status",
-    accessorKey: "status",
-    cell: (info) => {
-      const cell = info.getValue()
-      return <span className="bg-green-300">{cell as string}</span>
-    },
+    id: "private",
+    title: "Private",
+    type: "string",
+    render: (isPrivate: boolean) => (
+      <Tag color={isPrivate ? "green" : "red"}>{isPrivate.toString()}</Tag>
+    ),
   },
 ]
 
-export const Tasks = () => {
+export function Tasks() {
+  const [filter, setFilter] = useState<Filter[]>([])
+  const [data, setData] = useState<Task[]>([])
   const params = useParams()
   const router = useRouter()
+
+  useAsyncEffect(async () => {
+    const task = await api.task?.getFilter.query({ filter: filter })
+    setData(task)
+  }, [filter.length])
 
   const onDelete = (id: string) => {
     console.log(id)
   }
 
-  const actionColumn: ColumnDef<Task> = {
-    header: "Action",
-    accessorKey: "id",
-    cell: (info) => {
-      const id = info.getValue()
-      return <span onClick={() => onDelete(id as string)}>delete</span>
+  const actionColumn: ColumnsType = [
+    {
+      title: "Action",
+      id: "id",
+      render: (id) => (
+        <span
+          className="rounded-full text-gray-400 hover:bg-gray-600"
+          onClick={() => onDelete(id as string)}
+        >
+          <span>
+            <IconX size={16} />
+          </span>
+        </span>
+      ),
     },
-  }
+  ]
 
   return (
     <div>
-      <div className="flex px-4 space-x-4 py-6">
-        <Button
-          type="primary"
-          onClick={() =>
-            router.push(urlJoin(params.team as string, "tasks/new"))
-          }
-        >
-          Create new task
-        </Button>
-        <Button>Filter</Button>
-        <Button>Sort</Button>
+      <div className="flex items-center justify-between">
+        <div className="flex space-x-4 px-4 py-6">
+          <Button
+            type="primary"
+            onClick={() =>
+              router.push(urlJoin(params.team as string, "tasks/new"))
+            }
+          >
+            Create new task
+          </Button>
+          <NoSsrWarp>
+            <Filter
+              columns={columns}
+              setFilters={(filter) => setFilter(filter)}
+            />
+          </NoSsrWarp>
+          <Button>Sort</Button>
+        </div>
+        <div className="px-4 py-6">
+          <Pagination
+            totalPage={20}
+            onChange={(page, size) => console.log("onEnter ===>", page, size)}
+          />
+        </div>
       </div>
-      <Table data={data} columns={[...columns, actionColumn]} />
+      <Table data={data} columns={[...columns, ...actionColumn]} />
     </div>
   )
-}
-
-interface Task {
-  id: string
-  title: string
-  tags: string[]
-  owner: string
-  status: string
-  createdAt: string
 }

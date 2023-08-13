@@ -50,11 +50,38 @@ export const taskRouter = createTRPCRouter({
         },
       })
     }),
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
     return ctx.prisma.task.findMany({
       where: {
         ownerId: ctx.session.right.userId,
       },
     })
   }),
+  getFilter: protectedProcedure
+    .input(
+      z.object({
+        filter: z
+          .array(
+            z.object({
+              columns: z.string().nonempty(),
+              condition: z.string().nonempty(),
+              value: z.string(),
+            })
+          )
+          .nullable(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const filters = input.filter?.reduce((previousValue, currentValue) => {
+        previousValue[currentValue.columns] = {
+          [currentValue.condition]: currentValue.value,
+        }
+        return previousValue
+      }, {} as Record<string, Record<string, string>>)
+
+      return ctx.prisma.task.findMany({
+        where: filters,
+        include: { owner: true },
+      })
+    }),
 })

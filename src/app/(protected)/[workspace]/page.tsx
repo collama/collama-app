@@ -4,12 +4,14 @@ import { InviteForm } from "~/app/(protected)/[workspace]/components/InviteForm"
 import { Suspense } from "react"
 import Loading from "~/ui/loading"
 import { Members } from "~/app/(protected)/[workspace]/components/Members"
+import { getSession } from "~/common/passage"
 
 interface Props {
   workspace: string
 }
 
 export default async function WorkspacePage({ params }: PageProps<Props>) {
+  const session = await getSession()()
   const workspace = await api.workspace.getByNamePublic.query({
     workspaceName: params.workspace,
   })
@@ -31,7 +33,7 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
           <InviteForm workspaceName={params.workspace} />
         </Suspense>
         <Suspense fallback={<Loading />}>
-          <Members workspaceName={params.workspace} />
+          <Members workspaceName={params.workspace} session={session} />
         </Suspense>
       </div>
     </div>

@@ -55,9 +55,8 @@ export const InviteForm = (props: Props) => {
         >
           <input type="email" className="border" {...form.register("email")} />
           <select {...form.register("role")}>
-            <option value={Role.Owner}>{Role.Owner}</option>
-            <option value={Role.Reader}>{Role.Reader}</option>
-            <option value={Role.Writer}>{Role.Writer}</option>
+            <option value={Role.Reader}>Can View</option>
+            <option value={Role.Writer}>Can Edit</option>
           </select>
           <button type="submit" className="border bg-gray-400">
             Invite

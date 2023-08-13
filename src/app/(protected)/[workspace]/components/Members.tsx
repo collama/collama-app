@@ -9,10 +9,12 @@ import {
 } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { Role } from "@prisma/client"
-import { produce } from "immer"
+import { type Session } from "~/common/passage"
+import * as E from "fp-ts/Either"
 
 interface Props {
   workspaceName: string
+  session: E.Either<Error, Session>
 }
 
 export const Members = (props: Props) => {
@@ -56,42 +58,50 @@ export const Members = (props: Props) => {
             {member.user.email} - {member.status}
           </span>
           <span> - </span>
-          <select
-            name="role"
-            value={member.role}
-            onChange={(e) => {
-              const id = member.id
-              const newRole = e.target.value as Role
-              setMembers((prevState) =>
-                produce(prevState, (draft) => {
-                  const member = draft!.find((o) => o.id === id)
-                  if (member) {
-                    member.role = newRole
-                  }
-                })
-              )
-              updateMemberRoleMutation.mutate({
-                id: member.id,
-                role: e.target.value as Role,
-              })
-            }}
-          >
-            <option value={Role.Reader}>{Role.Reader}</option>
-            <option value={Role.Writer}>{Role.Writer}</option>
-            <option value={Role.Owner}>{Role.Owner}</option>
-          </select>
-          <div className="inline">
-            <button
-              className="border bg-gray-400"
-              onClick={() => {
-                removeMemberMutation.mutate({
-                  id: member.id,
-                })
-              }}
-            >
-              Remove
-            </button>
-          </div>
+          {member.role === Role.Owner ? (
+            <span>{member.role}</span>
+          ) : (
+            <>
+              <select
+                name="role"
+                value={member.role}
+                onChange={(e) => {
+                  const id = member.id
+                  const newRole = e.target.value as Role
+                  setMembers((draft) => {
+                    if (draft) {
+                      const member = draft.find((o) => o.id === id)
+                      if (member) {
+                        member.role = newRole
+                      }
+                    }
+                  })
+                  updateMemberRoleMutation.mutate({
+                    id: member.id,
+                    role: e.target.value as Role,
+                  })
+                }}
+              >
+                <option value={Role.Reader}>Can View</option>
+                <option value={Role.Writer}>Can Edit</option>
+              </select>
+            </>
+          )}
+          {E.isRight(props.session) &&
+            props.session.right.role === Role.Owner && (
+              <div className="inline">
+                <button
+                  className="border bg-gray-400"
+                  onClick={() => {
+                    removeMemberMutation.mutate({
+                      id: member.id,
+                    })
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
         </li>
       ))}
     </ul>

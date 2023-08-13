@@ -64,6 +64,7 @@
     "typia": "^4.2.1",
     "url-join": "^5.0.0",
     "use-async-effect": "^2.2.7",
+    "use-immer": "^0.9.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

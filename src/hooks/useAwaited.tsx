@@ -1,15 +1,16 @@
-import { Dispatch, SetStateAction, useState } from "react"
+import { useState } from "react"
 import useAsyncEffect from "use-async-effect"
+import { type Updater, useImmer } from "use-immer"
 
 interface AwaitedResult<T> {
   data: T | null | undefined
   error: Error | null
   loading: boolean
-  setData: Dispatch<SetStateAction<T | null | undefined>>
+  setData: Updater<T | null>
 }
 
 export default function useAwaited<T>(fn: Promise<T>): AwaitedResult<T> {
-  const [data, setData] = useState<T | null>()
+  const [data, setData] = useImmer<T | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 

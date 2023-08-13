@@ -7,35 +7,40 @@ export const createTask = protectedProcedure
     z.object({
       name: zId,
       prompt: z.string().optional(),
+      workspaceName: zId,
+      teamName: zId,
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const email = ctx.session.right.email
-    return ctx.prisma.task.create({
-      data: {
-        name: input.name,
-        prompt: input.prompt,
-        owner: {
-          connect: {
-            email,
-          },
-        },
+    const workspace = await ctx.prisma.workspace.findUnique({
+      where: {
+        name: input.workspaceName,
       },
     })
+
+    if (!workspace) {
+      throw new Error("workspace not found")
+    }
+
+    try {
+      return ctx.prisma.task.create({
+        data: {
+          name: input.name,
+          prompt: input.prompt,
+          ownerId: ctx.session.right.userId,
+          workspaceId: workspace.id,
+        },
+      })
+    } catch (e) {
+      console.log(e)
+    }
   })
 
 export const taskRouter = createTRPCRouter({
   getByName: protectedProcedure
     .input(
       z.object({
-        name: z
-          .string()
-          .max(20)
-          .min(3)
-          .refine(
-            (v) => /^(\w+-)*\w+$/.test(v),
-            "Name should contain only alphabets and -"
-          ),
+        name: zId,
       })
     )
     .query(async ({ ctx, input }) => {
@@ -48,9 +53,7 @@ export const taskRouter = createTRPCRouter({
   getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
     return ctx.prisma.task.findMany({
       where: {
-        owner: {
-          email: ctx.session.right.email,
-        },
+        ownerId: ctx.session.right.userId,
       },
     })
   }),

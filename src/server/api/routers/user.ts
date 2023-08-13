@@ -1,34 +1,55 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import { passage } from "~/common/passage"
 
 export const createUserIfNotExists = protectedProcedure
   .input(
     z.object({
+      passageId: z.string().nonempty(),
       username: z.string().max(20),
       email: z.string().email(),
       phone: z.string().optional(),
     })
   )
   .mutation(async ({ ctx, input }) => {
-    if (ctx.session.right.email) {
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          email: input.email,
-        },
-      })
+    console.log("ctx.session.right.email", ctx.session.right.email)
 
-      if (user) {
-        return user
-      }
-    }
+    // let user
+    // if (ctx.session.right.email) {
+    //   user = await ctx.prisma.user.findUnique({
+    //     where: {
+    //       email: input.email,
+    //     },
+    //   })
+    // }
+    //
+    // if (user) {
+    //   return user
+    // }
 
-    return ctx.prisma.user.create({
-      data: {
+    const user = await ctx.prisma.user.upsert({
+      where: {
+        username: input.username,
+        email: input.email,
+      },
+      create: {
         username: input.username,
         email: input.email,
         phone: input.phone,
       },
+      update: {
+        email: input.email,
+      },
     })
+
+    await passage.user.update(input.passageId, {
+      user_metadata: {
+        user_id: user.id,
+        role: "admin",
+      },
+    })
+
+    return user
   })
 
 export const updateUserAvatar = protectedProcedure

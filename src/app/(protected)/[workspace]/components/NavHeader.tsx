@@ -13,12 +13,12 @@ export const NavHeader = () => {
   })
 
   return (
-    <div className="flex relative w-full cursor-pointer">
+    <div className="relative flex w-full cursor-pointer">
       <div
         className="flex w-full flex-row items-center border-b p-2"
         onClick={() => setOpened((prevState) => !prevState)}
       >
-        <div className="flex w-full flex-row items-center p-2 hover:bg-gray-200 rounded-lg transition ease-in-out delay-150">
+        <div className="flex w-full flex-row items-center rounded-lg p-2 transition delay-150 ease-in-out hover:bg-gray-200">
           <Avatar character="P" color="green" />
           <div className="ml-1.5 text-sm font-medium">Personal</div>
           <div className="ml-auto">
@@ -29,41 +29,41 @@ export const NavHeader = () => {
       {opened && (
         <div
           ref={ref}
-          className="absolute top-[60px] left-[15px] bg-white border rounded-lg w-[300px]"
+          className="absolute left-[15px] top-[60px] w-[300px] rounded-lg border bg-white"
         >
           <div className="border-b p-2">
-            <div className="flex w-full flex-row items-center p-2 hover:bg-gray-100 rounded-lg transition ease-in-out delay-50">
+            <div className="delay-50 flex w-full flex-row items-center rounded-lg p-2 transition ease-in-out hover:bg-gray-100">
               <Avatar character="P" color="green" />
               <div className="ml-1.5 text-sm font-medium">Techcombank</div>
             </div>
-            <div className="flex w-full flex-row items-center p-2 hover:bg-gray-100 rounded-lg transition ease-in-out delay-50">
+            <div className="delay-50 flex w-full flex-row items-center rounded-lg p-2 transition ease-in-out hover:bg-gray-100">
               <Avatar character="A" color="red" />
               <div className="ml-1.5 text-sm font-medium">Ahamove</div>
             </div>
-            <div className="flex w-full flex-row items-center p-2 hover:bg-gray-100 rounded-lg transition ease-in-out delay-50">
+            <div className="delay-50 flex w-full flex-row items-center rounded-lg p-2 transition ease-in-out hover:bg-gray-100">
               <Avatar character="W" color="sky" />
               <div className="ml-1.5 text-sm font-medium">Woven</div>
             </div>
           </div>
 
           <div className="border-b">
-            <div className="font-medium text-xs px-4 pt-2 flex flex-row items-center">
+            <div className="flex flex-row items-center px-4 pt-2 text-xs font-medium">
               <span>linrium@gmail.com</span>
-              <div className="bg-green-100 text-green-500 ml-auto p-1 rounded text-xs">
+              <div className="ml-auto rounded bg-green-100 p-1 text-xs text-green-500">
                 <span>Premium</span>
               </div>
             </div>
             <div className="p-2">
-              <div className="flex w-full flex-row items-center p-2 hover:bg-gray-100 rounded-lg transition ease-in-out delay-50">
+              <div className="delay-50 flex w-full flex-row items-center rounded-lg p-2 transition ease-in-out hover:bg-gray-100">
                 <IconSettings2 size={18} color="#4b5563" />
-                <span className="text-sm ml-1.5">Account settings</span>
+                <span className="ml-1.5 text-sm">Account settings</span>
               </div>
             </div>
           </div>
 
           <div>
             <div className="p-2">
-              <div className="flex w-full flex-row items-center p-2 hover:bg-gray-100 rounded-lg transition ease-in-out delay-50">
+              <div className="delay-50 flex w-full flex-row items-center rounded-lg p-2 transition ease-in-out hover:bg-gray-100">
                 <span className="text-sm text-red-500">Sign out</span>
               </div>
             </div>

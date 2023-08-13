@@ -19,6 +19,7 @@ export const api = experimental_createTRPCNextAppDirServer<AppRouter>({
         }),
         experimental_nextHttpLink({
           batch: true,
+          revalidate: 5,
           url: getUrl(),
           headers() {
             return {

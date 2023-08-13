@@ -34,6 +34,7 @@ export default function Auth() {
         }
 
         await api.user.createIfNotExists.mutate({
+          passageId: info.id,
           email: info.email,
           username: "test",
           phone: info.phone,

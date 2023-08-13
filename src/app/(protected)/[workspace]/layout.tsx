@@ -1,70 +1,46 @@
-import Link from "next/link"
-import {
-  IconBox,
-  IconInbox,
-  IconSettings2,
-  IconSmartHome,
-  IconUsers,
-} from "@tabler/icons-react"
-import { type PropsWithChildren, Suspense } from "react"
-import NavItem from "~/app/(protected)/[workspace]/components/NavItem"
+import { type PropsWithChildren } from "react"
 import { type PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server-invoker"
-import Loading from "~/ui/loading"
-import Teams from "~/app/(protected)/[workspace]/components/Teams"
-import { redirect } from "next/navigation"
+import { getSession } from "~/common/passage"
+import Link from "next/link"
+import * as E from "fp-ts/Either"
 
 interface Props {
   workspace: string
+  team: string
 }
 
 export default async function RootLayout({
   children,
   params,
 }: PageProps<Props> & PropsWithChildren) {
-  const workspace = await api.workspace.getByName.query({
-    workspaceName: params.workspace,
-  })
-
-  if (!workspace) {
-    redirect("/empty")
-  }
+  const session = await getSession()()
 
   return (
     <div className="flex h-screen">
       <aside className="flex w-[300px] flex-col border-r bg-gray-50">
-        {/*<NavHeader />*/}
-        <div className="border-b py-2">
-          <NavItem
-            icon={<IconSmartHome size={18} color="#4b5563" />}
-            title="Home"
-            href={`/${params.workspace}`}
-          />
-          <NavItem
-            icon={<IconUsers size={18} color="#4b5563" />}
-            title="Members"
-            href={`/${params.workspace}/members`}
-          />
-          <NavItem
-            icon={<IconSettings2 size={18} color="#4b5563" />}
-            title="Settings"
-            href={`/${params.workspace}/settings`}
-          />
-        </div>
-        <div className="py-2">
-          <div className="p-2">
-            <span className="text-xs font-medium">Teams</span>
+        <div>
+          <div>
+            {E.isRight(session) ? (
+              <span>Linh Tran</span>
+            ) : (
+              <Link href={`/auth`}>Login</Link>
+            )}
+          </div>
+
+          <hr />
+          <div>
             <div>
-              <Link
-                className="underline"
-                href={`/${params.workspace}/teams/new`}
-              >
-                New Team
-              </Link>
+              <Link href={`/${params.workspace}`}>Home</Link>
             </div>
-            <Suspense fallback={<Loading />}>
-              <Teams workspace={params.workspace} />
-            </Suspense>
+            <div>
+              <Link href={`/${params.workspace}/explore`}>Explore</Link>
+            </div>
+            <div>
+              <Link href={`/${params.workspace}/tasks`}>Tasks</Link>
+            </div>
+            <div>
+              <Link href={`/${params.workspace}/settings`}>Settings</Link>
+            </div>
           </div>
         </div>
       </aside>

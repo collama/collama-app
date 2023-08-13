@@ -5,7 +5,7 @@ import useZodForm from "~/common/form"
 import { FormProvider } from "react-hook-form"
 import z from "zod"
 import { useEffect } from "react"
-import { inviteAction } from "~/app/(protected)/[workspace]/[team]/actions"
+import { inviteAction } from "~/app/(protected)/[workspace]/[task]/actions"
 
 const schema = z.object({
   email: z.string().email(),

@@ -4,8 +4,8 @@ import { FormProvider } from "react-hook-form"
 import { useAction } from "~/trpc/client"
 import useZodForm from "~/common/form"
 import z from "zod"
-import { createWorkspaceAction } from "~/app/(onboarding)/onboarding/actions"
 import { useRouter } from "next/navigation"
+import { createWorkspaceAction } from "~/app/actions"
 
 const schema = z.object({
   workspaceName: z.string().nonempty(),
@@ -24,7 +24,7 @@ export default function CreateWorkspaceForm() {
         <form
           onSubmit={form.handleSubmit((data) => {
             mutation.mutate(data)
-            router.push("/")
+            router.push(`/${data.workspaceName}`)
           })}
         >
           <div>

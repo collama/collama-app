@@ -1,16 +1,16 @@
 "use client"
 
-import { type ChangeEvent, useEffect, useState, use } from "react"
+import { type ChangeEvent, useEffect, useState } from "react"
 import { api, useAction } from "~/trpc/client"
 import {
   createPresignedUrlAction,
   updateUserAvatarAction,
 } from "~/app/(protected)/[workspace]/settings/account/actions"
 import useAsyncEffect from "use-async-effect"
-import useQuery from "~/hooks/useQuery"
+import useAwaited from "~/hooks/useAwaited"
 
 export default function AccountPage() {
-  const user = useQuery(api.user.getUser.query())
+  const { data: user, loading } = useAwaited(api.user.getUser.query())
   const [selectedFile, setSelectedFile] = useState<File>()
   const [preview, setPreview] = useState<string>()
 

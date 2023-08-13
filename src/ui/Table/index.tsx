@@ -6,40 +6,41 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { Button } from "~/ui/Button"
-import urlJoin from "url-join"
-import { Filter } from "~/ui/Table/components/Filter"
-import React from "react"
-import { useParams, useRouter } from "next/navigation"
+import { type ReactElement } from "react"
+
+export type ColumnsType = {
+  id: string
+  title: string
+  render: (value: never) => ReactElement
+  //declare for filter
+  type?: string
+}[]
 
 type TableProps<T> = {
   data: T[]
-  columns: ColumnDef<T>[]
+  columns: ColumnsType
+}
+
+const transformToColumnDef = <T,>(columns: ColumnsType): ColumnDef<T>[] => {
+  return columns.map<ColumnDef<T>>((col) => ({
+    header: col.title,
+    accessorKey: col.id,
+    cell: (info) => {
+      return col.render(info.getValue() as never)
+    },
+  }))
 }
 
 export function Table<T>({ data, columns }: TableProps<T>) {
   const table = useReactTable({
     data,
-    columns,
+    columns: transformToColumnDef<T>(columns),
     getCoreRowModel: getCoreRowModel(),
   })
-  const params = useParams()
-  const router = useRouter()
+
   return (
     <div className="w-full px-4">
-      <div className="flex px-4 space-x-4 py-6">
-        <Button
-          type="primary"
-          onClick={() =>
-            router.push(urlJoin(params.team as string, "tasks/new"))
-          }
-        >
-          Create new task
-        </Button>
-        <Filter columns={table.getFlatHeaders()} />
-        <Button>Sort</Button>
-      </div>
-      <table className="w-full shot-table">
+      <table className="shot-table w-full">
         <thead>
           <tr>
             {table.getFlatHeaders().map((header) => {

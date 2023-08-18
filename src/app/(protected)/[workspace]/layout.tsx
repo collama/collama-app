@@ -33,9 +33,6 @@ export default async function RootLayout({
               <Link href={`/${params.workspace}`}>Home</Link>
             </div>
             <div>
-              <Link href={`/${params.workspace}/explore`}>Explore</Link>
-            </div>
-            <div>
               <Link href={`/${params.workspace}/tasks`}>Tasks</Link>
             </div>
             <div>

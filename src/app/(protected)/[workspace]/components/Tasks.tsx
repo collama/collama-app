@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default async function Tasks({ workspaceName }: Props) {
-  const tasks = await api.task.getAll.query()
+  const tasks = await api.task.getAll.query({})
 
   return (
     <div>

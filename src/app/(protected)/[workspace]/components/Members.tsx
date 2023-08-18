@@ -29,6 +29,11 @@ export const Members = (props: Props) => {
       workspaceName: props.workspaceName,
     })
   )
+  const { data: userOnWorkspace } = useAwaited(
+    api.workspace.getUserInWorkspace.query({
+      workspaceName: props.workspaceName,
+    })
+  )
 
   useEffect(() => {
     if (removeMemberMutation.status === "success") {
@@ -87,14 +92,23 @@ export const Members = (props: Props) => {
               </select>
             </>
           )}
-          {E.isRight(props.session) &&
-            props.session.right.role === Role.Owner && (
+          {userOnWorkspace &&
+            userOnWorkspace.role === Role.Owner &&
+            userOnWorkspace.userId !== member.userId && (
               <div className="inline">
                 <button
                   className="border bg-gray-400"
                   onClick={() => {
+                    const id = member.id
                     removeMemberMutation.mutate({
-                      id: member.id,
+                      id,
+                    })
+
+                    setMembers((draft) => {
+                      if (draft) {
+                        const index = draft.findIndex((o) => o.id === id)
+                        draft.splice(index, 1)
+                      }
                     })
                   }}
                 >

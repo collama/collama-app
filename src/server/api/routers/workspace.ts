@@ -253,6 +253,24 @@ export const removeMember = protectedProcedure
     })
   })
 
+export const getUserInWorkspace = protectedProcedure
+  .input(
+    z.object({
+      workspaceName: zId,
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const session = ctx.session.right
+    return ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        workspace: {
+          name: input.workspaceName,
+        },
+        userId: session.userId,
+      },
+    })
+  })
+
 export const workspaceRouter = createTRPCRouter({
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.count({
@@ -306,4 +324,5 @@ export const workspaceRouter = createTRPCRouter({
   }),
   getMembers,
   inviteMember,
+  getUserInWorkspace,
 })

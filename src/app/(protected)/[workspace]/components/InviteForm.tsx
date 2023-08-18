@@ -45,7 +45,6 @@ export const InviteForm = (props: Props) => {
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
-            console.log(data)
             inviteMember({
               email: data.email,
               role: data.role,

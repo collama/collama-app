@@ -4,14 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="update">
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="ci: remove pnpm-lock.yaml">
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/CreateTeamForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/api/routers/team.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/actions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Tasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Tasks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useAwaited.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useAwaited.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/root.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/root.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +55,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/impl-permission&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/linh/Projects/collama/src/server/extensions/rbac&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -71,6 +78,7 @@
       <recent name="$PROJECT_DIR$/src/server/extensions" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team" />
       <recent name="$PROJECT_DIR$/src/app/(protected)/[workspaceName]" />
       <recent name="$PROJECT_DIR$/src/app/(protected)/[workspace]/[team]" />
       <recent name="$PROJECT_DIR$/src/server/extensions/rbac" />

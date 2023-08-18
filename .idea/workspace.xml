@@ -4,20 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="ci: remove pnpm-lock.yaml">
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/CreateTeamForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/api/routers/team.ts" afterDir="false" />
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: create team">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/actions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Tasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Tasks.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/api/root.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/root.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,10 +23,38 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feat/create-team" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1692367170" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="feat/create-team" />
+                    <option name="lastUsedInstant" value="1692367115" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -174,7 +194,8 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="feat: impl permissions checkpoint" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="feat: create team" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: create team" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

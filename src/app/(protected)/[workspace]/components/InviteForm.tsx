@@ -10,7 +10,7 @@ import { useEffect } from "react"
 import { inviteMemberAction } from "~/app/(protected)/[workspace]/actions"
 
 const schema = z.object({
-  email: z.string().email(),
+  emailOrName: z.string(),
   role: z.nativeEnum(Role),
 })
 
@@ -46,13 +46,13 @@ export const InviteForm = (props: Props) => {
         <form
           onSubmit={form.handleSubmit((data) => {
             inviteMember({
-              email: data.email,
+              emailOrTeamName: data.emailOrName,
               role: data.role,
-              name: props.workspaceName,
+              workspaceName: props.workspaceName,
             })
           })}
         >
-          <input type="email" className="border" {...form.register("email")} />
+          <input className="border" {...form.register("emailOrName")} />
           <select {...form.register("role")}>
             <option value={Role.Reader}>Can View</option>
             <option value={Role.Writer}>Can Edit</option>

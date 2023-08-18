@@ -60,7 +60,8 @@ export const Members = (props: Props) => {
       {members.map((member) => (
         <li key={member.id}>
           <span>
-            {member.user.email} - {member.status}
+            {member.user ? member.user.email : member.team!.name} -{" "}
+            {member.status}
           </span>
           <span> - </span>
           {member.role === Role.Owner ? (

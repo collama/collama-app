@@ -44,7 +44,9 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
         <Suspense fallback={<Loading />}>
           <CreateTeamForm workspaceName={params.workspace} />
         </Suspense>
-        <Teams workspaceName={params.workspace} />
+        <Suspense fallback={<Loading />}>
+          <Teams workspaceName={params.workspace} />
+        </Suspense>
       </div>
     </div>
   )

@@ -106,6 +106,11 @@ const getMembers = protectedProcedure
             email: true,
           },
         },
+        team: {
+          select: {
+            name: true,
+          },
+        },
       },
     })
   })
@@ -113,44 +118,58 @@ const getMembers = protectedProcedure
 export const inviteMember = protectedProcedure
   .input(
     z.object({
-      name: zId,
-      email: z.string(),
+      workspaceName: zId,
+      emailOrTeamName: z.string(),
       role: z.nativeEnum(Role),
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const member = await ctx.prisma.membersOnWorkspaces.findFirst({
+    const emailRe = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
+
+    if (emailRe.test(input.emailOrTeamName)) {
+      return ctx.prisma.membersOnWorkspaces.create({
+        data: {
+          role: input.role,
+          workspace: {
+            connect: {
+              name: input.workspaceName,
+            },
+          },
+          user: {
+            connectOrCreate: {
+              where: {
+                email: input.emailOrTeamName,
+              },
+              create: {
+                email: input.emailOrTeamName,
+                username: "",
+              },
+            },
+          },
+        },
+      })
+    }
+
+    const team = await ctx.prisma.team.findFirstOrThrow({
       where: {
         workspace: {
-          name: input.name,
+          name: input.workspaceName,
         },
-        user: {
-          email: input.email,
-        },
+        name: input.emailOrTeamName,
       },
     })
-
-    if (member) {
-      throw new Error("member has already invited")
-    }
 
     return ctx.prisma.membersOnWorkspaces.create({
       data: {
         role: input.role,
         workspace: {
           connect: {
-            name: input.name,
+            name: input.workspaceName,
           },
         },
-        user: {
-          connectOrCreate: {
-            where: {
-              email: input.email,
-            },
-            create: {
-              email: input.email,
-              username: "",
-            },
+        team: {
+          connect: {
+            id: team.id,
           },
         },
       },

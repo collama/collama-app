@@ -62,8 +62,10 @@ enum InviteStatus {
 model MembersOnWorkspaces {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   role        Role
-  user        User         @relation(fields: [userId], references: [id])
-  userId      String       @db.ObjectId
+  user        User?        @relation(fields: [userId], references: [id])
+  userId      String?      @db.ObjectId
+  team        Team?        @relation(fields: [teamId], references: [id])
+  teamId      String?      @db.ObjectId
   workspace   Workspace    @relation(fields: [workspaceId], references: [id])
   workspaceId String       @db.ObjectId
   status      InviteStatus @default(Pending)
@@ -151,16 +153,17 @@ model ApiKey {
 }
 
 model Team {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  description    String
-  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
-  workspaceId    String           @db.ObjectId
-  owner          User             @relation(fields: [ownerId], references: [id])
-  ownerId        String           @db.ObjectId
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  membersOnTasks MembersOnTasks[]
+  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  description         String
+  workspace           Workspace             @relation(fields: [workspaceId], references: [id])
+  workspaceId         String                @db.ObjectId
+  owner               User                  @relation(fields: [ownerId], references: [id])
+  ownerId             String                @db.ObjectId
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  membersOnTasks      MembersOnTasks[]
+  membersOnWorkspaces MembersOnWorkspaces[]
 
   @@map("teams")
 }

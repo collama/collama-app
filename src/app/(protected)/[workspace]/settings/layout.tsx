@@ -17,7 +17,6 @@ export default function SettingLayout({
         <Link href={`/${params.workspace}/settings`}>General</Link>
         <Link href={`/${params.workspace}/settings/account`}>Account</Link>
         <Link href={`/${params.workspace}/settings/keys`}>API Keys</Link>
-        <Link href={`/${params.workspace}/settings/members`}>Members</Link>
       </aside>
       <div className="w-full">{children}</div>
     </div>

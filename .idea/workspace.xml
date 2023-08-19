@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: support invite team into workspace">
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/[team]/page.tsx" afterDir="false" />
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: add team link">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,7 +191,8 @@
     <MESSAGE value="update" />
     <MESSAGE value="feat: create team" />
     <MESSAGE value="feat: support invite team into workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: support invite team into workspace" />
+    <MESSAGE value="feat: add team link" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add team link" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

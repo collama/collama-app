@@ -3,6 +3,7 @@
 import useAwaited from "~/hooks/useAwaited"
 import { api } from "~/trpc/client"
 import Loading from "~/ui/loading"
+import Link from "next/link"
 
 interface Props {
   workspaceName: string
@@ -32,7 +33,9 @@ export const Teams = (props: Props) => {
       <ul>
         {teams.map((team) => (
           <li key={team.id}>
-            {team.name} - {team.description}
+            <Link href={`/${props.workspaceName}/teams/${team.id}`}>
+              {team.name} - {team.description}
+            </Link>
           </li>
         ))}
       </ul>

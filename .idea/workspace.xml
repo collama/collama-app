@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: create team">
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: support invite team into workspace">
+      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/teams/[team]/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/InviteForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Members.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/workspace.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/components/Team/Teams.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,7 +192,8 @@
     <MESSAGE value="feat: impl permissions checkpoint" />
     <MESSAGE value="update" />
     <MESSAGE value="feat: create team" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: create team" />
+    <MESSAGE value="feat: support invite team into workspace" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: support invite team into workspace" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

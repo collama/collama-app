@@ -22,7 +22,7 @@ export const Popover: FC<PopoverProps> = ({
   onOpenChange,
   placement,
 }) => {
-  if (open)
+  if (!!onOpenChange)
     return (
       <PopoverWarped
         placement={placement}

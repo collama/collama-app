@@ -19,6 +19,7 @@ export type ColumnsType = {
 type TableProps<T> = {
   data: T[]
   columns: ColumnsType
+  loading?: boolean
 }
 
 const transformToColumnDef = <T,>(columns: ColumnsType): ColumnDef<T>[] => {
@@ -31,7 +32,7 @@ const transformToColumnDef = <T,>(columns: ColumnsType): ColumnDef<T>[] => {
   }))
 }
 
-export function Table<T>({ data, columns }: TableProps<T>) {
+export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
   const table = useReactTable({
     data,
     columns: transformToColumnDef<T>(columns),
@@ -39,7 +40,7 @@ export function Table<T>({ data, columns }: TableProps<T>) {
   })
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full">
       <table className="shot-table w-full">
         <thead>
           <tr>
@@ -58,19 +59,24 @@ export function Table<T>({ data, columns }: TableProps<T>) {
             })}
           </tr>
         </thead>
-        <tbody>
-          {table.getRowModel().flatRows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => {
-                return (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
+        {!loading && (
+          <tbody>
+            {table.getRowModel().flatRows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
     </div>
   )

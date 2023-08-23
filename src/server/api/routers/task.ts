@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { zId } from "~/common/validation"
+import { transformFilter, transformSort } from "~/services/prisma"
+import { type FilterValue, type SortValue } from "~/common/types/props"
 
 export const createTask = protectedProcedure
   .input(
@@ -8,7 +10,6 @@ export const createTask = protectedProcedure
       name: zId,
       prompt: z.string().optional(),
       workspaceName: zId,
-      teamName: zId,
     })
   )
   .mutation(async ({ ctx, input }) => {
@@ -61,26 +62,46 @@ export const taskRouter = createTRPCRouter({
     .input(
       z.object({
         filter: z
-          .array(
-            z.object({
-              columns: z.string().nonempty(),
-              condition: z.string().nonempty(),
-              value: z.string(),
-            })
-          )
-          .nullable(),
+          .object({
+            list: z
+              .array(
+                z.object({
+                  columns: z.string().nonempty(),
+                  condition: z.string().nonempty(),
+                  value: z.string(),
+                })
+              )
+              .nullable(),
+            operator: z.string().nonempty(),
+          })
+          .required(),
+        sort: z
+          .object({
+            list: z
+              .array(
+                z.object({
+                  columns: z.string().nonempty(),
+                  condition: z.string().nonempty(),
+                })
+              )
+              .nullable(),
+          })
+          .required(),
+        name: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const filters = input.filter?.reduce((previousValue, currentValue) => {
-        previousValue[currentValue.columns] = {
-          [currentValue.condition]: currentValue.value,
-        }
-        return previousValue
-      }, {} as Record<string, Record<string, string>>)
+      const filters = transformFilter(input.filter as FilterValue)
+      const sorts = transformSort(input.sort as SortValue)
 
       return ctx.prisma.task.findMany({
-        where: filters,
+        where: {
+          ...filters,
+          workspace: {
+            name: input.name,
+          },
+        },
+        orderBy: sorts,
         include: { owner: true },
       })
     }),

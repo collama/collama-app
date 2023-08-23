@@ -4,6 +4,7 @@ import { taskRouter } from "~/server/api/routers/task"
 import { workspaceRouter } from "~/server/api/routers/workspace"
 import { apiKeyRouter } from "~/server/api/routers/api-key"
 import { teamRouter } from "~/server/api/routers/team"
+import { filterSettingRouter } from "~/server/api/routers/filterSetting"
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   workspace: workspaceRouter,
   team: teamRouter,
   apiKey: apiKeyRouter,
+  filterSetting: filterSettingRouter,
 })
 
 // export type definition of API

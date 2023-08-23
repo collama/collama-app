@@ -9,8 +9,9 @@ import type { PageProps } from "~/common/types/props"
 import { zId } from "~/common/validation"
 import { TipTap } from "~/ui/RichText"
 import { useState } from "react"
-import { type Editor } from "@tiptap/core"
 import { createTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { type JSONContent } from "@tiptap/react"
+import urlJoin from "url-join"
 
 const schema = z.object({
   name: zId,
@@ -28,7 +29,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
   const form = useZodForm({
     schema,
   })
-  const [prompt, setPrompt] = useState<Editor | null>(null)
+  const [prompt, setPrompt] = useState<JSONContent | null>(null)
 
   return (
     <div>
@@ -37,14 +38,12 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit((data) => {
-              console.log(data)
               mutation.mutate({
                 name: data.name,
-                prompt: JSON.stringify(prompt?.getJSON()),
-                teamName: params.team,
+                prompt: JSON.stringify(prompt),
                 workspaceName: params.workspace,
               })
-              // router.push(`/${params.workspace}/${params.team}`)
+              router.push(urlJoin("/", params.workspace, "tasks"))
             })}
           >
             <div>
@@ -58,7 +57,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
             </div>
             <div>
               <label htmlFor="create-task-prompt">Prompt</label>
-              <TipTap setPrompt={(editor) => setPrompt(editor)} />
+              <TipTap onChange={(editor) => setPrompt(editor)} />
             </div>
             <button type="submit">Create</button>
           </form>

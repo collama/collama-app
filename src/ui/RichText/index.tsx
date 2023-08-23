@@ -1,13 +1,13 @@
-import { useEditor, EditorContent } from "@tiptap/react"
+import { useEditor, EditorContent, type JSONContent } from "@tiptap/react"
 import { TipTapProps } from "~/ui/RichText/components/TipTapProps"
 import { TipTapExtensions } from "~/ui/RichText/components/TipTapExtension"
 import type { Editor } from "@tiptap/core"
-import { useEffect } from "react"
+import { useCallback, useEffect } from "react"
 
 export function TipTap({
-  setPrompt,
+  onChange,
 }: {
-  setPrompt: (editor: Editor | null) => void
+  onChange: (editor: JSONContent) => void
 }) {
   const editor = useEditor({
     extensions: TipTapExtensions,
@@ -18,9 +18,24 @@ export function TipTap({
     // <variable-node text="new-1"></variable-node></p>`,
   })
 
+  const onEditorChange = useCallback(
+    ({ editor }: { editor: Editor }) => {
+      onChange(editor.getJSON())
+    },
+    [onChange]
+  )
+
   useEffect(() => {
-    setPrompt(editor)
-  }, [editor, setPrompt])
+    if (editor) {
+      editor.on("update", onEditorChange)
+
+      return () => {
+        editor.off("update", onEditorChange)
+      }
+    }
+
+    return () => null
+  }, [onEditorChange, editor])
 
   return (
     <div

@@ -27,7 +27,7 @@ import {
 import { type ControllerRenderProps } from "react-hook-form"
 import cx from "classnames"
 import { noop } from "~/common/utils"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 
 export interface SelectOption {
   value: string

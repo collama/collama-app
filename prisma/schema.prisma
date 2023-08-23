@@ -26,6 +26,7 @@ model User {
   membersOnTeams     MembersOnTeams[]
   apiKeys            ApiKey[]
   teams              Team[]
+  filterSettings     FilterSetting[]
 
   @@map("users")
 }
@@ -43,6 +44,7 @@ model Workspace {
   membersOnTeams      MembersOnTeams[]
   tasks               Task[]
   teams               Team[]
+  filterSettings      FilterSetting[]
 
   @@map("workspaces")
 }
@@ -149,7 +151,20 @@ model ApiKey {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("api-keys")
+  @@map("api_keys")
+}
+
+model FilterSetting {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User      @relation(fields: [ownerId], references: [id])
+  ownerId     String    @db.ObjectId
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  setting     String
+
+  @@map("filter_settings")
 }
 
 model Team {

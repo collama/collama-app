@@ -3,6 +3,14 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { zId } from "~/common/validation"
 import { transformFilter, transformSort } from "~/services/prisma"
 import { type FilterValue, type SortValue } from "~/common/types/props"
+import type { Prompt } from "~/common/types/prompt"
+import {
+  callOpenAI,
+  fillVariables,
+  getContent,
+  getTextFromContent,
+  getVariableContents,
+} from "~/server/api/services/task"
 
 export const createTask = protectedProcedure
   .input(
@@ -49,6 +57,7 @@ export const taskRouter = createTRPCRouter({
         where: {
           name: input.name,
         },
+        include: { owner: true },
       })
     }),
   getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
@@ -105,4 +114,57 @@ export const taskRouter = createTRPCRouter({
         include: { owner: true },
       })
     }),
+  getPromptVariables: protectedProcedure
+    .input(
+      z.object({
+        name: zId,
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const prompt = await ctx.prisma.task.findUnique({
+        where: {
+          name: input.name,
+        },
+        select: {
+          prompt: true,
+        },
+      })
+
+      const prompts = JSON.parse(
+        prompt ? (prompt.prompt as string) : ""
+      ) as Prompt
+
+      return getVariableContents(prompts.content)
+    }),
 })
+
+export const executeTask = protectedProcedure
+  .input(
+    z.object({
+      name: zId,
+      variables: z.record(z.string()),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const prompt = await ctx.prisma.task.findUnique({
+      where: {
+        name: input.name,
+      },
+      select: {
+        prompt: true,
+      },
+    })
+
+    const prompts = JSON.parse(
+      prompt ? (prompt.prompt as string) : ""
+    ) as Prompt
+
+    const contents = getContent(prompts.content)
+    const textContent = fillVariables(contents, input.variables)
+    const text = getTextFromContent(textContent)
+
+    // TODO:The response can returns an array, we need to check it later
+    const choices = await callOpenAI(text)
+
+    return choices[0]?.message.content
+  })

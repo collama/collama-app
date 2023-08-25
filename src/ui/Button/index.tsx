@@ -56,8 +56,13 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
           "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none px-2 py-1 text-center font-normal leading-5 outline-0  transition-all",
           BASE_SIZE[size],
           BUTTON_TYPE[type],
-          classNames
+          classNames,
+          {
+            "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:border-stone-300 hover:bg-gray-200 hover:text-gray-400":
+              disable,
+          }
         )}
+        disabled={disable}
       >
         <span>{children}</span>
       </button>

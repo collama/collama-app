@@ -15,7 +15,7 @@ export const env = createEnv({
     S3_UPLOAD_SECRET: z.string(),
     S3_UPLOAD_BUCKET: z.string(),
     S3_UPLOAD_REGION: z.string(),
-
+    OPENAI_KEY: z.string(),
   },
 
   /**
@@ -41,6 +41,7 @@ export const env = createEnv({
     S3_UPLOAD_SECRET: process.env.S3_UPLOAD_SECRET,
     S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
     S3_UPLOAD_REGION: process.env.S3_UPLOAD_REGION,
+    OPENAI_KEY: process.env.OPENAI_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

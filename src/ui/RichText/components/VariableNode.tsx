@@ -1,15 +1,16 @@
 import { mergeAttributes, Node, type NodeViewProps } from "@tiptap/core"
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react"
 import { IconPawFilled } from "@tabler/icons-react"
+import { nanoid } from "nanoid"
 
 const Variable = (props: NodeViewProps) => {
   return (
     <NodeViewWrapper className="inline">
       <button
         type="button"
-        className="px-1 border bg-gray-100 inline-block rounded leading-4"
+        className="inline-block rounded border bg-gray-100 px-1 leading-4"
       >
-        <span className="inline-block pr-1 relative w-4 h-3">
+        <span className="relative inline-block h-3 w-4 pr-1">
           <span className="absolute left-0 inline-flex items-center text-center">
             <IconPawFilled
               size={14}
@@ -34,6 +35,12 @@ export const VariableNode = Node.create({
         default: null,
       },
       className: {
+        default: null,
+      },
+      blockId: {
+        default: nanoid(),
+      },
+      type: {
         default: null,
       },
     }

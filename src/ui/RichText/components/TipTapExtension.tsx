@@ -52,18 +52,21 @@ const ExampleVariables = [
     searchTerms: ["name"],
     value: "lastName",
     color: "text-indigo-700",
+    type: "text",
   },
   {
     title: "Email",
     searchTerms: ["email"],
     value: "email",
     color: "text-red-700",
+    type: "text",
   },
   {
     title: "Phone",
     searchTerms: ["phone"],
     value: "090xxxxx",
     color: "text-lime-700",
+    type: "text",
   },
 ]
 
@@ -78,7 +81,11 @@ const getSuggestionItems = (): SuggestionItem[] => {
         .deleteRange(range)
         .insertContent({
           type: "variable",
-          attrs: { text: variable.value, className: variable.color },
+          attrs: {
+            text: variable.value,
+            className: variable.color,
+            type: variable.type,
+          },
         })
         .run()
     },

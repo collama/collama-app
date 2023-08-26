@@ -27,7 +27,11 @@ export const Input = forwardRef<HTMLInputElement | null, InputProps>(
         {...props}
         type={type}
         ref={ref}
-        className={cx("rounded-lg px-3 py-1", INPUT_SIZE[size], className)}
+        className={cx(
+          "rounded-lg px-3 py-1 outline outline-1",
+          INPUT_SIZE[size],
+          className
+        )}
       />
     )
   }

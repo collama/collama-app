@@ -3,6 +3,15 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { zId } from "~/common/validation"
 import { transformFilter, transformSort } from "~/services/prisma"
 import { type FilterValue, type SortValue } from "~/common/types/props"
+import type { Prompt } from "~/common/types/prompt"
+import {
+  callOpenAI,
+  fillVariables,
+  getContent,
+  getPromptFromTask,
+  getTextFromTextContent,
+  getVariableContents,
+} from "~/server/api/services/getPrompFromTask"
 
 export const createTask = protectedProcedure
   .input(
@@ -49,6 +58,7 @@ export const taskRouter = createTRPCRouter({
         where: {
           name: input.name,
         },
+        include: { owner: true },
       })
     }),
   getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
@@ -105,4 +115,35 @@ export const taskRouter = createTRPCRouter({
         include: { owner: true },
       })
     }),
+  getPromptVariables: protectedProcedure
+    .input(
+      z.object({
+        name: zId,
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const prompt = await getPromptFromTask(ctx.prisma, input.name)
+
+      return getVariableContents(prompt.content)
+    }),
 })
+
+export const executeTask = protectedProcedure
+  .input(
+    z.object({
+      name: zId,
+      variables: z.record(z.string()),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const prompt = await getPromptFromTask(ctx.prisma, input.name)
+
+    const contents = getContent(prompt.content)
+    const textContent = fillVariables(contents, input.variables)
+    const text = getTextFromTextContent(textContent)
+
+    // TODO:The response can returns an array, we need to check it later
+    const choices = await callOpenAI(text)
+
+    return choices[0]?.message.content
+  })

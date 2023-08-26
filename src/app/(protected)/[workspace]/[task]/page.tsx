@@ -1,5 +1,8 @@
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-invoker"
+import { TaskOverview } from "~/app/(protected)/[workspace]/[task]/components/TaskOverview"
+import { Suspense } from "react"
+import Loading from "~/ui/loading"
 
 interface TaskProps {
   task: string
@@ -10,29 +13,14 @@ export default async function TaskPage({ params }: PageProps<TaskProps>) {
     name: params.task,
   })
 
+
   if (!task) {
     return <div>Invalid task</div>
   }
 
   return (
-    <div>
-      <h3>Task: {params.task}</h3>
-      <div>
-        <h4>Prompt</h4>
-        <div>
-          <input
-            className="border-1 border-amber-300"
-            type="text"
-            defaultValue={task.name}
-          />
-        </div>
-        <div>
-          <textarea
-            defaultValue={task.prompt ?? ""}
-            className="border-1 border-amber-300"
-          ></textarea>
-        </div>
-      </div>
-    </div>
+    <Suspense fallback={<Loading />}>
+      <TaskOverview task={task} />
+    </Suspense>
   )
 }

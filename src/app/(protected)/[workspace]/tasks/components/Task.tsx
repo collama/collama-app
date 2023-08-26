@@ -20,14 +20,10 @@ import {
   type SortValue,
 } from "~/common/types/props"
 import { Sort } from "~/ui/Sort"
+import Link from "next/link"
+import urlJoin from "url-join"
 
 const columns: ColumnsType = [
-  {
-    id: "name",
-    title: "Task",
-    type: "string",
-    render: (name: string) => <span>{name}</span>,
-  },
   {
     id: "owner",
     title: "Owner",
@@ -122,7 +118,6 @@ export function Task({ workspaceName }: { workspaceName: string }) {
   }, [workspaceName])
 
   useAsyncEffect(async () => {
-    console.log(filterSetting.filter)
     const resp = await api.task.getFilter.query({
       filter: filterSetting.filter,
       sort: filterSetting.sort,
@@ -142,6 +137,17 @@ export function Task({ workspaceName }: { workspaceName: string }) {
   const onDelete = (id: string) => {
     console.log(id)
   }
+
+  const nameColumn: ColumnsType = [
+    {
+      id: "name",
+      title: "Task",
+      type: "string",
+      render: (name: string) => (
+        <Link href={urlJoin("/", workspaceName, name)}>{name}</Link>
+      ),
+    },
+  ]
 
   const actionColumn: ColumnsType = [
     {
@@ -169,14 +175,14 @@ export function Task({ workspaceName }: { workspaceName: string }) {
           </Button>
           <NoSsrWarp>
             <Filter
-              columns={columns}
+              columns={[...nameColumn, ...columns]}
               setFilters={onFilter}
               defaultFilter={filterSetting.filter}
             />
           </NoSsrWarp>
           <NoSsrWarp>
             <Sort
-              columns={columns}
+              columns={[...nameColumn, ...columns]}
               setSorts={onSort}
               defaultSort={filterSetting.sort}
             />
@@ -189,7 +195,10 @@ export function Task({ workspaceName }: { workspaceName: string }) {
           />
         </div>
       </div>
-      <Table data={data} columns={[...columns, ...actionColumn]} />
+      <Table
+        data={data}
+        columns={[...nameColumn, ...columns, ...actionColumn]}
+      />
     </div>
   )
 }

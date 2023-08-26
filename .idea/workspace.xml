@@ -4,17 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: add team link">
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: execute task">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/routers/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/task.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/services/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/services/getPrompFromTask.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager">
-    <option name="groupingKeys">
-      <option value="directory" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
+      </list>
     </option>
   </component>
   <component name="Git.Settings">
@@ -35,12 +40,12 @@
               <option name="branches">
                 <list>
                   <RecentBranch>
-                    <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1692367170" />
+                    <option name="branchName" value="feat/impl-detail-task" />
+                    <option name="lastUsedInstant" value="1692869438" />
                   </RecentBranch>
                   <RecentBranch>
-                    <option name="branchName" value="feat/create-team" />
-                    <option name="lastUsedInstant" value="1692367115" />
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1692869405" />
                   </RecentBranch>
                 </list>
               </option>
@@ -70,15 +75,18 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/impl-detail-task&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/linh/Projects/collama/src/server/extensions/rbac&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs.jest.jest_package&quot;: &quot;/Users/linh/Projects/collama/node_modules/jest&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/linh/Projects/collama/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/linh/Projects/collama/node_modules/typescript/lib&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -182,6 +190,28 @@
   <component name="SvelteServiceSettings">
     <option name="innerServiceMode" value="DISABLED" />
   </component>
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="refactor: add type and id">
+      <option name="closed" value="true" />
+      <created>1692869256269</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1692869256269</updated>
+    </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="refactor: add type and id" />
+      <created>1692951294247</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1692951294247</updated>
+      <workItem from="1692951298791" duration="91000" />
+      <workItem from="1692951406671" duration="16072000" />
+      <workItem from="1692967781176" duration="4887000" />
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
@@ -192,7 +222,8 @@
     <MESSAGE value="feat: create team" />
     <MESSAGE value="feat: support invite team into workspace" />
     <MESSAGE value="feat: add team link" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add team link" />
+    <MESSAGE value="refactor: add type and id" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: add type and id" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

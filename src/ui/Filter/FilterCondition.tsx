@@ -89,7 +89,7 @@ export const StringCondition = ({
             return (
               <Input
                 {...field}
-                className="w-[140px] rounded border outline-1"
+                className="w-[140px] rounded border"
                 placeholder="enter value ..."
                 size="sm"
                 defaultValue={field.value}

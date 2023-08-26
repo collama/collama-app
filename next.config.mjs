@@ -1,4 +1,4 @@
-import "./src/env.mjs";
+import "./src/env.mjs"
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -7,15 +7,15 @@ const config = {
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ['@trpc/server'],
+    serverComponentsExternalPackages: ["@trpc/server"],
   },
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'i.pinimg.com',
+        protocol: "https",
+        hostname: "i.pinimg.com",
       },
     ],
   },
-};
-export default config;
+}
+export default config

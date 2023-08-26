@@ -46,3 +46,4 @@ docker/data
 .flaskenv*
 !.env.project
 !.env.vault
+.idea/workspace.xml

@@ -119,46 +119,11 @@ export const inviteMember = protectedProcedure
   .input(
     z.object({
       workspaceName: zId,
-      emailOrTeamName: z.string(),
+      email: z.string().email(),
       role: z.nativeEnum(Role),
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const emailRe = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
-
-    if (emailRe.test(input.emailOrTeamName)) {
-      return ctx.prisma.membersOnWorkspaces.create({
-        data: {
-          role: input.role,
-          workspace: {
-            connect: {
-              name: input.workspaceName,
-            },
-          },
-          user: {
-            connectOrCreate: {
-              where: {
-                email: input.emailOrTeamName,
-              },
-              create: {
-                email: input.emailOrTeamName,
-                username: "",
-              },
-            },
-          },
-        },
-      })
-    }
-
-    const team = await ctx.prisma.team.findFirstOrThrow({
-      where: {
-        workspace: {
-          name: input.workspaceName,
-        },
-        name: input.emailOrTeamName,
-      },
-    })
-
     return ctx.prisma.membersOnWorkspaces.create({
       data: {
         role: input.role,
@@ -167,9 +132,15 @@ export const inviteMember = protectedProcedure
             name: input.workspaceName,
           },
         },
-        team: {
-          connect: {
-            id: team.id,
+        user: {
+          connectOrCreate: {
+            where: {
+              email: input.email,
+            },
+            create: {
+              email: input.email,
+              username: "",
+            },
           },
         },
       },

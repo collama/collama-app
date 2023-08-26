@@ -24,14 +24,14 @@
     "paths": {
       "~/*": [
         "./src/*"
+      ],
+      "~tests/*": [
+        "./tests/*"
       ]
     },
     "plugins": [
       {
         "name": "next"
-      },
-      {
-        "transform": "typia/lib/transform"
       }
     ],
     "strictNullChecks": true

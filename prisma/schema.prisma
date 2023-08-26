@@ -51,8 +51,10 @@ model Workspace {
 
 enum Role {
   Owner
+  Admin
   Reader
   Writer
+  Public
 }
 
 enum InviteStatus {
@@ -64,15 +66,15 @@ enum InviteStatus {
 model MembersOnWorkspaces {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   role        Role
-  user        User?        @relation(fields: [userId], references: [id])
-  userId      String?      @db.ObjectId
-  team        Team?        @relation(fields: [teamId], references: [id])
-  teamId      String?      @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String       @db.ObjectId
   workspace   Workspace    @relation(fields: [workspaceId], references: [id])
   workspaceId String       @db.ObjectId
   status      InviteStatus @default(Pending)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  team        Team?        @relation(fields: [teamId], references: [id])
+  teamId      String?      @db.ObjectId
 
   @@unique([workspaceId, userId])
   @@map("members_on_workspaces")
@@ -85,20 +87,21 @@ enum ChatRole {
 }
 
 model Task {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String    @unique
-  description String?
-  document    String?
-  prompt      String?
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  workspaceId String    @db.ObjectId
-  owner       User      @relation(fields: [ownerId], references: [id])
-  ownerId     String    @db.ObjectId
-  template    Template? @relation(fields: [templateId], references: [id])
-  templateId  String?   @db.ObjectId
-  private     Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  name           String           @unique
+  description    String?
+  document       String?
+  prompt         String?
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
+  workspaceId    String           @db.ObjectId
+  owner          User             @relation(fields: [ownerId], references: [id])
+  ownerId        String           @db.ObjectId
+  template       Template?        @relation(fields: [templateId], references: [id])
+  templateId     String?          @db.ObjectId
+  private        Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  membersOnTasks MembersOnTasks[]
 
   @@map("tasks")
 }
@@ -110,6 +113,8 @@ model MembersOnTasks {
   userId      String?      @db.ObjectId
   team        Team?        @relation(fields: [teamId], references: [id])
   teamId      String?      @db.ObjectId
+  task        Task         @relation(fields: [taskId], references: [id])
+  taskId      String       @db.ObjectId
   workspace   Workspace    @relation(fields: [workspaceId], references: [id])
   workspaceId String       @db.ObjectId
   status      InviteStatus @default(Pending)
@@ -179,6 +184,7 @@ model Team {
   updatedAt           DateTime              @updatedAt
   membersOnTasks      MembersOnTasks[]
   membersOnWorkspaces MembersOnWorkspaces[]
+  membersOnTeams      MembersOnTeams[]
 
   @@map("teams")
 }
@@ -188,6 +194,8 @@ model MembersOnTeams {
   role        Role
   user        User         @relation(fields: [userId], references: [id])
   userId      String       @db.ObjectId
+  team        Team         @relation(fields: [teamId], references: [id])
+  teamId      String       @db.ObjectId
   workspace   Workspace    @relation(fields: [workspaceId], references: [id])
   workspaceId String       @db.ObjectId
   status      InviteStatus @default(Pending)

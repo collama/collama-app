@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: execute task">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/api/routers/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/task.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/api/services/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/services/getPrompFromTask.ts" afterDir="false" />
+    <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="refactor: returns Role instead of boolean">
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,30 +69,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/impl-detail-task&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/linh/Projects/collama/src/server/extensions/rbac&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/linh/Projects/collama/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "fix/team-member-role",
+    "last_opened_file_path": "/Users/linh/Projects/collama/src/server/extensions/rbac",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/linh/Projects/collama/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "prettierjs.PrettierConfiguration.Package": "/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/prettier",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "/Users/linh/Projects/collama/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mongo&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/server/extensions/rbac" />
@@ -223,7 +221,8 @@
     <MESSAGE value="feat: support invite team into workspace" />
     <MESSAGE value="feat: add team link" />
     <MESSAGE value="refactor: add type and id" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: add type and id" />
+    <MESSAGE value="refactor: returns Role instead of boolean" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: returns Role instead of boolean" />
   </component>
   <component name="VueSettings">
     <option name="innerServiceType" value="DISABLED" />

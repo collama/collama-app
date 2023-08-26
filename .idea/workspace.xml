@@ -5,23 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b436763b-632e-43a8-8e09-74bc2b6909d2" name="Changes" comment="feat: execute task">
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/components/Execute.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/components/TaskOverview.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/common/types/prisma.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/common/types/prompt.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/api/services/task.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env.vault" beforeDir="false" afterPath="$PROJECT_DIR$/.env.vault" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/[task]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/components/Task.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/components/Task.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/new/actionts.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(protected)/[workspace]/tasks/new/actionts.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/env.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/src/env.mjs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/api/routers/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/routers/task.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Button/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Button/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Filter/FilterCondition.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Filter/FilterCondition.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/Input/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/Input/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/api/services/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/api/services/getPrompFromTask.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,30 +71,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feat/impl-detail-task",
-    "last_opened_file_path": "/Users/linh/Projects/collama/src/server/extensions/rbac",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs.jest.jest_package": "/Users/linh/Projects/collama/node_modules/jest",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/prettier",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "ts.external.directory.path": "/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/impl-detail-task&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/linh/Projects/collama/src/server/extensions/rbac&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/linh/Projects/collama/node_modules/jest&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/phieu/WebstormProjects/reactJs/collama-app/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/server/extensions/rbac" />

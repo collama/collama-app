@@ -8,6 +8,8 @@ import type {
 } from "~/common/types/prompt"
 import { type Paragraph, type ParagraphRequired } from "~/common/types/prompt"
 import "@total-typescript/ts-reset"
+import type { Prisma, PrismaClient } from "@prisma/client"
+import type { DefaultArgs } from "@prisma/client/runtime/library"
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_KEY, // defaults to process.env["OPENAI_API_KEY"]
@@ -22,7 +24,7 @@ export async function callOpenAI(content: string) {
   return completion.choices
 }
 
-export const getTextFromContent = (contents: TextContent[]): string => {
+export const getTextFromTextContent = (contents: TextContent[]): string => {
   return contents.reduce((res, cur) => {
     return `${res} ${cur.text}`
   }, "")
@@ -61,3 +63,19 @@ const checkIsVariables = (content: Content): content is VariableContent =>
 export const getVariableContents = (
   arr: Prompt["content"]
 ): VariableContent[] => getContent(arr).filter(checkIsVariables)
+
+export const getPromptFromTask = async (
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  name: string
+): Promise<Prompt> => {
+  const task = await prisma.task.findUnique({
+    where: {
+      name,
+    },
+    select: {
+      prompt: true,
+    },
+  })
+
+  return JSON.parse(task ? (task.prompt as string) : "") as Prompt
+}

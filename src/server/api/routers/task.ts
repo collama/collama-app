@@ -8,9 +8,10 @@ import {
   callOpenAI,
   fillVariables,
   getContent,
-  getTextFromContent,
+  getPromptFromTask,
+  getTextFromTextContent,
   getVariableContents,
-} from "~/server/api/services/task"
+} from "~/server/api/services/getPrompFromTask"
 
 export const createTask = protectedProcedure
   .input(
@@ -121,20 +122,9 @@ export const taskRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const prompt = await ctx.prisma.task.findUnique({
-        where: {
-          name: input.name,
-        },
-        select: {
-          prompt: true,
-        },
-      })
+      const prompt = await getPromptFromTask(ctx.prisma, input.name)
 
-      const prompts = JSON.parse(
-        prompt ? (prompt.prompt as string) : ""
-      ) as Prompt
-
-      return getVariableContents(prompts.content)
+      return getVariableContents(prompt.content)
     }),
 })
 
@@ -146,22 +136,11 @@ export const executeTask = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const prompt = await ctx.prisma.task.findUnique({
-      where: {
-        name: input.name,
-      },
-      select: {
-        prompt: true,
-      },
-    })
+    const prompt = await getPromptFromTask(ctx.prisma, input.name)
 
-    const prompts = JSON.parse(
-      prompt ? (prompt.prompt as string) : ""
-    ) as Prompt
-
-    const contents = getContent(prompts.content)
+    const contents = getContent(prompt.content)
     const textContent = fillVariables(contents, input.variables)
-    const text = getTextFromContent(textContent)
+    const text = getTextFromTextContent(textContent)
 
     // TODO:The response can returns an array, we need to check it later
     const choices = await callOpenAI(text)

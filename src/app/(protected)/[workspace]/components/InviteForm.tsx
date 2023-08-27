@@ -7,7 +7,7 @@ import { useAction } from "~/trpc/client"
 import { Role } from "@prisma/client"
 import Loading from "~/ui/loading"
 import { useEffect } from "react"
-import { inviteMemberAction } from "~/app/(protected)/[workspace]/actions"
+import { inviteMemberToWorkspaceAction } from "~/app/(protected)/[workspace]/actions"
 
 const schema = z.object({
   email: z.string().email(),
@@ -19,7 +19,11 @@ interface Props {
 }
 
 export const InviteForm = (props: Props) => {
-  const { mutate: inviteMember, status, error } = useAction(inviteMemberAction)
+  const {
+    mutate: inviteMember,
+    status,
+    error,
+  } = useAction(inviteMemberToWorkspaceAction)
   const form = useZodForm({
     schema,
   })

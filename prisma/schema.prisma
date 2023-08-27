@@ -192,6 +192,7 @@ model Team {
 enum TeamRole {
   Owner
   Member
+  Admin
 }
 
 model MembersOnTeams {

@@ -6,6 +6,7 @@ import {
   Role,
   type Task,
   type Team,
+  TeamRole,
   type User,
   type Workspace,
 } from "@prisma/client"
@@ -324,7 +325,7 @@ describe("Given a task", () => {
       // Mock members on teams
       const mockMemberOnTeamB: MembersOnTeams = {
         id: "mock-member-on-team-id",
-        role: Role.Writer,
+        role: TeamRole.Admin,
         status: InviteStatus.Accepted,
         teamId: mockTeamB.id,
         createdAt: new Date(),

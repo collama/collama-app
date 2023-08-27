@@ -115,7 +115,7 @@ const getMembers = protectedProcedure
     })
   })
 
-export const inviteMember = protectedProcedure
+export const inviteMemberToWorkspace = protectedProcedure
   .input(
     z.object({
       workspaceName: zId,
@@ -313,6 +313,6 @@ export const workspaceRouter = createTRPCRouter({
     })
   }),
   getMembers,
-  inviteMember,
+  inviteMember: inviteMemberToWorkspace,
   getUserInWorkspace,
 })

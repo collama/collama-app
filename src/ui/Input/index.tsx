@@ -4,7 +4,6 @@ import type { ControllerRenderProps } from "react-hook-form"
 
 type OverdriveProps = "size"
 
-type InputType = "text" | "number"
 type InputSize = "base" | "sm"
 
 const INPUT_SIZE: Record<InputSize, string> = {
@@ -14,7 +13,6 @@ const INPUT_SIZE: Record<InputSize, string> = {
 
 interface CustomProps
   extends Omit<InputHTMLAttributes<unknown>, OverdriveProps> {
-  type?: InputType
   size?: InputSize
 }
 

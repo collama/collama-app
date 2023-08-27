@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
-import { Role } from "@prisma/client"
+import { Role, TeamRole, InviteStatus } from "@prisma/client"
 
 export const createTeam = protectedProcedure
   .input(
@@ -71,4 +71,50 @@ export const teamRouter = createTRPCRouter({
         },
       })
     }),
+  membersOnTeam: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.membersOnTeams.findMany({
+        where: {
+          teamId: input.teamId,
+        },
+        include: {
+          user: true,
+        },
+      })
+    }),
 })
+
+export const inviteMemberToTeam = protectedProcedure
+  .input(
+    z.object({
+      email: z.string().email(),
+      teamId: z.string(),
+      workspaceName: zId,
+      role: z.nativeEnum(TeamRole),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    console.log(input)
+    return ctx.prisma.membersOnTeams.create({
+      data: {
+        role: input.role,
+        user: {
+          connect: {
+            email: input.email,
+          },
+        },
+        team: {
+          connect: {
+            id: input.teamId,
+          },
+        },
+        workspace: {
+          connect: {
+            name: input.workspaceName,
+          },
+        },
+        status: InviteStatus.Accepted,
+      },
+    })
+  })

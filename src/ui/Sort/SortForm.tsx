@@ -129,7 +129,7 @@ export function SortForm({
           <Button
             type="text"
             size="sm"
-            classNames="text-gray-400"
+            className="text-gray-400"
             onClick={() => {
               append(DEFAULT_VALUE)
             }}

@@ -38,7 +38,7 @@ type SelectProps = {
   options: SelectOption[]
   width?: number
   popupHeight?: number
-  defaultValue?: SelectOption
+  defaultValue?: string | SelectOption
   defaultOpen?: boolean
 } & Partial<ControllerRenderProps>
 
@@ -71,7 +71,7 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
     const [selectedLabel, setSelectedLabel] = useState<
       string | null | undefined
-    >(defaultValue?.value)
+    >(typeof defaultValue === "string" ? defaultValue : defaultValue?.value)
 
     const { refs, floatingStyles, context } = useFloating({
       placement: "bottom-start",

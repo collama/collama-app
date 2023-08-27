@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
+import { Role } from "@prisma/client"
 
 export const createTeam = protectedProcedure
   .input(
@@ -33,7 +34,7 @@ export const createTeam = protectedProcedure
 
       return ctx.prisma.membersOnTeams.create({
         data: {
-          role: "Owner",
+          role: Role.Owner,
           workspace: {
             connect: {
               name: input.workspaceName,

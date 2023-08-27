@@ -4,7 +4,7 @@ import { taskRouter } from "~/server/api/routers/task"
 import { workspaceRouter } from "~/server/api/routers/workspace"
 import { apiKeyRouter } from "~/server/api/routers/api-key"
 import { teamRouter } from "~/server/api/routers/team"
-import { filterSettingRouter } from "~/server/api/routers/filterSetting"
+import { filterSettingRouter } from "~/server/api/routers/filter-setting"
 
 /**
  * This is the primary router for your server.

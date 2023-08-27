@@ -11,21 +11,46 @@ export const createTeam = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    return ctx.prisma.team.create({
-      data: {
-        name: input.name,
-        description: input.description,
-        workspace: {
-          connect: {
-            name: input.workspaceName,
+    const userId = ctx.session.right.userId
+
+    return ctx.prisma.$transaction(async () => {
+      const team = await ctx.prisma.team.create({
+        data: {
+          name: input.name,
+          description: input.description,
+          workspace: {
+            connect: {
+              name: input.workspaceName,
+            },
+          },
+          owner: {
+            connect: {
+              id: ctx.session.right.userId,
+            },
           },
         },
-        owner: {
-          connect: {
-            id: ctx.session.right.userId,
+      })
+
+      return ctx.prisma.membersOnTeams.create({
+        data: {
+          role: "Owner",
+          workspace: {
+            connect: {
+              name: input.workspaceName,
+            },
+          },
+          team: {
+            connect: {
+              id: team.id,
+            },
+          },
+          user: {
+            connect: {
+              id: userId,
+            },
           },
         },
-      },
+      })
     })
   })
 

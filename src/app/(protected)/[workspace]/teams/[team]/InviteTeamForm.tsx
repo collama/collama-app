@@ -8,8 +8,7 @@ import { useAction } from "~/trpc/client"
 import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/actions"
 import useZodForm from "~/common/form"
 import { Button } from "~/ui/Button"
-
-const TeamRoleOptions = [{ value: TeamRole.Member }, { value: TeamRole.Admin }]
+import { TeamRoleOptions } from "~/common/constants/prisma"
 
 const schema = z.object({
   email: z.string().email(),

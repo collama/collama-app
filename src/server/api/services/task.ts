@@ -1,5 +1,12 @@
-import { type MembersOnTeams, type PrismaClient, Role } from "@prisma/client"
-import { HandlePermission } from "~/server/api/services/types"
+import {
+  InviteStatus,
+  type MembersOnTeams,
+  type Prisma,
+  type PrismaClient,
+  Role,
+} from "@prisma/client"
+import { type HandlePermission } from "~/server/api/services/types"
+import type { DefaultArgs } from "@prisma/client/runtime/library"
 
 export const TaskNotFound = new Error("task not found")
 
@@ -104,4 +111,58 @@ export class TaskPermission implements HandlePermission {
 
     return null
   }
+}
+
+export const inviteUserToTask = (
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  input: { email: string; taskName: string; workspaceName: string; role: Role }
+) => {
+  return prisma.membersOnTasks.create({
+    data: {
+      user: {
+        connect: {
+          email: input.email,
+        },
+      },
+      task: {
+        connect: {
+          name: input.taskName,
+        },
+      },
+      workspace: {
+        connect: {
+          name: input.workspaceName,
+        },
+      },
+      role: input.role,
+      status: InviteStatus.Accepted,
+    },
+  })
+}
+
+export const inviteTeamToTask = (
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  input: { teamId: string; taskName: string; workspaceName: string; role: Role }
+) => {
+  return prisma.membersOnTasks.create({
+    data: {
+      task: {
+        connect: {
+          name: input.taskName,
+        },
+      },
+      workspace: {
+        connect: {
+          name: input.workspaceName,
+        },
+      },
+      team: {
+        connect: {
+          id: input.teamId,
+        },
+      },
+      role: input.role,
+      status: InviteStatus.Accepted,
+    },
+  })
 }

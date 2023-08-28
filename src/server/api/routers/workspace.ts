@@ -143,6 +143,7 @@ export const inviteMemberToWorkspace = protectedProcedure
             },
           },
         },
+        status: InviteStatus.Accepted
       },
     })
   })
@@ -305,7 +306,6 @@ export const workspaceRouter = createTRPCRouter({
       })
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    console.log("userId", ctx.session.right.userId)
     return ctx.prisma.workspace.findMany({
       where: {
         ownerId: ctx.session.right.userId,

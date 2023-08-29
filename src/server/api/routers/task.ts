@@ -14,6 +14,7 @@ import {
 import { InviteStatus, Role } from "@prisma/client"
 import { isEmail } from "~/common/utils"
 import { inviteTeamToTask, inviteUserToTask } from "~/server/api/services/task"
+import { FailedToCreateTask, WorkspaceNotFound } from "~/common/errors"
 
 export const createTask = protectedProcedure
   .input(
@@ -32,7 +33,7 @@ export const createTask = protectedProcedure
       })
 
       if (!workspace) {
-        throw new Error("workspace not found")
+        throw WorkspaceNotFound
       }
 
       const task = await ctx.prisma.task.create({
@@ -45,7 +46,7 @@ export const createTask = protectedProcedure
       })
 
       if (!task) {
-        throw new Error("failed to create task")
+        throw FailedToCreateTask
       }
 
       await ctx.prisma.membersOnTasks.create({
@@ -169,13 +170,13 @@ export const inviteMemberToTask = protectedProcedure
     z.object({
       workspaceName: z.string(),
       taskName: z.string(),
-      emailOrTeamId: z.string().email().or(z.string()),
+      emailOrTeamName: z.string().email().or(z.string()),
       role: z.nativeEnum(Role),
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const { emailOrTeamId, ...inviteInput } = input
-    return isEmail(input.emailOrTeamId)
-      ? inviteUserToTask(ctx.prisma, { ...inviteInput, email: emailOrTeamId })
-      : inviteTeamToTask(ctx.prisma, { ...inviteInput, teamId: emailOrTeamId })
+    const { emailOrTeamName, ...inviteInput } = input
+    return isEmail(input.emailOrTeamName)
+      ? inviteUserToTask(ctx.prisma, { ...inviteInput, email: emailOrTeamName })
+      : inviteTeamToTask(ctx.prisma, { ...inviteInput, teamName: emailOrTeamName })
   })

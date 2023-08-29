@@ -1,7 +1,6 @@
 "use client"
 
 import { z } from "zod"
-import { zId } from "~/common/validation"
 import { useAction } from "~/trpc/client"
 import { createTeamAction } from "~/app/(protected)/[workspace]/actions"
 import useZodForm from "~/common/form"
@@ -45,7 +44,6 @@ export const CreateTeamForm = (props: Props) => {
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
-            console.log(data)
             createTeam({
               ...data,
               workspaceName: props.workspaceName,

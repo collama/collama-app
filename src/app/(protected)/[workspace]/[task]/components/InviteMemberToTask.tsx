@@ -12,7 +12,7 @@ import { useAction } from "~/trpc/client"
 import { inviteMemberToTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 
 const schema = z.object({
-  emailOrTeamId: z.string().email().or(z.string()),
+  emailOrTeamName: z.string().email().or(z.string()),
   role: z.nativeEnum(Role),
 })
 
@@ -37,15 +37,15 @@ export const InviteMemberToTask = ({
               workspaceName,
               role: data.role,
               taskName,
-              emailOrTeamId: data.emailOrTeamId,
+              emailOrTeamName: data.emailOrTeamName,
             })
           })}
         >
           <div className="mb-4 flex space-x-4">
             <div>
-              <div>Email Or TeamId</div>
+              <div>Email Or Team Name</div>
               <Controller
-                name="emailOrTeamId"
+                name="emailOrTeamName"
                 render={({ field }) => (
                   <Input {...field} size="sm" className="border" />
                 )}

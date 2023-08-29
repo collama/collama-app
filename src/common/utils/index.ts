@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod"
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms))

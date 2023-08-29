@@ -7,6 +7,7 @@ import {
 } from "@prisma/client"
 import { type HandlePermission } from "~/server/api/services/types"
 import type { DefaultArgs } from "@prisma/client/runtime/library"
+import { WorkspaceNotFound } from "~/common/errors"
 
 export const TaskNotFound = new Error("task not found")
 
@@ -142,27 +143,45 @@ export const inviteUserToTask = (
 
 export const inviteTeamToTask = (
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
-  input: { teamId: string; taskName: string; workspaceName: string; role: Role }
+  input: {
+    teamName: string
+    taskName: string
+    workspaceName: string
+    role: Role
+  }
 ) => {
-  return prisma.membersOnTasks.create({
-    data: {
-      task: {
-        connect: {
-          name: input.taskName,
-        },
+  return prisma.$transaction(async () => {
+    const workspace = await prisma.workspace.findFirst({
+      where: {
+        name: input.workspaceName,
       },
-      workspace: {
-        connect: {
-          name: input.workspaceName,
+    })
+
+    if (!workspace) throw WorkspaceNotFound
+
+    return prisma.membersOnTasks.create({
+      data: {
+        task: {
+          connect: {
+            name: input.taskName,
+          },
         },
-      },
-      team: {
-        connect: {
-          id: input.teamId,
+        team: {
+          connect: {
+            team_identifier: {
+              name: input.teamName,
+              workspaceId: workspace.id,
+            },
+          },
         },
+        workspace: {
+          connect: {
+            name: input.workspaceName,
+          },
+        },
+        role: input.role,
+        status: InviteStatus.Accepted,
       },
-      role: input.role,
-      status: InviteStatus.Accepted,
-    },
+    })
   })
 }

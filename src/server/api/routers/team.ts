@@ -95,7 +95,6 @@ export const inviteMemberToTeam = protectedProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    console.log(input)
     return ctx.prisma.membersOnTeams.create({
       data: {
         role: input.role,

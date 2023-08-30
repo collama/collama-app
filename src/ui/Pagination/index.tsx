@@ -1,5 +1,5 @@
 import { type ChangeEvent, type FC, type KeyboardEvent, useState } from "react"
-import { KEY } from "~/common/constatns/key"
+import { KEY } from "~/common/constants/key"
 import { Select, type SelectOption } from "~/ui/Select"
 import { util } from "zod"
 import { Input } from "~/ui/Input"

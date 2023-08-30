@@ -3,7 +3,6 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { zId } from "~/common/validation"
 import { transformFilter, transformSort } from "~/services/prisma"
 import { type FilterValue, type SortValue } from "~/common/types/props"
-import type { Prompt } from "~/common/types/prompt"
 import {
   callOpenAI,
   fillVariables,
@@ -12,6 +11,10 @@ import {
   getTextFromTextContent,
   getVariableContents,
 } from "~/server/api/services/getPrompFromTask"
+import { InviteStatus, Role } from "@prisma/client"
+import { isEmail } from "~/common/utils"
+import { inviteTeamToTask, inviteUserToTask } from "~/server/api/services/task"
+import { FailedToCreateTask, WorkspaceNotFound } from "~/common/errors"
 
 export const createTask = protectedProcedure
   .input(
@@ -22,18 +25,18 @@ export const createTask = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const workspace = await ctx.prisma.workspace.findUnique({
-      where: {
-        name: input.workspaceName,
-      },
-    })
+    return ctx.prisma.$transaction(async () => {
+      const workspace = await ctx.prisma.workspace.findUnique({
+        where: {
+          name: input.workspaceName,
+        },
+      })
 
-    if (!workspace) {
-      throw new Error("workspace not found")
-    }
+      if (!workspace) {
+        throw WorkspaceNotFound
+      }
 
-    try {
-      return ctx.prisma.task.create({
+      const task = await ctx.prisma.task.create({
         data: {
           name: input.name,
           prompt: input.prompt,
@@ -41,9 +44,23 @@ export const createTask = protectedProcedure
           workspaceId: workspace.id,
         },
       })
-    } catch (e) {
-      console.log(e)
-    }
+
+      if (!task) {
+        throw FailedToCreateTask
+      }
+
+      await ctx.prisma.membersOnTasks.create({
+        data: {
+          userId: ctx.session.right.userId,
+          workspaceId: workspace.id,
+          taskId: task.id,
+          role: Role.Owner,
+          status: InviteStatus.Accepted,
+        },
+      })
+
+      return task
+    })
   })
 
 export const taskRouter = createTRPCRouter({
@@ -146,4 +163,20 @@ export const executeTask = protectedProcedure
     const choices = await callOpenAI(text)
 
     return choices[0]?.message.content
+  })
+
+export const inviteMemberToTask = protectedProcedure
+  .input(
+    z.object({
+      workspaceName: z.string(),
+      taskName: z.string(),
+      emailOrTeamName: z.string().email().or(z.string()),
+      role: z.nativeEnum(Role),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const { emailOrTeamName, ...inviteInput } = input
+    return isEmail(input.emailOrTeamName)
+      ? inviteUserToTask(ctx.prisma, { ...inviteInput, email: emailOrTeamName })
+      : inviteTeamToTask(ctx.prisma, { ...inviteInput, teamName: emailOrTeamName })
   })

@@ -2,9 +2,12 @@
 
 import useAwaited from "~/hooks/useAwaited"
 import { api } from "~/trpc/client"
+import { type TeamByNamePageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
 
-export const Members = ({ teamId }: { teamId: string }) => {
-  const { data } = useAwaited(api.team.membersOnTeam.query({ teamId }))
+export const Members = ({ teamId, workspaceName }: TeamByNamePageParams) => {
+  const { data } = useAwaited(
+    api.team.membersOnTeam.query({ teamId, workspaceName })
+  )
 
   return (
     <div className="mt-6">

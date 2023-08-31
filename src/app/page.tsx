@@ -1,4 +1,4 @@
-import { getSession } from "~/common/passage"
+import { getAuthSession } from "src/common/next-auth"
 import * as E from "fp-ts/Either"
 import { redirect } from "next/navigation"
 import { api } from "~/trpc/server-invoker"
@@ -6,7 +6,7 @@ import Link from "next/link"
 import CreateWorkspaceForm from "~/app/component/CreateWorkspaceForm"
 
 export default async function Page() {
-  const session = await getSession()()
+  const session = await getAuthSession()
   if (E.isLeft(session)) {
     redirect("/auth")
   }

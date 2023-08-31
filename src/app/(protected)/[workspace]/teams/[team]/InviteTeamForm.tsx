@@ -9,21 +9,17 @@ import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/actions"
 import useZodForm from "~/common/form"
 import { Button } from "~/ui/Button"
 import { TeamRoleOptions } from "~/common/constants/prisma"
+import { type TeamByNamePageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
 
 const schema = z.object({
   email: z.string().email(),
   role: z.nativeEnum(TeamRole),
 })
 
-type InviteTeamFormProps = {
-  teamId: string
-  workspaceName: string
-}
-
 export const InviteTeamForm = ({
   teamId,
   workspaceName,
-}: InviteTeamFormProps) => {
+}: TeamByNamePageParams) => {
   const { mutate: inviteMember } = useAction(inviteMemberToTeamAction)
   const form = useZodForm({ schema })
 

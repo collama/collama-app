@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getSession } from "~/common/passage"
+import { getAuthSession } from "src/common/next-auth"
 import * as E from "fp-ts/Either"
 
 export const metadata = {
@@ -12,7 +12,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getSession()()
+  const session = await getAuthSession()
   if (E.isRight(session)) {
     redirect("/")
   }

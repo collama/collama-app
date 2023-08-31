@@ -1,55 +1,35 @@
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
-import { passage } from "~/common/passage"
+import { ExistUser } from "~/common/errors"
+import { hash } from "bcrypt"
 
-export const createUserIfNotExists = protectedProcedure
+// TODO(linh): register user
+export const createUser = protectedProcedure
   .input(
     z.object({
-      passageId: z.string().nonempty(),
-      username: z.string().max(20),
       email: z.string().email(),
-      phone: z.string().optional(),
+      password: z.string(),
+      username: z.string(),
     })
   )
   .mutation(async ({ ctx, input }) => {
-    console.log("ctx.session.right.email", ctx.session.right.email)
-
-    // let user
-    // if (ctx.session.right.email) {
-    //   user = await ctx.prisma.user.findUnique({
-    //     where: {
-    //       email: input.email,
-    //     },
-    //   })
-    // }
-    //
-    // if (user) {
-    //   return user
-    // }
-
-    const user = await ctx.prisma.user.upsert({
+    const user = await ctx.prisma.user.findFirst({
       where: {
-        username: input.username,
-        email: input.email,
-      },
-      create: {
-        username: input.username,
-        email: input.email,
-        phone: input.phone,
-      },
-      update: {
         email: input.email,
       },
     })
 
-    await passage.user.update(input.passageId, {
-      user_metadata: {
-        user_id: user.id,
-        role: "admin",
+    if (user) throw ExistUser
+
+    const hashPassword = await hash(input.password, 10)
+
+    return ctx.prisma.user.create({
+      data: {
+        email: input.email,
+        username: input.username,
+        password: hashPassword,
       },
     })
-
-    return user
   })
 
 export const updateUserAvatar = protectedProcedure
@@ -61,7 +41,7 @@ export const updateUserAvatar = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     return ctx.prisma.user.update({
       where: {
-        email: ctx.session.right.email,
+        email: ctx.session.right.user.email,
       },
       data: {
         avatar: input.avatar,
@@ -73,13 +53,12 @@ export const getUser = protectedProcedure.query(async ({ ctx }) => {
   const session = ctx.session.right
   return ctx.prisma.user.findUnique({
     where: {
-      email: session.email,
+      email: session.user.email,
     },
   })
 })
 
 export const userRouter = createTRPCRouter({
-  createIfNotExists: createUserIfNotExists,
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany()
   }),

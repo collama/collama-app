@@ -40,7 +40,7 @@ export const createTask = protectedProcedure
         data: {
           name: input.name,
           prompt: input.prompt,
-          ownerId: ctx.session.right.userId,
+          ownerId: ctx.session.right.user.userId,
           workspaceId: workspace.id,
         },
       })
@@ -74,6 +74,7 @@ export const taskRouter = createTRPCRouter({
       return ctx.prisma.task.findUnique({
         where: {
           name: input.name,
+          ownerId: ctx.session.right.user.userId,
         },
         include: { owner: true },
       })
@@ -81,7 +82,7 @@ export const taskRouter = createTRPCRouter({
   getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
     return ctx.prisma.task.findMany({
       where: {
-        ownerId: ctx.session.right.userId,
+        ownerId: ctx.session.right.user.userId,
       },
     })
   }),

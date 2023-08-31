@@ -10,7 +10,7 @@ export const upsertFilter = protectedProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    const userId = ctx.session.right.userId
+    const userId = ctx.session.right.user.userId
     const settingId = await ctx.prisma.filterSetting.findFirst({
       where: {
         workspace: {
@@ -54,7 +54,7 @@ export const filterSettingRouter = createTRPCRouter({
   getFilterSettingByWorkspaceName: protectedProcedure
     .input(z.object({ workspaceName: z.string().nonempty() }))
     .query(async ({ ctx, input }) => {
-      const userId = ctx.session.right.userId
+      const userId = ctx.session.right.user.userId
       return ctx.prisma.filterSetting.findFirst({
         where: {
           workspace: {

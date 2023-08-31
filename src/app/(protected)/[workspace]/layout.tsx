@@ -1,8 +1,9 @@
 import { type PropsWithChildren } from "react"
 import { type PageProps } from "~/common/types/props"
-import { getSession } from "~/common/passage"
+import { getAuthSession } from "src/common/next-auth"
 import Link from "next/link"
 import * as E from "fp-ts/Either"
+import { Logout } from "~/app/(protected)/[workspace]/components/Logout"
 
 interface Props {
   workspace: string
@@ -13,7 +14,7 @@ export default async function RootLayout({
   children,
   params,
 }: PageProps<Props> & PropsWithChildren) {
-  const session = await getSession()()
+  const session = await getAuthSession()
 
   return (
     <div className="flex h-screen">
@@ -21,9 +22,9 @@ export default async function RootLayout({
         <div>
           <div>
             {E.isRight(session) ? (
-              <span>Linh Tran</span>
+              <span>{session.right.user.username}</span>
             ) : (
-              <Link href={`/auth`}>Login</Link>
+              <Link href={`/auth/login`}>Login</Link>
             )}
           </div>
 
@@ -37,6 +38,9 @@ export default async function RootLayout({
             </div>
             <div>
               <Link href={`/${params.workspace}/settings`}>Settings</Link>
+            </div>
+            <div>
+              <Logout />
             </div>
           </div>
         </div>

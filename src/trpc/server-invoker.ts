@@ -6,8 +6,8 @@ import { experimental_createTRPCNextAppDirServer } from "@trpc/next/app-dir/serv
 import { cookies } from "next/headers"
 import SuperJSON from "superjson"
 import { appRouter } from "~/server/api/root"
-import { getAuthSession } from "src/common/next-auth"
 import { prisma } from "~/server/db"
+import { getAuthSession } from "~/libs/auth"
 
 /**
  * This client invokes procedures directly on the server without fetching over HTTP.

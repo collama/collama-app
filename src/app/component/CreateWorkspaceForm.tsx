@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { createWorkspaceAction } from "~/app/actions"
 
 const schema = z.object({
-  workspaceName: z.string().nonempty(),
+  name: z.string().nonempty(),
 })
 
 export default function CreateWorkspaceForm() {
@@ -24,7 +24,7 @@ export default function CreateWorkspaceForm() {
         <form
           onSubmit={form.handleSubmit((data) => {
             mutation.mutate(data)
-            router.push(`/${data.workspaceName}`)
+            // router.push(`/${data.name}`)
           })}
         >
           <div>
@@ -33,7 +33,7 @@ export default function CreateWorkspaceForm() {
               id="create-workspace-name"
               className="border"
               type="text"
-              {...form.register("workspaceName")}
+              {...form.register("name")}
             />
           </div>
           <button type="submit">Create</button>

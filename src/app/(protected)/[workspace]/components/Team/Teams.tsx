@@ -10,11 +10,7 @@ interface Props {
 }
 
 export const Teams = (props: Props) => {
-  const {
-    data: teams,
-    loading,
-    setData: setTeams,
-  } = useAwaited(
+  const { data: teams, loading } = useAwaited(
     api.team.teamsOnWorkspace.query({
       workspaceName: props.workspaceName,
     })
@@ -33,7 +29,7 @@ export const Teams = (props: Props) => {
       <ul>
         {teams.map((team) => (
           <li key={team.id}>
-            <Link href={`/${props.workspaceName}/teams/${team.id}`}>
+            <Link href={`/${props.workspaceName}/teams/${team.slug}`}>
               {team.name} - {team.description}
             </Link>
           </li>

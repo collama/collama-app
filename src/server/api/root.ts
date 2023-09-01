@@ -1,5 +1,4 @@
 import { createTRPCRouter } from "~/server/api/trpc"
-import { userRouter } from "~/server/api/routers/user"
 import { taskRouter } from "~/server/api/routers/task"
 import { workspaceRouter } from "~/server/api/routers/workspace"
 import { apiKeyRouter } from "~/server/api/routers/api-key"
@@ -12,7 +11,6 @@ import { filterSettingRouter } from "~/server/api/routers/filter-setting"
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  user: userRouter,
   task: taskRouter,
   workspace: workspaceRouter,
   team: teamRouter,

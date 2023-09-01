@@ -3,15 +3,15 @@
 import { createAction } from "~/server/api/trpc"
 import {
   inviteMemberToWorkspace,
-  removeMember,
-  updateRole,
+  removeMemberFromWorkspace,
+  updateMemberRoleInWorkspace,
 } from "~/server/api/routers/workspace"
 import { createTeam, inviteMemberToTeam } from "~/server/api/routers/team"
 
 export const inviteMemberToWorkspaceAction = createAction(
   inviteMemberToWorkspace
 )
-export const removeMemberAction = createAction(removeMember)
-export const updateMemberRoleAction = createAction(updateRole)
+export const removeMemberAction = createAction(removeMemberFromWorkspace)
+export const updateMemberRoleAction = createAction(updateMemberRoleInWorkspace)
 export const createTeamAction = createAction(createTeam)
 export const inviteMemberToTeamAction = createAction(inviteMemberToTeam)

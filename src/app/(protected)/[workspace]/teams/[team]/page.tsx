@@ -1,6 +1,6 @@
 import type { PageProps } from "~/common/types/props"
-import { InviteTeamForm } from "~/app/(protected)/[workspace]/teams/[team]/InviteTeamForm"
-import { Members } from "~/app/(protected)/[workspace]/teams/[team]/Members"
+import { InviteTeamForm } from "./components/InviteTeamForm"
+import { Members } from "./components/Members"
 
 interface Props {
   team: string
@@ -12,7 +12,7 @@ export type TeamByNamePageParams = {
   workspaceName: string
 }
 
-export default function TeamByNamePage({ params }: PageProps<Props>) {
+export default function TeamPage({ params }: PageProps<Props>) {
   return (
     <div>
       <div>Hello {params.team}</div>

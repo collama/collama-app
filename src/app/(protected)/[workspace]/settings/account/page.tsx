@@ -2,10 +2,7 @@
 
 import { type ChangeEvent, useEffect, useState } from "react"
 import { api, useAction } from "~/trpc/client"
-import {
-  createPresignedUrlAction,
-  updateUserAvatarAction,
-} from "~/app/(protected)/[workspace]/settings/account/actions"
+import { createPresignedUrlAction } from "~/app/(protected)/[workspace]/settings/account/actions"
 import useAsyncEffect from "use-async-effect"
 import useAwaited from "~/hooks/useAwaited"
 
@@ -16,7 +13,7 @@ export default function AccountPage() {
 
   const { mutate: createPresignedUrlMutation, data: presignedUrlData } =
     useAction(createPresignedUrlAction)
-  const { mutate: updateUserAvatarMutation } = useAction(updateUserAvatarAction)
+  // const { mutate: updateUserAvatarMutation } = useAction(updateUserAvatarAction)
 
   useAsyncEffect(async () => {
     if (!(presignedUrlData && selectedFile)) return
@@ -35,9 +32,9 @@ export default function AccountPage() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const key = presignedUrlData.fields.key!
-    updateUserAvatarMutation({
-      avatar: `https://collama-public-image.s3.ap-southeast-1.amazonaws.com/${key}`,
-    })
+    // updateUserAvatarMutation({
+    //   avatar: `https://collama-public-image.s3.ap-southeast-1.amazonaws.com/${key}`,
+    // })
   }, [presignedUrlData, selectedFile])
 
   // create a preview as a side effect, whenever selected file is changed

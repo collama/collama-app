@@ -9,12 +9,11 @@ import {
 } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { Role } from "@prisma/client"
-import type * as E from "fp-ts/Either"
 import { type Session } from "next-auth"
 
 interface Props {
   workspaceName: string
-  session: E.Either<Error, Session>
+  session: Session | null
 }
 
 export const Members = (props: Props) => {
@@ -25,13 +24,13 @@ export const Members = (props: Props) => {
     loading,
     setData: setMembers,
   } = useAwaited(
-    api.workspace.getMembers.query({
-      workspaceName: props.workspaceName,
+    api.workspace.getMembersFromWorkspace.query({
+      name: props.workspaceName,
     })
   )
   const { data: userOnWorkspace } = useAwaited(
     api.workspace.getUserInWorkspace.query({
-      workspaceName: props.workspaceName,
+      name: props.workspaceName,
     })
   )
 

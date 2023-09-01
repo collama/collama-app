@@ -18,6 +18,7 @@ export const env = createEnv({
     OPENAI_KEY: z.string(),
     NEXTAUTH_URL: z.string(),
     NEXTAUTH_SECRET: z.string(),
+    SALT_ROUND: z.number(),
   },
 
   /**
@@ -46,7 +47,8 @@ export const env = createEnv({
     OPENAI_KEY: process.env.OPENAI_KEY,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    // @ts-ignore
+    SALT_ROUND: parseInt(process.env.SALT_ROUND, 10)
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

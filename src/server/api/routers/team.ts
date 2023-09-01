@@ -12,7 +12,7 @@ export const createTeam = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session.right.userId
+    const userId = ctx.session.right.user.userId
 
     return ctx.prisma.$transaction(async () => {
       const team = await ctx.prisma.team.create({
@@ -26,7 +26,7 @@ export const createTeam = protectedProcedure
           },
           owner: {
             connect: {
-              id: ctx.session.right.userId,
+              id: ctx.session.right.user.userId,
             },
           },
         },
@@ -72,11 +72,14 @@ export const teamRouter = createTRPCRouter({
       })
     }),
   membersOnTeam: protectedProcedure
-    .input(z.object({ teamId: z.string() }))
+    .input(z.object({ teamId: z.string(), workspaceName: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.membersOnTeams.findMany({
         where: {
           teamId: input.teamId,
+          workspace: {
+            name: input.workspaceName,
+          },
         },
         include: {
           user: true,

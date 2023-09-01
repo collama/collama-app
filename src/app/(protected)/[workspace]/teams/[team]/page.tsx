@@ -7,12 +7,17 @@ interface Props {
   workspace: string
 }
 
+export type TeamByNamePageParams = {
+  teamId: string
+  workspaceName: string
+}
+
 export default function TeamByNamePage({ params }: PageProps<Props>) {
   return (
     <div>
       <div>Hello {params.team}</div>
       <InviteTeamForm teamId={params.team} workspaceName={params.workspace} />
-      <Members teamId={params.team} />
+      <Members teamId={params.team} workspaceName={params.workspace} />
     </div>
   )
 }

@@ -14,8 +14,9 @@ import { headers } from "next/headers"
 import superjson from "superjson"
 import { ZodError } from "zod"
 import { prisma } from "~/server/db"
-import { getSession, type Session } from "~/common/passage"
+import { getAuthSession } from "~/common/next-auth"
 import * as E from "fp-ts/Either"
+import { type Session } from "next-auth"
 
 /**
  * 1. CONTEXT
@@ -57,7 +58,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   // Fetch stuff that depends on the request
 
-  const session = await getSession(opts.req)()
+  const session = await getAuthSession()
 
   return createInnerTRPCContext({
     headers: opts.req.headers,
@@ -93,7 +94,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createAction = experimental_createServerActionHandler(t, {
   async createContext() {
-    const session = await getSession()()
+    const session = await getAuthSession()
     return createInnerTRPCContext({
       headers: headers(),
       session,

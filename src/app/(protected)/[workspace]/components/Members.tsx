@@ -9,8 +9,8 @@ import {
 } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { Role } from "@prisma/client"
-import { type Session } from "~/common/passage"
-import * as E from "fp-ts/Either"
+import type * as E from "fp-ts/Either"
+import { type Session } from "next-auth"
 
 interface Props {
   workspaceName: string

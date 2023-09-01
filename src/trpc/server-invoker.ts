@@ -6,7 +6,7 @@ import { experimental_createTRPCNextAppDirServer } from "@trpc/next/app-dir/serv
 import { cookies } from "next/headers"
 import SuperJSON from "superjson"
 import { appRouter } from "~/server/api/root"
-import { getSession } from "~/common/passage"
+import { getAuthSession } from "src/common/next-auth"
 import { prisma } from "~/server/db"
 
 /**
@@ -27,7 +27,7 @@ export const api = experimental_createTRPCNextAppDirServer<typeof appRouter>({
           revalidate: 1,
           router: appRouter,
           createContext: async () => {
-            const session = await getSession()()
+            const session = await getAuthSession()
 
             return {
               session,

@@ -15,7 +15,7 @@ export const createWorkspace = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const email = ctx.session.right.email
+    const email = ctx.session.right.user.email
     const user = await ctx.prisma.user.findUnique({
       where: {
         email,
@@ -54,7 +54,7 @@ export const renameWorkspace = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const email = ctx.session.right.email
+    const email = ctx.session.right.user.email
     const user = await ctx.prisma.user.findUnique({
       where: {
         email,
@@ -83,7 +83,7 @@ const getMembers = protectedProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    const userId = ctx.session.right.userId
+    const userId = ctx.session.right.user.userId
     const user = await ctx.prisma.user.findUnique({
       where: {
         id: userId,
@@ -133,14 +133,8 @@ export const inviteMemberToWorkspace = protectedProcedure
           },
         },
         user: {
-          connectOrCreate: {
-            where: {
-              email: input.email,
-            },
-            create: {
-              email: input.email,
-              username: "",
-            },
+          connect: {
+            email: input.email,
           },
         },
         status: InviteStatus.Accepted
@@ -166,7 +160,7 @@ export const updateRole = protectedProcedure
       throw new Error("member not found")
     }
 
-    const userId = ctx.session.right.userId
+    const userId = ctx.session.right.user.userId
     const owner = await ctx.prisma.membersOnWorkspaces.findFirst({
       where: {
         userId,
@@ -210,7 +204,7 @@ export const removeMember = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session.right.userId
+    const userId = ctx.session.right.user.userId
     const owner = await ctx.prisma.membersOnWorkspaces.findFirst({
       where: {
         userId,
@@ -251,7 +245,7 @@ export const getUserInWorkspace = protectedProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    const session = ctx.session.right
+    const session = ctx.session.right.user
     return ctx.prisma.membersOnWorkspaces.findFirst({
       where: {
         workspace: {
@@ -266,14 +260,14 @@ export const workspaceRouter = createTRPCRouter({
   count: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.count({
       where: {
-        ownerId: ctx.session.right.userId,
+        ownerId: ctx.session.right.user.userId,
       },
     })
   }),
   getFirst: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.findFirst({
       where: {
-        ownerId: ctx.session.right.userId,
+        ownerId: ctx.session.right.user.userId,
       },
     })
   }),
@@ -301,14 +295,14 @@ export const workspaceRouter = createTRPCRouter({
       return ctx.prisma.workspace.findFirst({
         where: {
           name: input.workspaceName,
-          ownerId: ctx.session.right.userId,
+          ownerId: ctx.session.right.user.userId,
         },
       })
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.workspace.findMany({
       where: {
-        ownerId: ctx.session.right.userId,
+        ownerId: ctx.session.right.user.userId,
       },
     })
   }),

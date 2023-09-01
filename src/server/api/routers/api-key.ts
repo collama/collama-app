@@ -26,7 +26,7 @@ export const createApiKey = protectedProcedure
         title: input.title,
         value: cryptr.encrypt(input.value),
         hint: createHint(input.value),
-        ownerId: ctx.session.right.userId,
+        ownerId: ctx.session.right.user.userId,
       },
     })
   })
@@ -36,7 +36,7 @@ export const apiKeyRouter = createTRPCRouter({
     return ctx.prisma.apiKey.findMany({
       where: {
         owner: {
-          email: ctx.session.right.email,
+          email: ctx.session.right.user.email,
         },
       },
     })

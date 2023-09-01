@@ -4,7 +4,7 @@ import { InviteForm } from "~/app/(protected)/[workspace]/components/InviteForm"
 import { Suspense } from "react"
 import Loading from "~/ui/loading"
 import { Members } from "~/app/(protected)/[workspace]/components/Members"
-import { getSession } from "~/common/passage"
+import { getAuthSession } from "src/common/next-auth"
 import { Teams } from "~/app/(protected)/[workspace]/components/Team/Teams"
 import { CreateTeamForm } from "~/app/(protected)/[workspace]/components/Team/CreateTeamForm"
 
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default async function WorkspacePage({ params }: PageProps<Props>) {
-  const session = await getSession()()
+  const session = await getAuthSession()
   const workspace = await api.workspace.getByNamePublic.query({
     workspaceName: params.workspace,
   })

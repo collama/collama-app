@@ -12,12 +12,13 @@ export const createTeam = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session.right.user.userId
+    const userId = ctx.session.user.id
 
-    return ctx.prisma.$transaction(async () => {
-      const team = await ctx.prisma.team.create({
+    return ctx.prisma.$transaction(async (tx) => {
+      const team = await tx.team.create({
         data: {
           name: input.name,
+          slug: input.name.toLowerCase(),
           description: input.description,
           workspace: {
             connect: {
@@ -26,13 +27,13 @@ export const createTeam = protectedProcedure
           },
           owner: {
             connect: {
-              id: ctx.session.right.user.userId,
+              id: ctx.session.user.id,
             },
           },
         },
       })
 
-      return ctx.prisma.membersOnTeams.create({
+      return tx.membersOnTeams.create({
         data: {
           role: Role.Owner,
           workspace: {
@@ -52,6 +53,39 @@ export const createTeam = protectedProcedure
           },
         },
       })
+    })
+  })
+
+export const inviteMemberToTeam = protectedProcedure
+  .input(
+    z.object({
+      email: z.string().email(),
+      teamId: z.string(),
+      workspaceName: zId,
+      role: z.nativeEnum(TeamRole),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    return ctx.prisma.membersOnTeams.create({
+      data: {
+        role: input.role,
+        user: {
+          connect: {
+            email: input.email,
+          },
+        },
+        team: {
+          connect: {
+            id: input.teamId,
+          },
+        },
+        workspace: {
+          connect: {
+            name: input.workspaceName,
+          },
+        },
+        status: InviteStatus.Accepted,
+      },
     })
   })
 
@@ -87,36 +121,3 @@ export const teamRouter = createTRPCRouter({
       })
     }),
 })
-
-export const inviteMemberToTeam = protectedProcedure
-  .input(
-    z.object({
-      email: z.string().email(),
-      teamId: z.string(),
-      workspaceName: zId,
-      role: z.nativeEnum(TeamRole),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    return ctx.prisma.membersOnTeams.create({
-      data: {
-        role: input.role,
-        user: {
-          connect: {
-            email: input.email,
-          },
-        },
-        team: {
-          connect: {
-            id: input.teamId,
-          },
-        },
-        workspace: {
-          connect: {
-            name: input.workspaceName,
-          },
-        },
-        status: InviteStatus.Accepted,
-      },
-    })
-  })

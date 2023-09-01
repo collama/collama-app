@@ -4,17 +4,17 @@ import { zId } from "~/common/validation"
 import { transformFilter, transformSort } from "~/services/prisma"
 import { type FilterValue, type SortValue } from "~/common/types/props"
 import {
-  callOpenAI,
   fillVariables,
   getContent,
-  getPromptFromTask,
   getTextFromTextContent,
   getVariableContents,
-} from "~/server/api/services/getPrompFromTask"
+} from "~/server/api/services/prompt"
 import { InviteStatus, Role } from "@prisma/client"
-import { isEmail } from "~/common/utils"
-import { inviteTeamToTask, inviteUserToTask } from "~/server/api/services/task"
 import { FailedToCreateTask, WorkspaceNotFound } from "~/common/errors"
+import { serializePrompt } from "~/server/api/services/task"
+import { TaskNotFound } from "~/libs/constants/errors"
+import { createProvider } from "~/server/api/services/llm/llm"
+import { env } from "~/env.mjs"
 
 export const createTask = protectedProcedure
   .input(
@@ -25,41 +25,96 @@ export const createTask = protectedProcedure
     })
   )
   .mutation(async ({ ctx, input }) => {
+    const workspace = await ctx.prisma.workspace.findUnique({
+      where: {
+        name: input.workspaceName,
+      },
+    })
+
+    if (!workspace) {
+      throw WorkspaceNotFound
+    }
+
     return ctx.prisma.$transaction(async () => {
-      const workspace = await ctx.prisma.workspace.findUnique({
-        where: {
-          name: input.workspaceName,
-        },
+      return ctx.prisma.$transaction(async (tx) => {
+        const task = await tx.task.create({
+          data: {
+            name: input.name,
+            slug: input.name.toLowerCase(),
+            prompt: input.prompt,
+            ownerId: ctx.session.user.id,
+            workspaceId: workspace.id,
+          },
+        })
+
+        if (!task) {
+          throw FailedToCreateTask
+        }
+
+        await tx.membersOnTasks.create({
+          data: {
+            userId: ctx.session.user.id,
+            workspaceId: workspace.id,
+            taskId: task.id,
+            role: Role.Owner,
+            status: InviteStatus.Accepted,
+          },
+        })
+
+        return task
       })
+    })
+  })
 
-      if (!workspace) {
-        throw WorkspaceNotFound
-      }
+export const executeTask = protectedProcedure
+  .input(
+    z.object({
+      name: zId,
+      variables: z.record(z.string()),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const task = await ctx.prisma.task.findUnique({
+      where: {
+        name: input.name,
+      },
+      select: {
+        prompt: true,
+      },
+    })
 
-      const task = await ctx.prisma.task.create({
-        data: {
-          name: input.name,
-          prompt: input.prompt,
-          ownerId: ctx.session.right.user.userId,
-          workspaceId: workspace.id,
-        },
-      })
+    if (!task) throw TaskNotFound
 
-      if (!task) {
-        throw FailedToCreateTask
-      }
+    const prompt = serializePrompt(task.prompt)
+    const contents = getContent(prompt.content)
+    const textContent = fillVariables(contents, input.variables)
+    const text = getTextFromTextContent(textContent)
 
-      await ctx.prisma.membersOnTasks.create({
-        data: {
-          userId: ctx.session.right.userId,
-          workspaceId: workspace.id,
-          taskId: task.id,
-          role: Role.Owner,
-          status: InviteStatus.Accepted,
-        },
-      })
+    // TODO: get api key
 
-      return task
+    const provider = createProvider("openai", {
+      apiKey: env.OPENAI_KEY,
+      model: "gpt-3.5-turbo",
+    })
+
+    return provider.completion(text)
+  })
+
+export const inviteMemberToTask = protectedProcedure
+  .input(
+    z.object({
+      workspaceName: z.string(),
+      taskName: z.string(),
+      emailOrTeamName: z.string().email().or(z.string()),
+      role: z.nativeEnum(Role),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.membersOnTasks.inviteMember({
+      emailOrTeamName: input.emailOrTeamName,
+      taskName: input.taskName,
+      role: input.role,
+      workspaceName: input.workspaceName,
     })
   })
 
@@ -74,7 +129,7 @@ export const taskRouter = createTRPCRouter({
       return ctx.prisma.task.findUnique({
         where: {
           name: input.name,
-          ownerId: ctx.session.right.user.userId,
+          ownerId: ctx.session.user.id,
         },
         include: { owner: true },
       })
@@ -82,7 +137,7 @@ export const taskRouter = createTRPCRouter({
   getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
     return ctx.prisma.task.findMany({
       where: {
-        ownerId: ctx.session.right.user.userId,
+        ownerId: ctx.session.user.id,
       },
     })
   }),
@@ -140,44 +195,19 @@ export const taskRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const prompt = await getPromptFromTask(ctx.prisma, input.name)
+      const task = await ctx.prisma.task.findUnique({
+        where: {
+          name: input.name,
+        },
+        select: {
+          prompt: true,
+        },
+      })
+
+      if (!task) throw TaskNotFound
+
+      const prompt = serializePrompt(task.prompt)
 
       return getVariableContents(prompt.content)
     }),
 })
-
-export const executeTask = protectedProcedure
-  .input(
-    z.object({
-      name: zId,
-      variables: z.record(z.string()),
-    })
-  )
-  .mutation(async ({ ctx, input }) => {
-    const prompt = await getPromptFromTask(ctx.prisma, input.name)
-
-    const contents = getContent(prompt.content)
-    const textContent = fillVariables(contents, input.variables)
-    const text = getTextFromTextContent(textContent)
-
-    // TODO:The response can returns an array, we need to check it later
-    const choices = await callOpenAI(text)
-
-    return choices[0]?.message.content
-  })
-
-export const inviteMemberToTask = protectedProcedure
-  .input(
-    z.object({
-      workspaceName: z.string(),
-      taskName: z.string(),
-      emailOrTeamName: z.string().email().or(z.string()),
-      role: z.nativeEnum(Role),
-    })
-  )
-  .mutation(async ({ ctx, input }) => {
-    const { emailOrTeamName, ...inviteInput } = input
-    return isEmail(input.emailOrTeamName)
-      ? inviteUserToTask(ctx.prisma, { ...inviteInput, email: emailOrTeamName })
-      : inviteTeamToTask(ctx.prisma, { ...inviteInput, teamName: emailOrTeamName })
-  })

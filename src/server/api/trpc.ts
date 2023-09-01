@@ -14,9 +14,8 @@ import { headers } from "next/headers"
 import superjson from "superjson"
 import { ZodError } from "zod"
 import { prisma } from "~/server/db"
-import { getAuthSession } from "~/common/next-auth"
-import * as E from "fp-ts/Either"
 import { type Session } from "next-auth"
+import { getAuthSession } from "~/libs/auth"
 
 /**
  * 1. CONTEXT
@@ -28,7 +27,7 @@ import { type Session } from "next-auth"
 
 type CreateContextOptions = {
   headers: Headers
-  session: E.Either<Error, Session>
+  session: Session | null
 }
 
 /**
@@ -117,11 +116,11 @@ export const createAction = experimental_createServerActionHandler(t, {
 export const createTRPCRouter = t.router
 
 const validateSession = t.middleware(({ ctx, next }) => {
-  if (E.isLeft(ctx.session)) {
+  if (!ctx.session) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: ctx.session.left.message,
-      cause: ctx.session.left.cause,
+      message: "session not found",
+      cause: "",
     })
   }
 

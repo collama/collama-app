@@ -10,9 +10,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id])
+  userId            String   @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String?  @db.String
+  accessToken       String?  @db.String
+  expeiresAt        Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?  @db.String
+  sessionState      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @db.ObjectId
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([id, token])
+  @@map("verification_tokens")
+}
+
 model User {
   id                 String                @id @default(auto()) @map("_id") @db.ObjectId
   email              String                @unique
+  emailVerified      DateTime?
   password           String
   username           String                @unique
   phone              String?
@@ -28,6 +73,8 @@ model User {
   apiKeys            ApiKey[]
   teams              Team[]
   filterSettings     FilterSetting[]
+  accounts           Account[]
+  sessions           Session[]
 
   @@map("users")
 }
@@ -35,6 +82,7 @@ model User {
 model Workspace {
   id                  String                @id @default(auto()) @map("_id") @db.ObjectId
   name                String                @unique
+  slug                String                @unique
   owner               User                  @relation(fields: [ownerId], references: [id])
   ownerId             String                @db.ObjectId
   createdAt           DateTime              @default(now())
@@ -90,6 +138,7 @@ enum ChatRole {
 model Task {
   id             String           @id @default(auto()) @map("_id") @db.ObjectId
   name           String           @unique
+  slug           String           @unique
   description    String?
   document       String?
   prompt         String?
@@ -104,6 +153,7 @@ model Task {
   updatedAt      DateTime         @updatedAt
   membersOnTasks MembersOnTasks[]
 
+  @@unique([name, workspaceId], name: "task_identifier")
   @@map("tasks")
 }
 
@@ -176,6 +226,7 @@ model FilterSetting {
 model Team {
   id                  String                @id @default(auto()) @map("_id") @db.ObjectId
   name                String
+  slug                String
   description         String
   workspace           Workspace             @relation(fields: [workspaceId], references: [id])
   workspaceId         String                @db.ObjectId

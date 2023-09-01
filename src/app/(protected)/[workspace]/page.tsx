@@ -4,9 +4,9 @@ import { InviteForm } from "~/app/(protected)/[workspace]/components/InviteForm"
 import { Suspense } from "react"
 import Loading from "~/ui/loading"
 import { Members } from "~/app/(protected)/[workspace]/components/Members"
-import { getAuthSession } from "src/common/next-auth"
 import { Teams } from "~/app/(protected)/[workspace]/components/Team/Teams"
 import { CreateTeamForm } from "~/app/(protected)/[workspace]/components/Team/CreateTeamForm"
+import { getAuthSession } from "~/libs/auth"
 
 interface Props {
   workspace: string

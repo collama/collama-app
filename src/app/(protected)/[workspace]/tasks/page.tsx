@@ -1,4 +1,4 @@
-import { Task } from "~/app/(protected)/[workspace]/tasks/components/Task"
+import { Tasks } from "~/app/(protected)/[workspace]/tasks/components/Tasks"
 import { type PageProps } from "~/common/types/props"
 
 type TaskPageProps = {
@@ -6,5 +6,5 @@ type TaskPageProps = {
 }
 
 export default function TaskPage({ params }: PageProps<TaskPageProps>) {
-  return <Task workspaceName={params.workspace} />
+  return <Tasks workspaceName={params.workspace} />
 }

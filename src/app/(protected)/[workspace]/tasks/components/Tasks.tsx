@@ -67,7 +67,7 @@ const DEFAULT_FILTER_SETTING_STATE = {
   count: 0,
 }
 
-export function Task({ workspaceName }: { workspaceName: string }) {
+export function Tasks({ workspaceName }: { workspaceName: string }) {
   const router = useRouter()
   const upsertSetting = useAction(upsertFilterAction).mutate
 

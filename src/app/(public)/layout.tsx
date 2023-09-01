@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getAuthSession } from "src/common/next-auth"
-import * as E from "fp-ts/Either"
+import { ReactNode } from "react"
 
 export const metadata = {
   title: "Next.js",
@@ -10,12 +10,12 @@ export const metadata = {
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
-  const session = await getAuthSession()
-  if (E.isRight(session)) {
-    redirect("/")
-  }
+  // const session = await getAuthSession()
+  // if (!session) {
+  //   redirect("/")
+  // }
 
   return <div>{children}</div>
 }

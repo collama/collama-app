@@ -1,9 +1,8 @@
 import { type PropsWithChildren } from "react"
 import { type PageProps } from "~/common/types/props"
-import { getAuthSession } from "src/common/next-auth"
 import Link from "next/link"
-import * as E from "fp-ts/Either"
 import { Logout } from "~/app/(protected)/[workspace]/components/Logout"
+import { getAuthSession } from "~/libs/auth"
 
 interface Props {
   workspace: string
@@ -21,10 +20,10 @@ export default async function RootLayout({
       <aside className="flex w-[300px] flex-col border-r bg-gray-50">
         <div>
           <div>
-            {E.isRight(session) ? (
-              <span>{session.right.user.username}</span>
+            {session ? (
+              <span>{session.user.username}</span>
             ) : (
-              <Link href={`/auth/login`}>Login</Link>
+              <Link href={`/auth/sign-in`}>Login</Link>
             )}
           </div>
 

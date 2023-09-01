@@ -7,7 +7,7 @@ const config = {
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ["@trpc/server"],
+    serverComponentsExternalPackages: ["@trpc/server", "@prisma/client"],
   },
   images: {
     remotePatterns: [

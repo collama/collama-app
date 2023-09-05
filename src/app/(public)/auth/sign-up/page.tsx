@@ -12,6 +12,8 @@ import { useAction } from "~/trpc/client"
 import { signUpAction } from "~/app/(public)/auth/sign-up/actions"
 import { sleep } from "~/common/utils"
 import { Input } from "~/ui/input"
+import { useNotification } from "~/ui/Notification"
+import cx from "classnames"
 
 const schema = z.object({
   email: z.string().email(),
@@ -22,7 +24,7 @@ const schema = z.object({
 type SubmitData = z.infer<typeof schema>
 
 export default function SignUp() {
-  const form = useZodForm({
+  const { control, handleSubmit } = useZodForm({
     schema: schema,
     defaultValues: {
       email: "linh@gmail.com",
@@ -32,11 +34,13 @@ export default function SignUp() {
   })
   const router = useRouter()
   const session = useSession()
-  const {
-    mutate: signUpMutation,
-    status: signUpStatus,
-    data: signUpData,
-  } = useAction(signUpAction)
+  const [notice, holder] = useNotification({
+    placement: "topRight",
+  })
+  const { mutate: signUpMutation, status: signUpStatus } =
+    useAction(signUpAction)
+
+  const signUploading = signUpStatus === "loading"
 
   useEffect(() => {
     // Because have issue with SignInResponse in https://github.com/nextauthjs/next-auth/issues/7638
@@ -45,62 +49,110 @@ export default function SignUp() {
     }
   }, [router, session.status])
 
+  useEffect(() => {
+    if (signUpStatus === "error") {
+      notice.open({
+        content: {
+          message: "User has been already exited",
+        },
+        status: "error",
+      })
+    }
+  }, [signUpStatus])
+
   const onSubmit = async (data: SubmitData) => {
     signUpMutation(data)
 
-    const resp = await signIn("credentials", {
-      ...data,
-      redirect: false,
-    })
+    if (signUpStatus === "success") {
+      const resp = await signIn("credentials", {
+        ...data,
+        redirect: false,
+      })
 
-    if (resp?.ok) {
-      await sleep(500)
-      router.push("/")
+      if (resp?.error) {
+        notice.open({
+          content: {
+            message: "Failed to sign in",
+          },
+          status: "error",
+        })
+      }
     }
   }
 
   return (
-    <div>
-      <div className="mb-10">
-        <h2 className="text-center text-3xl font-bold">Register</h2>
-      </div>
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="mx-auto w-[600px] space-y-4">
-            <div>
-              <div>
-                <span>UserName</span>
-                <Controller
-                  name="username"
-                  render={({ field }) => <Input {...field} size="sm" />}
-                />
-              </div>
-              <span>Email</span>
+    <div className={cx({ "pointer-events-none": signUploading })}>
+      <div className="w-[560px] rounded-xl p-6 shadow-card">
+        <div className="space-y-6 py-5">
+          <h2 className="text-center text-3xl font-bold">
+            Create your account
+          </h2>
+          <p className="text-center text-neutral-500">
+            {"Hi there! Let's create your account."}
+          </p>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mx-auto mt-10 w-[480px]">
+            <div className="flex h-[180px] w-full flex-col items-center justify-between">
+              <Controller
+                name="username"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Your name"
+                    disabled={signUploading}
+                  />
+                )}
+              />
               <Controller
                 name="email"
+                control={control}
                 render={({ field }) => (
-                  <Input {...field} type="email" size="sm" />
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="Email address"
+                    disabled={signUploading}
+                  />
                 )}
               />
-            </div>
-            <div>
-              <span>Password</span>
               <Controller
                 name="password"
+                control={control}
                 render={({ field }) => (
-                  <Input {...field} type="password" size="sm" />
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="Password"
+                    disabled={signUploading}
+                  />
                 )}
               />
             </div>
-            <section>
-              <Button htmlType="submit" type="primary">
-                Register
+            <div className="mt-10">
+              <Button
+                size="lg"
+                block
+                htmlType="submit"
+                type="primary"
+                loading={signUploading}
+              >
+                Sign Up
               </Button>
-              <Link href="/auth/sign-in">Login</Link>
-            </section>
+              <div className="mt-4 text-center">
+                <span className="text-neutral-500">
+                  {"You already have an account? "}
+                </span>
+                <Link href="/auth/sign-in">
+                  <span className="hover:underline font-medium">Login</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </form>
-      </FormProvider>
+      </div>
+      {holder}
     </div>
   )
 }

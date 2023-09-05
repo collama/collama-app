@@ -1,8 +1,16 @@
-import { forwardRef, type InputHTMLAttributes } from "react"
+"use client"
+
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type ReactNode,
+  useState,
+} from "react"
 import cx from "classnames"
 import type { ControllerRenderProps } from "react-hook-form"
+import { IconEye, IconEyeOff } from "@tabler/icons-react"
 
-type OverdriveProps = "size"
+type OverdriveProps = "size" | "prefix"
 
 type InputSize = "base" | "sm"
 
@@ -14,23 +22,88 @@ const INPUT_SIZE: Record<InputSize, string> = {
 interface CustomProps
   extends Omit<InputHTMLAttributes<unknown>, OverdriveProps> {
   size?: InputSize
+  prefix?: ReactNode
+  suffix?: ReactNode
 }
 
 type InputProps = CustomProps & Partial<ControllerRenderProps>
 
 export const Input = forwardRef<HTMLInputElement | null, InputProps>(
-  function Input({ className, type = "text", size = "base", ...props }, ref) {
-    return (
-      <input
-        {...props}
-        type={type}
-        ref={ref}
-        className={cx(
-          "rounded-lg px-3 py-1 outline outline-1",
-          INPUT_SIZE[size],
-          className
-        )}
-      />
+  function Input(
+    { className, type = "text", size = "base", suffix, prefix, ...props },
+    ref
+  ) {
+    const { disabled } = props
+    const [isShowPassword, setIsShowPassword] = useState(false)
+
+    const classes = cx(
+      "w-full rounded-lg px-3 py-1 outline outline-1 outline-gray-300",
+      INPUT_SIZE[size],
+      { "bg-gray-100 text-gray-300 cursor-not-allowed": disabled },
+      className
     )
+
+    const showPassword = () => setIsShowPassword(!isShowPassword)
+
+    if (type === "password") {
+      return renderPrefixSuffix({
+        suffix,
+        type,
+        classes,
+        isShowPassword,
+        showPassword,
+        ...props,
+      })
+    }
+
+    return <input {...props} type={type} ref={ref} className={classes} />
   }
 )
+
+const renderPrefixSuffix = ({
+  suffix,
+  isShowPassword,
+  showPassword,
+  classes,
+  ...props
+}: Omit<InputProps, "prefix" | "size"> & {
+  classes: string
+  isShowPassword?: boolean
+  showPassword?: () => void
+}) => {
+  return (
+    <span
+      className={cx(
+        "w-full",
+        classes,
+        "focus-within::outline-blue-400 inline-flex"
+      )}
+    >
+      <input
+        {...props}
+        type={isShowPassword ? "text" : "password"}
+        className="w-full border-0 outline-0 ring-0"
+      />
+      {renderSuffix({ suffix, isShowPassword, showPassword })}
+    </span>
+  )
+}
+const renderSuffix = ({
+  suffix,
+  isShowPassword,
+  showPassword,
+}: {
+  suffix?: ReactNode
+  isShowPassword?: boolean
+  showPassword?: () => void
+}) => {
+  if (!!showPassword) {
+    return (
+      <span onClick={showPassword} className="text-neutral-500">
+        {isShowPassword ? <IconEye /> : <IconEyeOff />}
+      </span>
+    )
+  }
+
+  return suffix && <span>{suffix}</span>
+}

@@ -5,11 +5,12 @@ import useZodForm from "~/common/form"
 import { Controller, FormProvider } from "react-hook-form"
 import { Button } from "~/ui/Button"
 import Link from "next/link"
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
-import { sleep } from "~/common/utils"
+import { useEffect, useState } from "react"
 import { Input } from "~/ui/input"
+import { useNotification } from "~/ui/Notification"
+import cx from "classnames"
 
 const schema = z.object({
   email: z.string().email(),
@@ -26,15 +27,25 @@ export default function Login() {
     },
   })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const [notice, holder] = useNotification({
+    placement: "topRight",
+  })
+  const session = useSession()
 
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/"
 
+  useEffect(() => {
+    // Because have issue with SignInResponse in https://github.com/nextauthjs/next-auth/issues/7638
+    if (session.status === "authenticated") {
+      setLoading(false)
+      router.push(callbackUrl)
+    }
+  }, [session.status])
+
   const onSubmit = async (data: SubmitData) => {
     setLoading(true)
-    setError(null)
 
     const resp = await signIn("credentials", {
       ...data,
@@ -42,61 +53,79 @@ export default function Login() {
       callbackUrl,
     })
 
-    if (resp?.ok) {
-      await sleep(500)
-      setLoading(false)
-      router.push(callbackUrl)
-    }
-
     if (resp?.error) {
       setLoading(false)
-      setError(resp.error)
+      notice.open({
+        content: {
+          message: "Failed to sign in",
+        },
+        status: "error",
+      })
     }
   }
 
-  if (error) {
-    return <span>Error: {error}</span>
-  }
-
-  // if (loading) {
-  //   return <Loading />
-  // }
-
   return (
-    <div>
-      <div className="mb-10">
-        <h2 className="text-center text-3xl font-bold">Login</h2>
+    <div className={cx({ "pointer-events-none": loading })}>
+      <div className="w-[560px] rounded-xl p-6 shadow-card">
+        <div className="space-y-6 py-5">
+          <h2 className="text-center text-3xl font-bold">Sign In to Collama</h2>
+          <p className="text-center text-neutral-500">
+            Welcome back please enter your detail!
+          </p>
+        </div>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="mx-auto mt-10 w-[480px]">
+              <div className="flex h-[100px] flex-col items-center justify-between">
+                <Controller
+                  name="email"
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="Your-email@gmail.com"
+                      disabled={loading}
+                    />
+                  )}
+                />
+                <Controller
+                  name="password"
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="password"
+                      placeholder="Password"
+                      disabled={loading}
+                    />
+                  )}
+                />
+              </div>
+              <div className="mt-10">
+                <Button
+                  size="lg"
+                  block
+                  htmlType="submit"
+                  type="primary"
+                  loading={loading}
+                >
+                  Sign In
+                </Button>
+                <div className="mt-4 text-center">
+                  <span className="text-neutral-500">
+                    {"Don't have an account? "}
+                  </span>
+                  <Link href="/auth/sign-up">
+                    <span className="font-medium hover:underline">
+                      Request now
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </form>
+        </FormProvider>
       </div>
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="mx-auto w-[600px] space-y-4">
-            <div>
-              <span>Email</span>
-              <Controller
-                name="email"
-                render={({ field }) => (
-                  <Input {...field} type="email" size="sm" />
-                )}
-              />
-            </div>
-            <div>
-              <span>Password</span>
-              <Controller
-                name="password"
-                render={({ field }) => (
-                  <Input {...field} type="password" size="sm" />
-                )}
-              />
-            </div>
-            <section>
-              <Button htmlType="submit" type="primary">
-                Login
-              </Button>
-              <Link href="/auth/sign-up">Register</Link>
-            </section>
-          </div>
-        </form>
-      </FormProvider>
+      {holder}
     </div>
   )
 }

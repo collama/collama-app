@@ -20,7 +20,7 @@ import {
   forwardRef,
   type HTMLProps,
   isValidElement,
-  PropsWithChildren,
+  type PropsWithChildren,
   type ReactNode,
   type SetStateAction,
   useContext,
@@ -128,14 +128,10 @@ export function Popover({
   )
 }
 
-interface PopoverTriggerProps extends PropsWithChildren {
-  asChild?: boolean
-}
-
 export const PopoverTrigger = forwardRef<
   HTMLElement | null,
-  HTMLProps<HTMLElement> & PopoverTriggerProps
->(function PopoverTrigger({ children, asChild = false, ...props }, propRef) {
+  HTMLProps<HTMLElement> & PropsWithChildren
+>(function PopoverTrigger({ children, ...props }, propRef) {
   const context = usePopoverContext()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
   const childrenRef = (children as any).ref
@@ -143,7 +139,7 @@ export const PopoverTrigger = forwardRef<
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
   // `asChild` allows the user to pass any element as the anchor
-  if (asChild && isValidElement(children)) {
+  if (isValidElement(children)) {
     return cloneElement(
       children,
       context.getReferenceProps({
@@ -155,16 +151,16 @@ export const PopoverTrigger = forwardRef<
     )
   }
 
-  return (
-    <div
-      ref={ref}
-      // The user can style the trigger based on the state
-      data-state={context.open ? "open" : "closed"}
-      {...context.getReferenceProps(props)}
-    >
-      {children}
-    </div>
-  )
+  // return (
+  //   <div
+  //     ref={ref}
+  //     // The user can style the trigger based on the state
+  //     data-state={context.open ? "open" : "closed"}
+  //     {...context.getReferenceProps(props)}
+  //   >
+  //     {children}
+  //   </div>
+  // )
 })
 
 export const PopoverContent = forwardRef<

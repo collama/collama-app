@@ -39,7 +39,7 @@ export const createWorkspace = protectedProcedure
         },
       })
 
-      return tx.membersOnWorkspaces.create({
+      await tx.membersOnWorkspaces.create({
         data: {
           workspaceId: workspace.id,
           userId: user.id,
@@ -47,6 +47,8 @@ export const createWorkspace = protectedProcedure
           status: InviteStatus.Accepted,
         },
       })
+
+      return workspace
     })
   })
 

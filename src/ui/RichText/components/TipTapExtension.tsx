@@ -4,12 +4,16 @@ import { type Editor, Extension, type Range } from "@tiptap/core"
 import Suggestion from "@tiptap/suggestion"
 import { ReactRenderer } from "@tiptap/react"
 import tippy, { type Instance } from "tippy.js"
-import { VariableNode } from "~/ui/RichText/components/VariableNode"
+import {
+  VARIABLE_COLOR,
+  VariableNode,
+} from "~/ui/RichText/components/VariableNode"
 import { CommandList, Key } from "~/ui/RichText/components/CommandList"
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
 } from "@tiptap/suggestion/src/suggestion"
+import { CreateVariableNode } from "~/ui/RichText/components/CreateVariableNode"
 
 type CommandProps = {
   editor: Editor
@@ -46,50 +50,59 @@ const Command = Extension.create<Options>({
   },
 })
 
-const ExampleVariables = [
-  {
-    title: "LastName",
-    searchTerms: ["name"],
-    value: "lastName",
-    color: "text-indigo-700",
-    type: "text",
-  },
-  {
-    title: "Email",
-    searchTerms: ["email"],
-    value: "email",
-    color: "text-red-700",
-    type: "text",
-  },
-  {
-    title: "Phone",
-    searchTerms: ["phone"],
-    value: "090xxxxx",
-    color: "text-lime-700",
-    type: "text",
-  },
-]
-
-type SuggestionItem = Options["suggestion"] & { command: Command }
+type SuggestionItem = { command: Command } & {
+  title: string
+}
 
 const getSuggestionItems = (): SuggestionItem[] => {
-  return ExampleVariables.map((variable) => ({
-    ...variable,
-    command: ({ editor, range }) => {
-      editor
-        .chain()
-        .deleteRange(range)
-        .insertContent({
-          type: "variable",
-          attrs: {
-            text: variable.value,
-            className: variable.color,
-            type: variable.type,
-          },
-        })
-        .run()
+  return [
+    {
+      title: "Create-Variable",
+      command: ({ editor, range }) => {
+        editor
+          .chain()
+          .deleteRange(range)
+          .insertContent({
+            type: "create-variable",
+          })
+          .run()
+      },
     },
-  }))
+    {
+      title: "Email",
+      command: ({ editor, range }) => {
+        editor
+          .chain()
+          .deleteRange(range)
+          .insertContent({
+            type: "variable",
+            attrs: {
+              text: "email",
+              className: VARIABLE_COLOR["text"],
+              type: "text",
+            },
+          })
+          .run()
+      },
+    },
+    {
+      title: "Result",
+      command: ({ editor, range }) => {
+        editor
+          .chain()
+          .deleteRange(range)
+          .insertContent({
+            type: "variable",
+            attrs: {
+              text: "result",
+              className: VARIABLE_COLOR["text"],
+              type: "text",
+            },
+          })
+          .run()
+      },
+    },
+  ]
 }
 
 type RenderItem = Partial<
@@ -142,8 +155,6 @@ const SlashCommand = Command.configure({
   },
 })
 
-export default SlashCommand
-
 export const TipTapExtensions = [
   StarterKit.configure({
     paragraph: {
@@ -154,4 +165,5 @@ export const TipTapExtensions = [
   }),
   SlashCommand,
   VariableNode,
+  CreateVariableNode,
 ]

@@ -18,15 +18,16 @@ const placementClass: Record<Placement, string> = {
   bottomLeft: "flex-col bottom-6 left-0",
 }
 
-export const NoticeList: FC<NoticeListProps> = ({
+export const NoticeList: FC<NoticeListProps & { placement: Placement }> = ({
   configList,
   onNoticeClose,
+  placement,
 }) => {
   return (
     <div
       className={cx(
         "fixed z-[1000] me-6 mt-0 box-border list-none p-0 text-base ",
-        placementClass[configList?.[0]?.placement as Placement]
+        placementClass[placement]
       )}
     >
       {configList?.map(({ key, ...config }) => {

@@ -6,7 +6,12 @@ import { createTeamAction } from "~/app/(protected)/[workspace]/actions"
 import useZodForm from "~/common/form"
 import { useEffect } from "react"
 import Loading from "~/ui/loading"
-import { FormProvider } from "react-hook-form"
+import { Controller, FormProvider } from "react-hook-form"
+import { Input } from "~/ui/Input"
+import { Button } from "~/ui/Button"
+import { useNotification } from "~/ui/Notification"
+import { sleep } from "~/common/utils"
+import useAsyncEffect from "use-async-effect"
 
 interface Props {
   workspaceName: string
@@ -22,16 +27,29 @@ export const CreateTeamForm = (props: Props) => {
   const form = useZodForm({
     schema,
   })
+  const [notice, holder] = useNotification()
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (status === "success") {
-      alert("Invited")
+      notice.open({
+        content: {
+          message: "Invite user is successfully",
+        },
+        status: "success",
+      })
+      await sleep(500)
+      window.location.reload()
     }
   }, [status])
 
   useEffect(() => {
     if (status === "error" && error) {
-      console.log(error)
+      notice.open({
+        content: {
+          message: "Failed to invite user",
+        },
+        status: "error",
+      })
     }
   }, [error, status])
 
@@ -50,14 +68,37 @@ export const CreateTeamForm = (props: Props) => {
             })
           })}
         >
-          <input className="border" {...form.register("name")} />
-          <input className="border" {...form.register("description")} />
+          <div className="flex space-x-6">
+            <Controller
+              name="name"
+              render={({ field }) => {
+                return (
+                  <Input
+                    {...field}
+                    className="!w-[350px]"
+                    placeholder="Team name"
+                  />
+                )
+              }}
+            />
+            <Controller
+              name="description"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="!w-[350px]"
+                  placeholder="Description ..."
+                />
+              )}
+            />
 
-          <button type="submit" className="border bg-gray-400">
-            Create
-          </button>
+            <Button htmlType="submit" type="primary">
+              Create
+            </Button>
+          </div>
         </form>
       </FormProvider>
+      {holder}
     </div>
   )
 }

@@ -110,11 +110,6 @@ const getMembersFromWorkspace = protectedProcedure
             email: true,
           },
         },
-        team: {
-          select: {
-            name: true,
-          },
-        },
       },
     })
   })
@@ -296,3 +291,23 @@ export const workspaceRouter = createTRPCRouter({
   getMembersFromWorkspace,
   getUserInWorkspace,
 })
+
+export const deleteMemberOnWorkspace = protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (tx) => {
+      const workspaceMember = await tx.membersOnWorkspaces.delete({
+        where: {
+          id: input.id,
+        },
+      })
+
+      await tx.membersOnTasks.deleteMany({
+        where: {
+          userId: workspaceMember.userId,
+        },
+      })
+
+      return workspaceMember
+    })
+  })

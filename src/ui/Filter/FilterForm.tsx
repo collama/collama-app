@@ -10,7 +10,7 @@ import {
   type FilterType,
 } from "~/ui/Filter/constants"
 import { IconX } from "@tabler/icons-react"
-import { type ColumnsType } from "~/ui/Table"
+import { type ColumnType } from "~/ui/Table"
 import {
   type FilterConditionProps,
   HandleFormError,
@@ -36,7 +36,7 @@ const filterSchema = z.object({
 export type FilterSchema = z.infer<typeof filterSchema>
 
 interface DynamicFilterProps {
-  columns: ColumnsType
+  columns: ColumnType[]
   setFilter: (props: FilterValue) => void
   defaultValue: FilterValue
 }
@@ -70,8 +70,8 @@ export function FilterForm({
   }
 
   const columnsHeader = columns.map((col) => ({
-    value: col.id,
-    label: col.title,
+    value: col.id.toString(),
+    label: col.title.toString(),
   }))
 
   const columnsType = columns.reduce<Record<string, FilterType>>((res, cur) => {

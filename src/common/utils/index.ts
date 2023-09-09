@@ -6,6 +6,9 @@ export const sleep = (ms: number) =>
 export const noop = () => undefined
 
 export const isEmail = (text: string): boolean => {
-  const res = z.string().email().catch('false').parse(text)
-  return res !== 'false'
+  const res = z.string().email().catch("false").parse(text)
+  return res !== "false"
 }
+
+export const capitalizeFirstLetter = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1)

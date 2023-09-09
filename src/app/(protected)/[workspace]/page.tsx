@@ -1,19 +1,14 @@
 import { api } from "~/trpc/server-invoker"
 import { type PageProps } from "~/common/types/props"
-import { InviteForm } from "~/app/(protected)/[workspace]/components/InviteForm"
-import { Suspense } from "react"
+import React, { Suspense } from "react"
 import Loading from "~/ui/loading"
-import { Members } from "~/app/(protected)/[workspace]/components/Members"
-import { Teams } from "~/app/(protected)/[workspace]/components/Team/Teams"
-import { CreateTeamForm } from "~/app/(protected)/[workspace]/components/Team/CreateTeamForm"
-import { getAuthSession } from "~/libs/auth"
+import { MemberOnWorkspace } from "~/app/(protected)/[workspace]/components/workspace-member/MemberOnWorkspace"
 
 interface Props {
   workspace: string
 }
 
 export default async function WorkspacePage({ params }: PageProps<Props>) {
-  const session = await getAuthSession()
   const workspace = await api.workspace.getByNamePublic.query({
     workspaceName: params.workspace,
   })
@@ -24,30 +19,9 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
 
   return (
     <div>
-      <h1>
-        Hello <span className="text-red-500">{workspace.name}</span> workspace
-      </h1>
-
-      <hr />
-      <div>
-        <h2>Workspace members</h2>
-        <Suspense fallback={<Loading />}>
-          <InviteForm workspaceName={params.workspace} />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <Members workspaceName={params.workspace} session={session} />
-        </Suspense>
-      </div>
-      <hr />
-      <div>
-        <h3>Create Team</h3>
-        <Suspense fallback={<Loading />}>
-          <CreateTeamForm workspaceName={params.workspace} />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <Teams workspaceName={params.workspace} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<Loading />}>
+        <MemberOnWorkspace workspaceName={workspace.name} />
+      </Suspense>
     </div>
   )
 }

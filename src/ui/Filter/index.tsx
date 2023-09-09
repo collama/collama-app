@@ -1,6 +1,6 @@
 import { Button } from "~/ui/Button"
 import { Popover } from "~/ui/Popover"
-import { type ColumnsType } from "~/ui/Table"
+import { type ColumnType } from "~/ui/Table"
 import { FilterForm } from "~/ui/Filter/FilterForm"
 import { type FilterValue } from "~/common/types/props"
 import { useState } from "react"
@@ -10,7 +10,7 @@ export function Filter({
   setFilters,
   defaultFilter,
 }: {
-  columns: ColumnsType
+  columns: ColumnType[]
   setFilters: (filter: FilterValue) => void
   defaultFilter: FilterValue
 }) {

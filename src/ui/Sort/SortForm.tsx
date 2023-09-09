@@ -4,7 +4,7 @@ import { Button } from "~/ui/Button"
 import useZodForm from "~/common/form"
 import { z } from "zod"
 import { IconX } from "@tabler/icons-react"
-import { type ColumnsType } from "~/ui/Table"
+import { type ColumnType } from "~/ui/Table"
 import { HandleFormError } from "~/ui/Filter/FilterCondition"
 import { SORT_CONDITION, SORT_FORM_NAME } from "~/ui/Sort/contants"
 import { type Sort, type SortValue } from "~/common/types/props"
@@ -22,7 +22,7 @@ export const sortSchema = z.object({
 })
 
 interface DynamicFilterProps {
-  columns: ColumnsType
+  columns: ColumnType[]
   setSort: (props: SortValue) => void
   defaultValue: SortValue
 }
@@ -51,8 +51,8 @@ export function SortForm({
   }
 
   const columnsHeader = columns.map((col) => ({
-    value: col.id,
-    label: col.title,
+    value: col.id.toString(),
+    label: col.title.toString(),
   }))
 
   return (

@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
-import { Role, TeamRole, InviteStatus } from "@prisma/client"
+import { InviteStatus, Role, TeamRole } from "@prisma/client"
 
 export const createTeam = protectedProcedure
   .input(
@@ -33,7 +33,7 @@ export const createTeam = protectedProcedure
         },
       })
 
-      return tx.membersOnTeams.create({
+      await tx.membersOnTeams.create({
         data: {
           role: Role.Owner,
           workspace: {
@@ -53,6 +53,8 @@ export const createTeam = protectedProcedure
           },
         },
       })
+
+      return team
     })
   })
 
@@ -103,6 +105,9 @@ export const teamRouter = createTRPCRouter({
             name: input.workspaceName,
           },
         },
+        include: {
+          owner: true,
+        },
       })
     }),
   membersOnTeam: protectedProcedure
@@ -121,3 +126,33 @@ export const teamRouter = createTRPCRouter({
       })
     }),
 })
+
+export const deleteTeam = protectedProcedure
+  .input(
+    z.object({
+      id: z.string(),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (tx) => {
+
+      await tx.membersOnTasks.deleteMany({
+        where: {
+          teamId: input.id,
+        },
+      })
+
+      await tx.membersOnTeams.deleteMany({
+        where: {
+          teamId: input.id,
+        },
+      })
+
+      return await tx.team.delete({
+        where: {
+          id: input.id,
+        },
+      })
+
+    })
+  })

@@ -116,7 +116,7 @@ export const Pagination: FC<PaginationProps> = ({
       <li className="inline-block">
         <Button onClick={next}>Next</Button>
       </li>
-      <li className="inline-block">
+      <li className="inline-block space-x-1.5">
         <Input
           value={inputValue ?? ""}
           onKeyUp={handleKeyUp}
@@ -124,7 +124,7 @@ export const Pagination: FC<PaginationProps> = ({
           onBlur={() => change(currentPage)}
           type="text"
           size="sm"
-          className="w-14 border px-2"
+          className="!w-14 px-2"
         />
         <span>/</span>
         {totalPage}

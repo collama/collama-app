@@ -3,48 +3,87 @@
 import { api, useAction } from "~/trpc/client"
 import useAwaited from "~/hooks/useAwaited"
 import Loading from "~/ui/loading"
-import {
-  removeMemberAction,
-  updateMemberRoleAction,
-} from "~/app/(protected)/[workspace]/actions"
+import { type ColumnType, Table } from "~/ui/Table"
+import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
+import { toFullDate } from "~/common/utils/datetime"
+import { IconX } from "@tabler/icons-react"
+import { deleteMemberOnWorkspaceAction } from "~/app/actions"
+import { useNotification } from "~/ui/Notification"
+import useAsyncEffect from "use-async-effect"
+import { sleep } from "~/common/utils"
 import { useEffect } from "react"
-import { Role } from "@prisma/client"
-import { type Session } from "next-auth"
+import { Tag } from "~/ui/Tag"
+
+const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
+  {
+    title: "Name",
+    id: "user",
+    render: (user: MemberOnWorkspaceIncludeUserMail["user"]) => (
+      <span>{user.email}</span>
+    ),
+  },
+  {
+    title: "Role",
+    id: "role",
+    render: (role) => <Tag>{role}</Tag>,
+  },
+  {
+    title: "Invite at",
+    id: "createdAt",
+    render: (date: Date) => <span>{toFullDate(date)}</span>,
+  },
+]
 
 interface Props {
   workspaceName: string
-  session: Session | null
 }
 
 export const Members = (props: Props) => {
-  const removeMemberMutation = useAction(removeMemberAction)
-  const updateMemberRoleMutation = useAction(updateMemberRoleAction)
-  const {
-    data: members,
-    loading,
-    setData: setMembers,
-  } = useAwaited(
+  const { data: members, loading } = useAwaited(
     api.workspace.getMembersFromWorkspace.query({
       name: props.workspaceName,
     })
   )
-  const { data: userOnWorkspace } = useAwaited(
-    api.workspace.getUserInWorkspace.query({
-      name: props.workspaceName,
-    })
-  )
+
+  const {
+    mutate: deleteMember,
+    status,
+    error,
+  } = useAction(deleteMemberOnWorkspaceAction)
+  const [notice, holder] = useNotification()
+
+  const actionCol: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
+    {
+      title: "Action",
+      id: "id",
+      render: (id: string) => (
+        <span className="table-icon" onClick={() => deleteMember({ id })}>
+          <IconX />
+        </span>
+      ),
+    },
+  ]
+
+  useAsyncEffect(async () => {
+    if (status === "success") {
+      notice.open({
+        content: { message: "Deleted member is successfully!" },
+
+        status: "success",
+      })
+      await sleep(500)
+      window.location.reload()
+    }
+  }, [status])
 
   useEffect(() => {
-    if (removeMemberMutation.status === "success") {
-      alert("Removed")
+    if (status === "error" && error) {
+      notice.open({
+        content: { message: "Failed to delete member" },
+        status: "error",
+      })
     }
-  }, [removeMemberMutation.status])
-
-  useEffect(() => {
-    if (removeMemberMutation.status === "error" && removeMemberMutation.error) {
-      console.log(removeMemberMutation.error)
-    }
-  }, [removeMemberMutation.error, removeMemberMutation.status])
+  }, [status, error])
 
   if (loading) {
     return <Loading />
@@ -55,69 +94,9 @@ export const Members = (props: Props) => {
   }
 
   return (
-    <ul>
-      {members.map((member) => (
-        <li key={member.id}>
-          <span>
-            {member.user ? member.user.email : member.team!.name} -{" "}
-            {member.status}
-          </span>
-          <span> - </span>
-          {member.role === Role.Owner ? (
-            <span>{member.role}</span>
-          ) : (
-            <>
-              <select
-                name="role"
-                value={member.role}
-                onChange={(e) => {
-                  const id = member.id
-                  const newRole = e.target.value as Role
-                  setMembers((draft) => {
-                    if (draft) {
-                      const member = draft.find((o) => o.id === id)
-                      if (member) {
-                        member.role = newRole
-                      }
-                    }
-                  })
-                  updateMemberRoleMutation.mutate({
-                    id: member.id,
-                    role: e.target.value as Role,
-                  })
-                }}
-              >
-                <option value={Role.Reader}>Can View</option>
-                <option value={Role.Writer}>Can Edit</option>
-              </select>
-            </>
-          )}
-          {userOnWorkspace &&
-            userOnWorkspace.role === Role.Owner &&
-            userOnWorkspace.userId !== member.userId && (
-              <div className="inline">
-                <button
-                  className="border bg-gray-400"
-                  onClick={() => {
-                    const id = member.id
-                    removeMemberMutation.mutate({
-                      id,
-                    })
-
-                    setMembers((draft) => {
-                      if (draft) {
-                        const index = draft.findIndex((o) => o.id === id)
-                        draft.splice(index, 1)
-                      }
-                    })
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            )}
-        </li>
-      ))}
-    </ul>
+    <>
+      <Table data={members} columns={[...columns, ...actionCol]} />
+      {holder}
+    </>
   )
 }

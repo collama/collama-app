@@ -14,6 +14,7 @@ import {
   flip,
   FloatingFocusManager,
   FloatingList,
+  offset,
   useClick,
   useDismiss,
   useFloating,
@@ -27,7 +28,7 @@ import {
 import { type ControllerRenderProps } from "react-hook-form"
 import cx from "classnames"
 import { noop } from "~/common/utils"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 
 export interface SelectOption {
   value: string
@@ -78,7 +79,7 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
       open: isOpen,
       onOpenChange: setIsOpen,
       whileElementsMounted: autoUpdate,
-      middleware: [flip()],
+      middleware: [flip(), offset(5)],
     })
 
     const elementsRef = useRef<Array<HTMLElement | null>>([])
@@ -148,9 +149,8 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
           value={selectLabel[selectedLabel ?? ""]}
           placeholder="Select ..."
           style={{ width, maxHeight: popupHeight }}
-          className="rounded border px-2"
+          className="cursor-pointer px-2"
           ref={useMergeRefs([refs.setReference, ref])}
-          size="sm"
           onChange={noop}
         />
         <SelectContext.Provider value={selectContext}>
@@ -160,7 +160,7 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
                 ref={refs.setFloating}
                 style={{ ...floatingStyles, width }}
                 {...getFloatingProps()}
-                className="relative z-50 max-h-[200px] overflow-y-auto"
+                className="relative z-[1000] rounded-lg max-h-[200px] overflow-y-auto bg-white p-1 shadow-card outline-0 border-0"
               >
                 <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
                   {options.map((option, index) => (
@@ -189,6 +189,12 @@ function Option({ label, value }: SelectOption) {
   const isActive = activeIndex === index
   const isSelected = selectedIndex === index
 
+  const classes = cx(
+    "block rounded-lg w-full truncate bg-white text-start px-2 py-1 border-0 outline-0",
+    { "!bg-violet-100": isSelected },
+    { "!bg-neutral-100": isActive && !isSelected }
+  )
+
   return (
     <button
       ref={ref}
@@ -198,11 +204,7 @@ function Option({ label, value }: SelectOption) {
       {...getItemProps({
         onClick: () => handleSelect(index),
       })}
-      className={cx(
-        "block w-full truncate border bg-yellow-100 text-start",
-        { "bg-violet-100": isActive },
-        { "bg-yellow-200": isSelected }
-      )}
+      className={classes}
     >
       {label ?? value}
     </button>

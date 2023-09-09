@@ -1,6 +1,6 @@
 import { Button } from "~/ui/Button"
 import { Popover } from "~/ui/Popover"
-import { type ColumnsType } from "~/ui/Table"
+import { type ColumnType } from "~/ui/Table"
 import { type SortValue } from "~/common/types/props"
 import { SortForm } from "~/ui/Sort/SortForm"
 import { useState } from "react"
@@ -10,7 +10,7 @@ export function Sort({
   setSorts,
   defaultSort,
 }: {
-  columns: ColumnsType
+  columns: ColumnType[]
   setSorts: (sort: SortValue) => void
   defaultSort: SortValue
 }) {

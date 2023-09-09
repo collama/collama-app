@@ -15,10 +15,10 @@ export default async function Page() {
   const workspaces = await api.workspace.getAll.query()
 
   return (
-    <div>
+    <div className="bg-white">
       <Heading />
       <hr />
-      <div className="mt-2 ml-2">
+      <div className="ml-2 mt-2">
         <Logout />
       </div>
       <div className="mx-auto mt-4 w-[450px] space-y-4">
@@ -27,12 +27,11 @@ export default async function Page() {
           <h4 className="mb-6 text-neutral-500">Available workspace:</h4>
           <ul>
             {workspaces.map((w) => (
-              <li
-                key={w.id}
-                className="mb-2 cursor-pointer rounded px-2 py-1 shadow hover:bg-violet-400 hover:text-white "
-              >
-                <Link href={`/${w.slug}`}>{w.name}</Link>
-              </li>
+              <Link href={`/${w.slug}`} key={w.id}>
+                <li className="mb-2 cursor-pointer rounded px-2 py-1 shadow hover:bg-violet-400 hover:text-white ">
+                  {w.name}
+                </li>
+              </Link>
             ))}
           </ul>
         </div>

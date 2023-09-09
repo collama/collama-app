@@ -11,6 +11,10 @@ ul {
 @layer {
   .shot-table > thead > tr > th,
   .shot-table > tbody > tr > td {
-    @apply text-start !border p-2 first:!border-l-0 last:!border-r-0 hover:bg-gray-100;
+    @apply !border p-2 text-start first:!border-l-0 last:!border-r-0;
+  }
+
+  .table-icon {
+    @apply flex h-7 w-7 items-center justify-center rounded-full p-1.5 text-neutral-500 outline-0 transition-all hover:bg-gray-200;
   }
 }

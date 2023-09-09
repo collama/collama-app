@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useState } from "react"
-import { type ColumnsType, Table } from "~/ui/Table"
+import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
 import { IconX } from "@tabler/icons-react"
 import type { Task, User } from "@prisma/client"
@@ -23,7 +23,7 @@ import { Sort } from "~/ui/Sort"
 import Link from "next/link"
 import urlJoin from "url-join"
 
-const columns: ColumnsType = [
+const columns: ColumnType[] = [
   {
     id: "owner",
     title: "Owner",
@@ -138,7 +138,7 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
     console.log(id)
   }
 
-  const nameColumn: ColumnsType = [
+  const nameColumn: ColumnType[] = [
     {
       id: "name",
       title: "Task",
@@ -149,7 +149,7 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
     },
   ]
 
-  const actionColumn: ColumnsType = [
+  const actionColumn: ColumnType[] = [
     {
       title: "Action",
       id: "id",

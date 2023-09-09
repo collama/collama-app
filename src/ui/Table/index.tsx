@@ -7,37 +7,56 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { type ReactElement } from "react"
+import { Empty } from "~/ui/Empty"
+import { Spin } from "~/ui/Spinner"
 
-export type ColumnsType = {
-  id: string
+export type ColumnType<T = { [key: string]: any }> = {
+  id: keyof T
   title: string
-  render: (value: never) => ReactElement
+  render: (value: any, record: T) => ReactElement
   //declare for filter
   type?: string
-}[]
+}
 
 type TableProps<T> = {
-  data: T[]
-  columns: ColumnsType
+  data?: T[] | null
+  columns: ColumnType<T>[]
   loading?: boolean
 }
 
-const transformToColumnDef = <T,>(columns: ColumnsType): ColumnDef<T>[] => {
+const transformToColumnDef = <T,>(columns: ColumnType<T>[]): ColumnDef<T>[] => {
   return columns.map<ColumnDef<T>>((col) => ({
     header: col.title,
     accessorKey: col.id,
     cell: (info) => {
-      return col.render(info.getValue() as never)
+      const record = info.row.original
+      return col.render(info.getValue() as never, record)
     },
   }))
 }
 
 export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns: transformToColumnDef<T>(columns),
     getCoreRowModel: getCoreRowModel(),
   })
+
+  if (loading) {
+    return (
+      <div className="flex h-[20vh] items-center justify-center shadow">
+        <Spin className="h-10 w-10" />
+      </div>
+    )
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-[20vh] ">
+        <Empty />
+      </div>
+    )
+  }
 
   return (
     <div className="w-full">
@@ -46,10 +65,7 @@ export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
           <tr>
             {table.getFlatHeaders().map((header) => {
               return (
-                <th
-                  key={header.id}
-                  className="font-medium opacity-60 hover:bg-gray-50"
-                >
+                <th key={header.id} className="font-medium opacity-60">
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -62,7 +78,7 @@ export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
         {!loading && (
           <tbody>
             {table.getRowModel().flatRows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} className="hover:bg-gray-50">
                 {row.getVisibleCells().map((cell) => {
                   return (
                     <td key={cell.id}>

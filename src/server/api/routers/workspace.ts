@@ -12,6 +12,7 @@ import {
   Unauthorized,
   UserNotFound,
 } from "~/libs/constants/errors"
+import { CanNotRemoveOwner } from "~/common/errors"
 
 export const createWorkspace = protectedProcedure
   .input(
@@ -295,19 +296,22 @@ export const workspaceRouter = createTRPCRouter({
 export const deleteMemberOnWorkspace = protectedProcedure
   .input(z.object({ id: z.string() }))
   .mutation(async ({ ctx, input }) => {
-    return ctx.prisma.$transaction(async (tx) => {
-      const workspaceMember = await tx.membersOnWorkspaces.delete({
-        where: {
-          id: input.id,
-        },
-      })
+    const member = await ctx.prisma.membersOnWorkspaces.findFirst({
+      where: {
+        id: input.id,
+      },
+      select: {
+        role: true,
+      },
+    })
 
-      await tx.membersOnTasks.deleteMany({
-        where: {
-          userId: workspaceMember.userId,
-        },
-      })
+    if (!member) throw UserNotFound
 
-      return workspaceMember
+    if (member.role === Role.Owner) throw CanNotRemoveOwner
+
+    return ctx.prisma.membersOnWorkspaces.delete({
+      where: {
+        id: input.id,
+      },
     })
   })

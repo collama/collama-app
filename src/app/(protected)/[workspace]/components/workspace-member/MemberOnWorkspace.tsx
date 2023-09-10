@@ -16,7 +16,7 @@ interface Props {
   workspaceName: string
 }
 export function MemberOnWorkspace({ workspaceName }: Props) {
-  const [tab, setTab] = useState(Tab.Team)
+  const [tab, setTab] = useState(Tab.Workspace)
 
   return (
     <div className="p-6">

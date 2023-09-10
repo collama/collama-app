@@ -20,3 +20,9 @@ export type TeamIncludeOwner = Prisma.TeamGetPayload<{
     owner: true
   }
 }>
+
+export type MembersOnTeamsIncludeUser =  Prisma.MembersOnTeamsGetPayload<{
+  include: {
+    user: true
+  }
+}>

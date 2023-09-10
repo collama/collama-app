@@ -57,6 +57,7 @@ export const InviteForm = (props: Props) => {
       notice.open({
         content: {
           message: "Failed to invite user",
+          description: error.message
         },
         status: "error",
       })

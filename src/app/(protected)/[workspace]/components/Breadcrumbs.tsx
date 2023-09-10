@@ -1,6 +1,6 @@
 "use client"
 
-import { useParams, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Breadcrumbs as UiBreadcrumbs, type CrumbItem } from "~/ui/Breadcrumbs"
 import { capitalizeFirstLetter } from "~/common/utils"
 
@@ -9,7 +9,14 @@ const parsePathname = (pathname: string) => {
   return paths.length <= 1 ? null : paths.slice(1)
 }
 
-const transformToCrumbItem = (items: string[]) => {
+const unUsePath = ["teams"]
+
+const removeUnUsePath = (paths: string[]) =>
+  paths.filter((path) => !unUsePath.includes(path))
+
+const transformToCrumbItem = (paths: string[]) => {
+  const items = removeUnUsePath(paths)
+
   return items.map<CrumbItem>((item, index) => {
     if (index === 0) {
       return {
@@ -35,7 +42,7 @@ export const Breadcrumbs = () => {
   const items = transformToCrumbItem(paths)
 
   return (
-    <div className="px-4 py-2 shadow bg-white">
+    <div className="bg-white px-4 py-2 shadow">
       <UiBreadcrumbs items={items} />
     </div>
   )

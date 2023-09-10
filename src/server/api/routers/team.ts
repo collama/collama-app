@@ -2,6 +2,11 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { z } from "zod"
 import { zId } from "~/common/validation"
 import { InviteStatus, Role, TeamRole } from "@prisma/client"
+import {
+  CanNotRemoveOwner,
+  UserNotFound,
+  WorkspaceNotFound,
+} from "~/common/errors"
 
 export const createTeam = protectedProcedure
   .input(
@@ -51,6 +56,7 @@ export const createTeam = protectedProcedure
               id: userId,
             },
           },
+          status: InviteStatus.Accepted,
         },
       })
 
@@ -62,32 +68,48 @@ export const inviteMemberToTeam = protectedProcedure
   .input(
     z.object({
       email: z.string().email(),
-      teamId: z.string(),
-      workspaceName: zId,
+      teamSlug: z.string(),
+      workspaceSlug: zId,
       role: z.nativeEnum(TeamRole),
     })
   )
   .query(async ({ ctx, input }) => {
-    return ctx.prisma.membersOnTeams.create({
-      data: {
-        role: input.role,
-        user: {
-          connect: {
-            email: input.email,
-          },
+    return ctx.prisma.$transaction(async (tx) => {
+      const workspace = await tx.workspace.findFirst({
+        where: {
+          name: input.workspaceSlug,
         },
-        team: {
-          connect: {
-            id: input.teamId,
-          },
+        select: {
+          id: true,
         },
-        workspace: {
-          connect: {
-            name: input.workspaceName,
+      })
+
+      if (!workspace) throw WorkspaceNotFound
+
+      return tx.membersOnTeams.create({
+        data: {
+          role: input.role,
+          user: {
+            connect: {
+              email: input.email,
+            },
           },
+          team: {
+            connect: {
+              slug_workspaceId: {
+                slug: input.teamSlug,
+                workspaceId: workspace.id,
+              },
+            },
+          },
+          workspace: {
+            connect: {
+              name: input.workspaceSlug,
+            },
+          },
+          status: InviteStatus.Accepted,
         },
-        status: InviteStatus.Accepted,
-      },
+      })
     })
   })
 
@@ -111,17 +133,40 @@ export const teamRouter = createTRPCRouter({
       })
     }),
   membersOnTeam: protectedProcedure
-    .input(z.object({ teamId: z.string(), workspaceName: z.string() }))
+    .input(z.object({ teamSlug: z.string(), workspaceSlug: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.membersOnTeams.findMany({
         where: {
-          teamId: input.teamId,
+          team: {
+            slug: input.teamSlug,
+          },
           workspace: {
-            name: input.workspaceName,
+            name: input.workspaceSlug,
           },
         },
         include: {
           user: true,
+        },
+      })
+    }),
+  getTeamBySlug: protectedProcedure
+    .input(z.object({ teamSlug: z.string(), workspaceSlug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const workspace = await ctx.prisma.workspace.findFirst({
+        where: {
+          name: input.workspaceSlug,
+        },
+        select: {
+          id: true,
+        },
+      })
+
+      if (!workspace) throw WorkspaceNotFound
+
+      return ctx.prisma.team.findFirst({
+        where: {
+          slug: input.teamSlug,
+          workspaceId: workspace.id,
         },
       })
     }),
@@ -135,7 +180,6 @@ export const deleteTeam = protectedProcedure
   )
   .mutation(async ({ ctx, input }) => {
     return ctx.prisma.$transaction(async (tx) => {
-
       await tx.membersOnTasks.deleteMany({
         where: {
           teamId: input.id,
@@ -153,6 +197,31 @@ export const deleteTeam = protectedProcedure
           id: input.id,
         },
       })
+    })
+  })
+export const deleteTeamMember = protectedProcedure
+  .input(
+    z.object({
+      id: z.string(),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const member = await ctx.prisma.membersOnTeams.findFirst({
+      where: {
+        id: input.id,
+      },
+      select: {
+        role: true,
+      },
+    })
 
+    if (!member) throw UserNotFound
+
+    if (member.role === Role.Owner) throw CanNotRemoveOwner
+
+    return ctx.prisma.membersOnTeams.delete({
+      where: {
+        id: input.id,
+      },
     })
   })

@@ -8,7 +8,7 @@ import { type Team } from "@prisma/client"
 import { toFullDate } from "~/common/utils/datetime"
 import { IconX } from "@tabler/icons-react"
 import { type TeamIncludeOwner } from "~/common/types/prisma"
-import { deleteMemberOnTeamAction } from "~/app/(protected)/[workspace]/actions"
+import { deleteTeamAction } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { useNotification } from "~/ui/Notification"
 import useAsyncEffect from "use-async-effect"
@@ -49,14 +49,13 @@ export const Teams = (props: Props) => {
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteMemberOnTeamAction)
+  } = useAction(deleteTeamAction)
   const [notice, holder] = useNotification()
 
   useAsyncEffect(async () => {
     if (status === "success") {
       notice.open({
         content: { message: "Deleted member is successfully!" },
-
         status: "success",
       })
       await sleep(500)
@@ -67,7 +66,7 @@ export const Teams = (props: Props) => {
   useEffect(() => {
     if (status === "error" && error) {
       notice.open({
-        content: { message: "Failed to delete member" },
+        content: { message: "Failed to delete member", description: error.message },
         status: "error",
       })
     }

@@ -79,7 +79,10 @@ export const Members = (props: Props) => {
   useEffect(() => {
     if (status === "error" && error) {
       notice.open({
-        content: { message: "Failed to delete member" },
+        content: {
+          message: "Failed to delete member",
+          description: error.message,
+        },
         status: "error",
       })
     }

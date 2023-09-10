@@ -6,7 +6,7 @@ import { getAuthSession } from "~/libs/auth"
 import { Button } from "~/ui/Button"
 import urlJoin from "url-join"
 import { Heading } from "~/components/Heading"
-import { Breadcrumbs } from "~/components/Breadcrumbs"
+import { Breadcrumbs } from "~/app/(protected)/[workspace]/components/Breadcrumbs"
 
 interface Props {
   workspace: string
@@ -53,9 +53,9 @@ export default async function WorkspaceLayout({
                   <Logout />
                 </div>
               ) : (
-                  <Button >
-                    <Link href="auth/sign-in">Sign In</Link>
-                  </Button>
+                <Button>
+                  <Link href="auth/sign-in">Sign In</Link>
+                </Button>
               )}
             </div>
           </div>

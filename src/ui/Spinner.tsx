@@ -1,7 +1,7 @@
 import cx from "classnames"
 
 interface SpinProps {
-  className: string
+  className?: string
 }
 
 export const Spin = ({ className }: SpinProps) => (

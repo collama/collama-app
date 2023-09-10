@@ -171,13 +171,15 @@ export const taskRouter = createTRPCRouter({
           })
           .required(),
         name: z.string(),
+        page: z.number(),
+        limit: z.number()
       })
     )
     .query(async ({ ctx, input }) => {
       const filters = transformFilter(input.filter as FilterValue)
       const sorts = transformSort(input.sort as SortValue)
 
-      return ctx.prisma.task.findMany({
+      return ctx.prisma.task.paginate({
         where: {
           ...filters,
           workspace: {
@@ -186,6 +188,10 @@ export const taskRouter = createTRPCRouter({
         },
         orderBy: sorts,
         include: { owner: true },
+      }).withPages({
+        limit: input.limit,
+        page: input.page,
+        includePageCount: true,
       })
     }),
   getPromptVariables: protectedProcedure
@@ -211,3 +217,21 @@ export const taskRouter = createTRPCRouter({
       return getVariableContents(prompt.content)
     }),
 })
+
+export const deleteTask = protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (tx) => {
+      await tx.membersOnTasks.deleteMany({
+        where: {
+          taskId: input.id
+        },
+      })
+
+      return tx.task.delete({
+        where: {
+          id: input.id,
+        },
+      })
+    })
+  })

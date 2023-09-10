@@ -1,4 +1,10 @@
-import { type ChangeEvent, type FC, type KeyboardEvent, useState } from "react"
+import {
+  type ChangeEvent,
+  type FC,
+  type KeyboardEvent,
+  useEffect,
+  useState,
+} from "react"
 import { KEY } from "~/common/constants/key"
 import { Select, type SelectOption } from "~/ui/Select"
 import { util } from "zod"
@@ -6,28 +12,38 @@ import { Input } from "~/ui/Input"
 import { Button } from "~/ui/Button"
 
 const defaultPageOptions: SelectOption[] = [
+  { value: "10", label: "10 / page" },
   { value: "20", label: "20 / page" },
   { value: "50", label: "50 / page" },
-  { value: "100", label: "100 / page" },
 ]
 
+export type PageSize = 10 | 20 | 50
+
 type PaginationProps = {
-  totalPage: number
-  pageSize?: number
+  total: number
+  pageSize?: PageSize
   defaultPage?: number
-  onChange?: (newPage: number, pageSize: number) => void
+  onChange?: (newPage: number, pageSize: PageSize) => void
 }
 
+const transformTotalPage = (total: number, size: number) =>
+  Math.ceil(total / size)
+
 export const Pagination: FC<PaginationProps> = ({
-  totalPage,
   onChange,
+  total = 1,
   pageSize = 20,
   defaultPage = 1,
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(defaultPage)
   const [inputValue, setInputValue] = useState<number | undefined>(currentPage)
-  const [size, setSize] = useState<number>(pageSize)
+  const [size, setSize] = useState<PageSize>(pageSize)
 
+  useEffect(() => {
+    onChange?.(currentPage, pageSize)
+  }, [])
+
+  const totalPage = transformTotalPage(total, size)
   const hasNext = () => currentPage < totalPage
   const hasPrev = () => currentPage > 1
 
@@ -103,7 +119,7 @@ export const Pagination: FC<PaginationProps> = ({
   }
 
   const changPageSize = (size: string) => {
-    const pageSize = parseInt(size)
+    const pageSize = parseInt(size) as PageSize
     setSize(pageSize)
     onChange?.(currentPage, pageSize)
   }
@@ -111,10 +127,14 @@ export const Pagination: FC<PaginationProps> = ({
   return (
     <ul className="space-x-2">
       <li className="inline-block">
-        <Button onClick={prev}>Prev</Button>
+        <Button disable={!hasPrev()} onClick={prev}>
+          Prev
+        </Button>
       </li>
       <li className="inline-block">
-        <Button onClick={next}>Next</Button>
+        <Button disable={!hasNext()} onClick={next}>
+          Next
+        </Button>
       </li>
       <li className="inline-block space-x-1.5">
         <Input

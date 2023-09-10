@@ -3,14 +3,13 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
-import { IconX } from "@tabler/icons-react"
 import type { Task, User } from "@prisma/client"
 import { api, useAction } from "~/trpc/client"
 import { toFullDate } from "~/common/utils/datetime"
 import { Button } from "~/ui/Button"
 import { useRouter } from "next/navigation"
 import { NoSsrWarp } from "~/components/NoSsr"
-import { Pagination } from "~/ui/Pagination"
+import { type PageSize, Pagination } from "~/ui/Pagination"
 import { Filter } from "~/ui/Filter"
 import useAsyncEffect from "use-async-effect"
 import { upsertFilterAction } from "~/app/(protected)/[workspace]/tasks/components/actions"
@@ -22,6 +21,15 @@ import {
 import { Sort } from "~/ui/Sort"
 import Link from "next/link"
 import urlJoin from "url-join"
+import { deleteTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { useNotification } from "~/ui/Notification"
+import { sleep } from "~/common/utils"
+import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
+import { RemoveIcon } from "~/app/component/RemoveIcon"
+import type {
+  PageNumberCounters,
+  PageNumberPagination,
+} from "prisma-extension-pagination/dist/types"
 
 const columns: ColumnType[] = [
   {
@@ -67,15 +75,37 @@ const DEFAULT_FILTER_SETTING_STATE = {
   count: 0,
 }
 
+const DEFAULT_PAGES: { page: number; limit: PageSize } = {
+  page: 1,
+  limit: 10,
+}
+
+const checkLoadings = (
+  ...loadings: UseTRPCActionResult<never>["status"][]
+): boolean => loadings.some((loading) => loading === "loading")
+
 export function Tasks({ workspaceName }: { workspaceName: string }) {
   const router = useRouter()
-  const upsertSetting = useAction(upsertFilterAction).mutate
+  const {
+    mutate: upsertSetting,
+    status: upsertSettingStatus,
+    error: upsertSettingError,
+  } = useAction(upsertFilterAction)
+  const {
+    mutate: deleteTask,
+    status: deleteTaskStatus,
+    error: deleteTaskError,
+  } = useAction(deleteTaskAction)
+  const [notice, holder] = useNotification()
 
   const [filterSetting, setFilterSetting] = useState<FilterSettingState>(
     DEFAULT_FILTER_SETTING_STATE
   )
+  const [pages, setPages] = useState(DEFAULT_PAGES)
 
-  const [data, setData] = useState<Task[]>([])
+  const [data, setData] = useState<
+    [Task[], PageNumberPagination & PageNumberCounters] | null
+  >(null)
 
   const onFilter = useCallback(
     (filter: FilterValue) =>
@@ -122,9 +152,12 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
       filter: filterSetting.filter,
       sort: filterSetting.sort,
       name: workspaceName,
+      page: pages.page,
+      limit: pages.limit,
     })
+
     setData(resp)
-  }, [filterSetting.count])
+  }, [filterSetting.count, pages.page, pages.limit])
 
   useEffect(() => {
     const setting = JSON.stringify({
@@ -132,11 +165,7 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
       sort: filterSetting.sort,
     })
     upsertSetting({ workspaceName, setting })
-  }, [filterSetting.count, upsertSetting, workspaceName])
-
-  const onDelete = (id: string) => {
-    console.log(id)
-  }
+  }, [filterSetting.count, workspaceName])
 
   const nameColumn: ColumnType[] = [
     {
@@ -153,18 +182,48 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
     {
       title: "Action",
       id: "id",
-      render: (id) => (
-        <span
-          className="rounded-full text-gray-400 hover:bg-gray-600"
-          onClick={() => onDelete(id as string)}
-        >
-          <span>
-            <IconX size={16} />
-          </span>
-        </span>
-      ),
+      render: (id: string) => <RemoveIcon onClick={() => deleteTask({ id })} />,
     },
   ]
+
+  useEffect(() => {
+    if (deleteTaskStatus === "error" && deleteTaskError) {
+      notice.open({
+        content: {
+          message: "Failed to delete task",
+          description: deleteTaskError.message,
+        },
+        status: "error",
+      })
+    }
+  }, [deleteTaskError, deleteTaskStatus])
+
+  useAsyncEffect(async () => {
+    if (deleteTaskStatus === "success") {
+      notice.open({
+        content: {
+          message: "Delete task is successfully",
+        },
+        status: "success",
+      })
+
+      await sleep(500)
+      window.location.reload()
+    }
+  }, [deleteTaskStatus])
+
+  useEffect(() => {
+    if (upsertSettingStatus === "error" && upsertSettingError) {
+      notice.open({
+        content: {
+          message: "Failed to filter table",
+        },
+        status: "error",
+      })
+    }
+  }, [upsertSettingError, upsertSettingStatus])
+
+  const loading = checkLoadings(upsertSettingStatus, deleteTaskStatus)
 
   return (
     <div className="px-4">
@@ -190,15 +249,18 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
         </div>
         <div className="px-4 py-6">
           <Pagination
-            totalPage={20}
-            onChange={(page, size) => console.log("onEnter ===>", page, size)}
+            total={data?.[1]?.totalCount ?? 1}
+            pageSize={DEFAULT_PAGES.limit}
+            onChange={(page, size) => setPages({ page, limit: size })}
           />
         </div>
       </div>
       <Table
-        data={data}
+        data={data?.[0]}
         columns={[...nameColumn, ...columns, ...actionColumn]}
+        loading={loading}
       />
+      {holder}
     </div>
   )
 }

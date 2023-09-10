@@ -57,7 +57,7 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
       { "w-full block": block },
       className,
       {
-        "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:border-stone-300 hover:bg-gray-200 hover:text-gray-400 ":
+        "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:!border-stone-300 hover:!bg-gray-200 hover:!text-gray-400 ":
           disable,
       },
       { "opacity-70 hover:!opacity-70": loading }

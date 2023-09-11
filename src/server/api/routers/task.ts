@@ -11,6 +11,7 @@ import {
 } from "~/server/api/services/prompt"
 import { InviteStatus, Role } from "@prisma/client"
 import {
+  ApiKeyNotFound,
   CanNotRemoveOwner,
   FailedToCreateTask,
   UserNotFound,
@@ -19,7 +20,10 @@ import {
 import { serializePrompt } from "~/server/api/services/task"
 import { TaskNotFound } from "~/libs/constants/errors"
 import { createProvider } from "~/server/api/services/llm/llm"
+import Cryptr from "cryptr"
 import { env } from "~/env.mjs"
+
+const cryptr = new Cryptr(env.ENCRYPTION_KEY)
 
 export const createTask = protectedProcedure
   .input(
@@ -97,8 +101,12 @@ export const executeTask = protectedProcedure
 
     // TODO: get api key
 
+    const apiKey = await ctx.prisma.apiKey.findFirst()
+
+    if (!apiKey) throw ApiKeyNotFound
+
     const provider = createProvider("openai", {
-      apiKey: env.OPENAI_KEY,
+      apiKey: cryptr.decrypt(apiKey.value),
       model: "gpt-3.5-turbo",
     })
 

@@ -32,3 +32,9 @@ export type MembersOnTaskIncludeUser = Prisma.MembersOnTasksGetPayload<{
     user: true
   }
 }>
+
+export type ApiKeyIncludeUser = Prisma.ApiKeyGetPayload<{
+  include: {
+    owner: true
+  }
+}>

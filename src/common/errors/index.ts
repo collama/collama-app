@@ -5,6 +5,7 @@ export const TeamNotFound = new Error("team not found")
 export const WorkspaceNotFound = new Error("workspace not found")
 export const Unauthorized = new Error("unauthorized")
 export const ExistUser = new Error("user is exist")
+export const ApiKeyNotFound = new Error("api key not found")
 
 // Create
 export const FailedToCreateTask = new Error("failed to create task")

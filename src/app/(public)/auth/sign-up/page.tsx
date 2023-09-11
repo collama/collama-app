@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import useZodForm from "~/common/form"
-import { Controller, FormProvider } from "react-hook-form"
+import { Controller } from "react-hook-form"
 import { Button } from "~/ui/Button"
 import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
@@ -10,8 +10,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useAction } from "~/trpc/client"
 import { signUpAction } from "~/app/(public)/auth/sign-up/actions"
-import { sleep } from "~/common/utils"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 import { useNotification } from "~/ui/Notification"
 import cx from "classnames"
 
@@ -26,19 +25,17 @@ type SubmitData = z.infer<typeof schema>
 export default function SignUp() {
   const { control, handleSubmit } = useZodForm({
     schema: schema,
-    defaultValues: {
-      email: "linh@gmail.com",
-      password: "123",
-      username: "linh",
-    },
   })
   const router = useRouter()
   const session = useSession()
   const [notice, holder] = useNotification({
     placement: "topRight",
   })
-  const { mutate: signUpMutation, status: signUpStatus } =
-    useAction(signUpAction)
+  const {
+    mutateAsync: signUpMutation,
+    status: signUpStatus,
+    error: signUpError,
+  } = useAction(signUpAction)
 
   const signUploading = signUpStatus === "loading"
 
@@ -50,33 +47,41 @@ export default function SignUp() {
   }, [router, session.status])
 
   useEffect(() => {
-    if (signUpStatus === "error") {
+    if (signUpStatus === "error" && signUpError) {
       notice.open({
         content: {
           message: "User has been already exited",
+          description: signUpError.message,
         },
         status: "error",
       })
     }
-  }, [signUpStatus])
+  }, [signUpStatus, signUpError])
 
   const onSubmit = async (data: SubmitData) => {
-    signUpMutation(data)
+    try {
+      await signUpMutation(data)
 
-    if (signUpStatus === "success") {
       const resp = await signIn("credentials", {
         ...data,
         redirect: false,
       })
 
       if (resp?.error) {
-        notice.open({
+        return notice.open({
           content: {
             message: "Failed to sign in",
           },
           status: "error",
         })
       }
+    } catch (e) {
+      notice.open({
+        content: {
+          message: "Failed to sign in",
+        },
+        status: "error",
+      })
     }
   }
 
@@ -145,7 +150,7 @@ export default function SignUp() {
                   {"You already have an account? "}
                 </span>
                 <Link href="/auth/sign-in">
-                  <span className="hover:underline font-medium">Login</span>
+                  <span className="font-medium hover:underline">Login</span>
                 </Link>
               </div>
             </div>

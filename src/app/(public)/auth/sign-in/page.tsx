@@ -21,10 +21,6 @@ type SubmitData = z.infer<typeof schema>
 export default function Login() {
   const form = useZodForm({
     schema: schema,
-    defaultValues: {
-      email: "linh@gmail.com",
-      password: "123",
-    },
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -83,7 +79,7 @@ export default function Login() {
                     <Input
                       {...field}
                       type="email"
-                      placeholder="Your-email@gmail.com"
+                      placeholder="Your_email@gmail.com"
                       disabled={loading}
                     />
                   )}

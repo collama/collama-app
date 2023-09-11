@@ -5,12 +5,13 @@ import { Popover } from "~/ui/Popover"
 import useZodForm from "~/common/form"
 import { z } from "zod"
 import { Controller } from "react-hook-form"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 import { Button } from "~/ui/Button"
 import {
   VARIABLE_COLOR,
   type VariableType,
 } from "~/ui/RichText/components/VariableNode"
+import { IconPawFilled } from "@tabler/icons-react"
 
 export const CreateVariable = ({
   deleteNode,
@@ -50,10 +51,15 @@ export const CreateVariable = ({
     <NodeViewWrapper className="inline">
       <Popover
         open={open}
+        placement="bottom-end"
         onOpenChange={() => setOpen(!open)}
         content={<CreateVariableForm onSuccess={onSuccess} />}
       >
-        <span>Show</span>
+        <span className="relative inline-block h-3 w-4 pr-1">
+          <span className="absolute left-0 inline-flex items-center text-center text-indigo-700">
+            <IconPawFilled size={14} />
+          </span>
+        </span>
       </Popover>
     </NodeViewWrapper>
   )
@@ -73,7 +79,6 @@ const CreateVariableForm = ({
   const { handleSubmit, control } = useZodForm({
     schema,
     defaultValues: {
-      name: "prompt-name",
       type: "text",
     },
   })
@@ -95,7 +100,9 @@ const CreateVariableForm = ({
         <Controller
           control={control}
           name="name"
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => (
+            <Input {...field} placeholder="Type your variable name" />
+          )}
         />
         <Controller
           control={control}

@@ -37,7 +37,7 @@ export const Input = forwardRef<HTMLInputElement | null, InputProps>(
     const [isShowPassword, setIsShowPassword] = useState(false)
 
     const classes = cx(
-      "w-full rounded-lg px-3 py-1 outline outline-1 outline-gray-300",
+      "w-full rounded-lg px-3 py-1 outline-0 border border-gray-300 focus:border-violet-500",
       INPUT_SIZE[size],
       { "bg-gray-100 text-gray-300 cursor-not-allowed": disabled },
       className
@@ -76,7 +76,7 @@ const renderPrefixSuffix = ({
       className={cx(
         "w-full",
         classes,
-        "focus-within::outline-blue-400 inline-flex"
+        "inline-flex focus-within:border-violet-500"
       )}
     >
       <input

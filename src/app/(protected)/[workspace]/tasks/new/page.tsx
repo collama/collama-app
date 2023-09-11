@@ -12,10 +12,11 @@ import { useState } from "react"
 import { createTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import { type JSONContent } from "@tiptap/react"
 import urlJoin from "url-join"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 
 const schema = z.object({
   name: zId,
+  description: z.string().nullable(),
   prompt: z.string().optional(),
 })
 
@@ -40,6 +41,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
           onSubmit={handleSubmit((data) => {
             mutation.mutate({
               name: data.name,
+              description: data.description,
               prompt: JSON.stringify(prompt),
               workspaceName: params.workspace,
             })
@@ -52,6 +54,13 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
               control={control}
               name="name"
               render={({ field }) => <Input {...field} />}
+            />
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <Input {...field} placeholder="Description" />
+              )}
             />
           </div>
           <div>

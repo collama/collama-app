@@ -3,6 +3,7 @@
 import { createAction } from "~/server/api/trpc"
 import {
   createTask,
+  deleteMemberOnTask,
   deleteTask,
   executeTask,
   inviteMemberToTask,
@@ -13,4 +14,7 @@ export const createTaskAction = createAction(createTask)
 export const executeTaskAction = createAction(executeTask)
 
 export const inviteMemberToTaskAction = createAction(inviteMemberToTask)
+
 export const deleteTaskAction = createAction(deleteTask)
+
+export const deleteMemberOnTaskAction = createAction(deleteMemberOnTask)

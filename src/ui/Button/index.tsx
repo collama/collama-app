@@ -71,7 +71,13 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
         className={classes}
         disabled={disable || loading}
       >
-        {loading ? <Spin /> : <span>{children}</span>}
+        {loading ? (
+          <div className="w-[50px]">
+            <Spin className={cx({ "text-white": type === "primary" })} />
+          </div>
+        ) : (
+          <span>{children}</span>
+        )}
       </button>
     )
   }

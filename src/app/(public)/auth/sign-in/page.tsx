@@ -8,7 +8,7 @@ import Link from "next/link"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Input } from "~/ui/input"
+import { Input } from "~/ui/Input"
 import { useNotification } from "~/ui/Notification"
 import cx from "classnames"
 

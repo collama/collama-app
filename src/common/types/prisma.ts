@@ -21,7 +21,13 @@ export type TeamIncludeOwner = Prisma.TeamGetPayload<{
   }
 }>
 
-export type MembersOnTeamsIncludeUser =  Prisma.MembersOnTeamsGetPayload<{
+export type MembersOnTeamsIncludeUser = Prisma.MembersOnTeamsGetPayload<{
+  include: {
+    user: true
+  }
+}>
+
+export type MembersOnTaskIncludeUser = Prisma.MembersOnTasksGetPayload<{
   include: {
     user: true
   }

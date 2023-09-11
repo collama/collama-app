@@ -9,7 +9,7 @@ const parsePathname = (pathname: string) => {
   return paths.length <= 1 ? null : paths.slice(1)
 }
 
-const unUsePath = ["teams"]
+const unUsePath = ["teams", "tasks"]
 
 const removeUnUsePath = (paths: string[]) =>
   paths.filter((path) => !unUsePath.includes(path))

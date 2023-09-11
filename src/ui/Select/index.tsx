@@ -41,6 +41,7 @@ type SelectProps = {
   popupHeight?: number
   defaultValue?: string | SelectOption
   defaultOpen?: boolean
+  disabled?: boolean
 } & Partial<ControllerRenderProps>
 
 interface SelectContextValue {

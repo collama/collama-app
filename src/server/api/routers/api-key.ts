@@ -39,6 +39,19 @@ export const apiKeyRouter = createTRPCRouter({
           id: ctx.session.user.id,
         },
       },
+      include: {
+        owner: true,
+      },
     })
   }),
 })
+
+export const deleteApiKey = protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.apiKey.delete({
+      where: {
+        id: input.id,
+      },
+    })
+  })

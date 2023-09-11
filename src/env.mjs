@@ -9,13 +9,11 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(["development", "test", "production"]),
-    PASSAGE_API_KEY: z.string(),
     ENCRYPTION_KEY: z.string(),
     S3_UPLOAD_KEY: z.string(),
     S3_UPLOAD_SECRET: z.string(),
     S3_UPLOAD_BUCKET: z.string(),
     S3_UPLOAD_REGION: z.string(),
-    OPENAI_KEY: z.string(),
     NEXTAUTH_URL: z.string(),
     NEXTAUTH_SECRET: z.string(),
     SALT_ROUND: z.number(),
@@ -27,7 +25,6 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_PASSAGE_APP_ID: z.string(),
   },
 
   /**
@@ -37,14 +34,11 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_PASSAGE_APP_ID: process.env.NEXT_PUBLIC_PASSAGE_APP_ID,
-    PASSAGE_API_KEY: process.env.PASSAGE_API_KEY,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     S3_UPLOAD_KEY: process.env.S3_UPLOAD_KEY,
     S3_UPLOAD_SECRET: process.env.S3_UPLOAD_SECRET,
     S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
     S3_UPLOAD_REGION: process.env.S3_UPLOAD_REGION,
-    OPENAI_KEY: process.env.OPENAI_KEY,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     // @ts-ignore

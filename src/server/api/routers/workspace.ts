@@ -12,7 +12,9 @@ import {
   Unauthorized,
   UserNotFound,
 } from "~/libs/constants/errors"
-import { CanNotRemoveOwner } from "~/common/errors"
+import {CanNotRemoveOwner, WorkspaceNotFound} from "~/common/errors"
+import { seedTasks } from "~/server/api/routers/seeds/workspace"
+import { type Prisma } from "@prisma/client"
 
 export const createWorkspace = protectedProcedure
   .input(
@@ -30,7 +32,7 @@ export const createWorkspace = protectedProcedure
 
     if (!user) throw UserNotFound
 
-    return ctx.prisma.$transaction(async (tx) => {
+    const workspace = await ctx.prisma.$transaction(async (tx) => {
       const workspace = await tx.workspace.create({
         data: {
           name: input.name,
@@ -51,6 +53,21 @@ export const createWorkspace = protectedProcedure
 
       return workspace
     })
+
+    if (!workspace) throw WorkspaceNotFound
+
+    // TODO: delete it later after iml release Example Model
+    const taskData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
+      ...task,
+      ownerId: userId,
+      workspaceId: workspace.id,
+    }))
+
+    await ctx.prisma.task.createMany({
+      data: taskData,
+    })
+
+    return workspace
   })
 
 export const renameWorkspace = protectedProcedure

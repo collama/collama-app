@@ -42,6 +42,14 @@ export const fillVariables = (
 const checkIsVariables = (content: Content): content is VariableContent =>
   content.type === "variable"
 
+const removeDuplicateVariable = (res: VariableContent[], cur: VariableContent) => {
+  if (!res.some((item) => item.attrs.text === cur.attrs.text)) {
+    res.push(cur)
+  }
+  return res
+}
+
 export const getVariableContents = (
   arr: Prompt["content"]
-): VariableContent[] => getContent(arr).filter(checkIsVariables)
+): VariableContent[] =>
+  getContent(arr).filter(checkIsVariables).reduce(removeDuplicateVariable, [])

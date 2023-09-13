@@ -45,7 +45,7 @@ export const inviteUserToTaskExtension = Prisma.defineExtension((prisma) => {
           if (!isEmail(data.emailOrTeamName)) {
             insertData.team = {
               connect: {
-                team_identifier: {
+                name_workspaceId: {
                   name: data.emailOrTeamName,
                   workspaceId: workspace.id,
                 },

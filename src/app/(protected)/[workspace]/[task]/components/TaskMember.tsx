@@ -6,7 +6,7 @@ import React, { useEffect } from "react"
 import { type ColumnType, Table } from "~/ui/Table"
 import useAwaited from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import type { MembersOnTaskIncludeUser } from "~/common/types/prisma"
+import type { MembersOnTaskIncludeUserTeam } from "~/common/types/prisma"
 import { Tag } from "~/ui/Tag"
 import { toFullDate } from "~/common/utils/datetime"
 import { RemoveIcon } from "~/app/component/RemoveIcon"
@@ -15,23 +15,26 @@ import { deleteMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/ne
 import useAsyncEffect from "use-async-effect"
 import { sleep } from "~/common/utils"
 
-const columns: ColumnType<MembersOnTaskIncludeUser>[] = [
+const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
   {
-    title: "Email",
+    title: "Email or Team",
     id: "user",
-    render: (user: MembersOnTaskIncludeUser["user"]) => (
-      <span>{user?.email}</span>
-    ),
+    render: (user: MembersOnTaskIncludeUserTeam["user"], record) => {
+      const team = record.team
+      if (team) return <span>{team.name}</span>
+      return <span>{user?.email}</span>
+
+    },
   },
   {
     title: "Role",
     id: "role",
-    render: (role: MembersOnTaskIncludeUser["role"]) => <Tag>{role}</Tag>,
+    render: (role: MembersOnTaskIncludeUserTeam["role"]) => <Tag>{role}</Tag>,
   },
   {
     title: "Invite at",
     id: "createdAt",
-    render: (date: MembersOnTaskIncludeUser["createdAt"]) => (
+    render: (date: MembersOnTaskIncludeUserTeam["createdAt"]) => (
       <span>{toFullDate(date)}</span>
     ),
   },
@@ -81,7 +84,7 @@ export function TaskMember({
     }
   }, [status])
 
-  const actionCol: ColumnType<MembersOnTaskIncludeUser> = {
+  const actionCol: ColumnType<MembersOnTaskIncludeUserTeam> = {
     title: "Action",
     id: "id",
     render: (id: string) => <RemoveIcon onClick={() => deleteMember({ id })} />,

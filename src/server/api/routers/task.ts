@@ -245,6 +245,7 @@ export const taskRouter = createTRPCRouter({
         },
         include: {
           user: true,
+          team: true
         },
       })
     }),

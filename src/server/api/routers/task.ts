@@ -249,6 +249,40 @@ export const taskRouter = createTRPCRouter({
         },
       })
     }),
+  getPublicTaskByName: protectedProcedure
+    .input(
+      z.object({
+        name: zId,
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.task.findUnique({
+        where: {
+          slug: input.name,
+          private: false,
+        },
+        include: { owner: true },
+      })
+    }),
+  getPromptVariablesOnPublic: protectedProcedure
+    .input(z.object({ name: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const task = await ctx.prisma.task.findUnique({
+        where: {
+          slug: input.name,
+          private: false,
+        },
+        select: {
+          prompt: true,
+        },
+      })
+
+      if (!task) throw TaskNotFound
+
+      const prompt = serializePrompt(task.prompt)
+
+      return getVariableContents(prompt.content)
+    }),
 })
 
 export const deleteTask = protectedProcedure

@@ -1,6 +1,6 @@
 import { Role, RolePublic } from "~/server/api/services/types"
 import { type PrismaClient } from "@prisma/client"
-import { Prompt } from "~/common/types/prompt"
+import { type Prompt } from "~/common/types/prompt"
 import { TaskNotFound } from "~/libs/constants/errors"
 
 export class CurrentUserPermission {
@@ -27,7 +27,7 @@ export class WorkspacePermission {
   async checkFor(
     workspaceId: string,
     userId: string,
-    role: Role
+    role: Role | null
   ): Promise<Role | null> {
     const member = await this.prisma.membersOnWorkspaces.findFirst({
       where: {
@@ -41,6 +41,10 @@ export class WorkspacePermission {
     }
 
     const memberRole = new Role(member.role)
+    if (!role) {
+      return memberRole
+    }
+
     if (memberRole.gte(role)) {
       return memberRole
     }
@@ -101,23 +105,43 @@ export class TeamOnTaskPermission {
   }
 }
 
+export class MembersOnTasksPermission {
+  constructor(private readonly prisma: PrismaClient) {}
+  async checkFor(taskId: string, userId: string): Promise<Role | null> {
+    const members = await this.prisma.membersOnTasks.findMany({
+      where: {
+        taskId,
+        userId,
+      },
+    })
+
+    if (members) {
+      let highestRole: Role | null = null
+      for (const member of members) {
+        const memberRole = new Role(member.role)
+        if (!highestRole || memberRole.gte(highestRole)) {
+          highestRole = memberRole
+        }
+      }
+
+      return highestRole
+    }
+
+    return null
+  }
+}
+
 export class TaskPermission {
-  private readonly teamOnTaskPermission: TeamOnTaskPermission
   private readonly workspacePermission: WorkspacePermission
-  private readonly currentUserPermission: CurrentUserPermission
+  private readonly membersOnTasksPermission: MembersOnTasksPermission
 
   // TODO: impl DI later
   constructor(private readonly prisma: PrismaClient) {
-    this.teamOnTaskPermission = new TeamOnTaskPermission(prisma)
     this.workspacePermission = new WorkspacePermission(prisma)
-    this.currentUserPermission = new CurrentUserPermission(prisma)
+    this.membersOnTasksPermission = new MembersOnTasksPermission(prisma)
   }
 
-  async checkFor(
-    taskId: string,
-    userId: string,
-    role: Role
-  ): Promise<Role | null> {
+  async checkFor(taskId: string, userId: string): Promise<Role | null> {
     const task = await this.prisma.task.findUnique({
       where: {
         id: taskId,
@@ -128,34 +152,22 @@ export class TaskPermission {
       throw TaskNotFound
     }
 
-    if (!task.private) {
-      return this.currentUserPermission.checkFor(userId)
-    }
-
-    const member = await this.prisma.membersOnTasks.findFirst({
-      where: {
-        taskId,
-        userId,
-      },
-    })
-
-    if (member) {
-      const memberRole = new Role(member.role)
-      if (memberRole.gte(role)) {
-        return memberRole
-      }
-    }
-
-    const workspaceRole = await this.teamOnTaskPermission.checkFor(
+    const memberRole = await this.membersOnTasksPermission.checkFor(
       taskId,
-      userId,
-      role
+      userId
     )
-    if (workspaceRole) {
-      return workspaceRole
+
+    const workspaceRole = await this.workspacePermission.checkFor(
+      task.workspaceId,
+      userId,
+      memberRole
+    )
+
+    if (!workspaceRole) {
+      return memberRole
     }
 
-    return this.workspacePermission.checkFor(task.workspaceId, userId, role)
+    return workspaceRole
   }
 }
 

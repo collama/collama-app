@@ -80,19 +80,19 @@ describe("Given a task", () => {
         updatedAt: new Date(),
       }
       // noinspection Duplicates
-      mockCtx.prisma.membersOnTasks.findFirst.mockResolvedValue(
-        mockMemberOnTask
-      )
+      mockCtx.prisma.membersOnTasks.findMany.mockResolvedValue([
+        mockMemberOnTask,
+      ])
 
       const taskP = new TaskPermission(mockCtx.prisma)
-      const role = await taskP.checkFor(mockTask.id, mockUser.id, RoleWriter)
+      const role = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
-      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
       expect(role).toEqual(RoleWriter)
     })
 
@@ -145,7 +145,7 @@ describe("Given a task", () => {
         userId: mockUser.id,
         taskId: mockTask.id,
         workspaceId: mockWorkspace.id,
-        role: PrismaRole.Owner,
+        role: PrismaRole.Writer,
         teamId: null,
         status: InviteStatus.Pending,
         createdAt: new Date(),
@@ -156,15 +156,30 @@ describe("Given a task", () => {
         mockMemberOnTask
       )
 
+      // Mock members on workspaces
+      const mockMemberOnWorkspace: MembersOnWorkspaces = {
+        id: "user-on-workspace-id",
+        role: PrismaRole.Owner,
+        status: InviteStatus.Accepted,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: mockUser.id,
+        workspaceId: mockWorkspace.id,
+        teamId: null,
+      }
+      mockCtx.prisma.membersOnWorkspaces.findFirst.mockResolvedValue(
+        mockMemberOnWorkspace
+      )
+
       const taskP = new TaskPermission(mockCtx.prisma)
-      const role = await taskP.checkFor(mockTask.id, mockUser.id, RoleOwner)
+      const role = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
-      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
       expect(role).toEqual(RoleOwner)
     })
 
@@ -186,8 +201,7 @@ describe("Given a task", () => {
       const taskP = new TaskPermission(mockCtx.prisma)
       const hasPermissionPromise = taskP.checkFor(
         "invalid-task-id",
-        mockUser.id,
-        RoleOwner
+        mockUser.id
       )
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
@@ -244,19 +258,15 @@ describe("Given a task", () => {
       // No need to mock membersOnTasks since the task has been already public
 
       const taskP = new TaskPermission(mockCtx.prisma)
-      const hasPermission = await taskP.checkFor(
-        mockTask.id,
-        mockUser.id,
-        RoleOwner
-      )
+      const hasPermission = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
-      expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(1)
+      expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(0)
-      expect(hasPermission).toEqual(RolePublic)
+      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
+      expect(hasPermission).toEqual(null)
     })
   })
 
@@ -369,14 +379,14 @@ describe("Given a task", () => {
 
       // noinspection Duplicates
       const taskP = new TaskPermission(mockCtx.prisma)
-      const role = await taskP.checkFor(mockTask.id, mockUser.id, RoleWriter)
+      const role = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
-      expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(2)
-      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
+      expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
       expect(role).toEqual(RoleOwner)
     })
   })
@@ -445,11 +455,11 @@ describe("Given a task", () => {
 
       // noinspection Duplicates
       const taskP = new TaskPermission(mockCtx.prisma)
-      const role = await taskP.checkFor(mockTask.id, mockUser.id, RoleWriter)
+      const role = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
@@ -519,15 +529,15 @@ describe("Given a task", () => {
 
       // noinspection Duplicates
       const taskP = new TaskPermission(mockCtx.prisma)
-      const role = await taskP.checkFor(mockTask.id, mockUser.id, RoleOwner)
+      const role = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)
-      expect(role).toEqual(null)
+      expect(role).toEqual(RoleWriter)
     })
   })
 
@@ -583,15 +593,11 @@ describe("Given a task", () => {
 
       // noinspection Duplicates
       const taskP = new TaskPermission(mockCtx.prisma)
-      const hasPermission = await taskP.checkFor(
-        mockTask.id,
-        mockUser.id,
-        RoleOwner
-      )
+      const hasPermission = await taskP.checkFor(mockTask.id, mockUser.id)
 
       expect(mockCtx.prisma.task.findUnique).toBeCalledTimes(1)
       expect(mockCtx.prisma.user.findUnique).toBeCalledTimes(0)
-      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(1)
+      expect(mockCtx.prisma.membersOnTasks.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnTasks.findMany).toBeCalledTimes(1)
       expect(mockCtx.prisma.membersOnTeams.findFirst).toBeCalledTimes(0)
       expect(mockCtx.prisma.membersOnWorkspaces.findFirst).toBeCalledTimes(1)

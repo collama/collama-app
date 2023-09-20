@@ -172,8 +172,8 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
       id: "name",
       title: "Task",
       type: "string",
-      render: (name: string) => (
-        <Link href={urlJoin("/", workspaceName, name)}>{name}</Link>
+      render: (name: string, data) => (
+        <Link href={urlJoin("/", workspaceName, data.slug)}>{name}</Link>
       ),
     },
   ]

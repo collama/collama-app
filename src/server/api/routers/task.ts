@@ -21,14 +21,23 @@ import { serializePrompt } from "~/server/api/services/task"
 import { TaskNotFound } from "~/libs/constants/errors"
 import { createProvider } from "~/server/api/services/llm/llm"
 import Cryptr from "cryptr"
+import slugify from "slugify"
 import { env } from "~/env.mjs"
 
 const cryptr = new Cryptr(env.ENCRYPTION_KEY)
+const makeSlug = (text: string): string =>
+  slugify(text, {
+    replacement: "-", // replace spaces with replacement character, defaults to `-`
+    lower: true, // convert to lower case, defaults to `false`
+    strict: true, // strip special characters except replacement, defaults to `false`
+    locale: "en", // language code of the locale to use
+    trim: true, // trim leading and trailing replacement chars, defaults to `true`
+  })
 
 export const createTask = protectedProcedure
   .input(
     z.object({
-      name: zId,
+      name: z.string().nonempty(),
       prompt: z.string().optional(),
       description: z.string().nullable(),
       workspaceName: zId,
@@ -50,7 +59,7 @@ export const createTask = protectedProcedure
         data: {
           name: input.name,
           description: input.description,
-          slug: input.name.toLowerCase(),
+          slug: makeSlug(input.name),
           prompt: input.prompt,
           ownerId: ctx.session.user.id,
           workspaceId: workspace.id,
@@ -128,6 +137,44 @@ export const inviteMemberToTask = protectedProcedure
       taskName: input.taskName,
       role: input.role,
       workspaceName: input.workspaceName,
+    })
+  })
+
+export const deleteTask = protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (tx) => {
+      await tx.membersOnTasks.deleteMany({
+        where: {
+          taskId: input.id,
+        },
+      })
+
+      return tx.task.delete({
+        where: {
+          id: input.id,
+        },
+      })
+    })
+  })
+
+export const deleteMemberOnTask = protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    const member = await ctx.prisma.membersOnTasks.findFirst({
+      where: {
+        id: input.id,
+      },
+    })
+
+    if (!member) throw UserNotFound
+
+    if (member.role === Role.Owner) throw CanNotRemoveOwner
+
+    return ctx.prisma.membersOnTasks.delete({
+      where: {
+        id: input.id,
+      },
     })
   })
 
@@ -245,31 +292,31 @@ export const taskRouter = createTRPCRouter({
         },
         include: {
           user: true,
-          team: true
+          team: true,
         },
       })
     }),
-  getPublicTaskByName: protectedProcedure
+  getPublicTaskBySlug: protectedProcedure
     .input(
       z.object({
-        name: zId,
+        slug: zId,
       })
     )
     .query(async ({ ctx, input }) => {
       return ctx.prisma.task.findUnique({
         where: {
-          slug: input.name,
+          slug: input.slug,
           private: false,
         },
         include: { owner: true },
       })
     }),
   getPromptVariablesOnPublic: protectedProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
       const task = await ctx.prisma.task.findUnique({
         where: {
-          slug: input.name,
+          slug: input.slug,
           private: false,
         },
         select: {
@@ -284,41 +331,3 @@ export const taskRouter = createTRPCRouter({
       return getVariableContents(prompt.content)
     }),
 })
-
-export const deleteTask = protectedProcedure
-  .input(z.object({ id: z.string() }))
-  .mutation(async ({ ctx, input }) => {
-    return ctx.prisma.$transaction(async (tx) => {
-      await tx.membersOnTasks.deleteMany({
-        where: {
-          taskId: input.id,
-        },
-      })
-
-      return tx.task.delete({
-        where: {
-          id: input.id,
-        },
-      })
-    })
-  })
-
-export const deleteMemberOnTask = protectedProcedure
-  .input(z.object({ id: z.string() }))
-  .mutation(async ({ ctx, input }) => {
-    const member = await ctx.prisma.membersOnTasks.findFirst({
-      where: {
-        id: input.id,
-      },
-    })
-
-    if (!member) throw UserNotFound
-
-    if (member.role === Role.Owner) throw CanNotRemoveOwner
-
-    return ctx.prisma.membersOnTasks.delete({
-      where: {
-        id: input.id,
-      },
-    })
-  })

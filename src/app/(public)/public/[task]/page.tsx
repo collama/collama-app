@@ -19,10 +19,10 @@ type Props = {
 
 export default function Page({ params }: PageProps<Props>) {
   const { data: task, loading: taskLoading } = useAwaited(
-    api.task.getPublicTaskByName.query({ name: params.task })
+    api.task.getPublicTaskBySlug.query({ slug: params.task })
   )
   const { data: variables, loading: variablesLoading } = useAwaited(
-    api.task.getPromptVariablesOnPublic.query({ name: params.task })
+    api.task.getPromptVariablesOnPublic.query({ slug: params.task })
   )
   const {
     mutate: executeTask,

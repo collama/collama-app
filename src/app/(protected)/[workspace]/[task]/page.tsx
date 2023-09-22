@@ -10,8 +10,8 @@ interface TaskProps {
 }
 
 export default async function TaskPage({ params }: PageProps<TaskProps>) {
-  const task = await api.task.getByName.query({
-    name: params.task,
+  const task = await api.task.getBySlug.query({
+    slug: params.task,
   })
 
   if (!task) {

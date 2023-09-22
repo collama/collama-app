@@ -14,7 +14,7 @@ import { Spin } from "~/ui/Spinner"
 
 export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
   const { data, loading } = useAwaited(
-    api.task.getPromptVariables.query({ name: task.name })
+    api.task.getPromptVariables.query({ slug: task.slug })
   )
   const {
     mutate: executeTask,
@@ -39,7 +39,7 @@ export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit((data) =>
-                executeTask({ name: task.name, variables: data })
+                executeTask({ slug: task.slug, variables: data })
               )}
             >
               {loading && (

@@ -87,14 +87,14 @@ export const createTask = protectedProcedure
 export const executeTask = protectedProcedure
   .input(
     z.object({
-      name: zId,
+      slug: zId,
       variables: z.record(z.string()),
     })
   )
   .mutation(async ({ ctx, input }) => {
     const task = await ctx.prisma.task.findUnique({
       where: {
-        name: input.name,
+        slug: input.slug,
       },
       select: {
         prompt: true,
@@ -179,16 +179,16 @@ export const deleteMemberOnTask = protectedProcedure
   })
 
 export const taskRouter = createTRPCRouter({
-  getByName: protectedProcedure
+  getBySlug: protectedProcedure
     .input(
       z.object({
-        name: zId,
+        slug: zId,
       })
     )
     .query(async ({ ctx, input }) => {
       return ctx.prisma.task.findUnique({
         where: {
-          name: input.name,
+          slug: input.slug,
           ownerId: ctx.session.user.id,
         },
         include: { owner: true },
@@ -247,7 +247,7 @@ export const taskRouter = createTRPCRouter({
               name: input.name,
             },
           },
-          orderBy: { createdAt: "desc", ...sorts },
+          orderBy: sorts,
           include: { owner: true },
         })
         .withPages({
@@ -259,13 +259,13 @@ export const taskRouter = createTRPCRouter({
   getPromptVariables: protectedProcedure
     .input(
       z.object({
-        name: zId,
+        slug: zId,
       })
     )
     .query(async ({ ctx, input }) => {
       const task = await ctx.prisma.task.findUnique({
         where: {
-          name: input.name,
+          slug: input.slug,
         },
         select: {
           prompt: true,

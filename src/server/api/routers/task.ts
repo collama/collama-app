@@ -179,28 +179,6 @@ export const deleteMemberOnTask = protectedProcedure
   })
 
 export const taskRouter = createTRPCRouter({
-  getBySlug: protectedProcedure
-    .input(
-      z.object({
-        slug: zId,
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.task.findUnique({
-        where: {
-          slug: input.slug,
-          ownerId: ctx.session.user.id,
-        },
-        include: { owner: true },
-      })
-    }),
-  getAll: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
-    return ctx.prisma.task.findMany({
-      where: {
-        ownerId: ctx.session.user.id,
-      },
-    })
-  }),
   getFilter: protectedProcedure
     .input(
       z.object({
@@ -255,79 +233,5 @@ export const taskRouter = createTRPCRouter({
           page: input.page,
           includePageCount: true,
         })
-    }),
-  getPromptVariables: protectedProcedure
-    .input(
-      z.object({
-        slug: zId,
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const task = await ctx.prisma.task.findUnique({
-        where: {
-          slug: input.slug,
-        },
-        select: {
-          prompt: true,
-        },
-      })
-
-      if (!task) throw TaskNotFound
-
-      const prompt = serializePrompt(task.prompt)
-
-      return getVariableContents(prompt.content)
-    }),
-  getMemberOnTask: protectedProcedure
-    .input(z.object({ workspaceSlug: z.string(), taskSlug: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.membersOnTasks.findMany({
-        where: {
-          task: {
-            name: input.taskSlug,
-          },
-          workspace: {
-            name: input.workspaceSlug,
-          },
-        },
-        include: {
-          user: true,
-          team: true,
-        },
-      })
-    }),
-  getPublicTaskBySlug: protectedProcedure
-    .input(
-      z.object({
-        slug: zId,
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.task.findUnique({
-        where: {
-          slug: input.slug,
-          private: false,
-        },
-        include: { owner: true },
-      })
-    }),
-  getPromptVariablesOnPublic: protectedProcedure
-    .input(z.object({ slug: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const task = await ctx.prisma.task.findUnique({
-        where: {
-          slug: input.slug,
-          private: false,
-        },
-        select: {
-          prompt: true,
-        },
-      })
-
-      if (!task) throw TaskNotFound
-
-      const prompt = serializePrompt(task.prompt)
-
-      return getVariableContents(prompt.content)
     }),
 })

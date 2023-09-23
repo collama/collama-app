@@ -36,7 +36,8 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["bun-types"]
   },
   "include": [
     ".eslintrc.cjs",

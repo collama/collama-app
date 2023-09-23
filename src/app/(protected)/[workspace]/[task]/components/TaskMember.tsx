@@ -23,7 +23,6 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
       const team = record.team
       if (team) return <span>{team.name}</span>
       return <span>{user?.email}</span>
-
     },
   },
   {
@@ -45,8 +44,8 @@ export function TaskMember({
   workspaceName,
 }: InviteMemberToTaskProps) {
   const { data, loading } = useAwaited(
-    api.task.getMemberOnTask.query({
-      taskSlug: taskName,
+    api.task.getMembers.query({
+      slug: taskName,
       workspaceSlug: workspaceName,
     })
   )

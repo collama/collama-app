@@ -1,9 +1,10 @@
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 import { nextAuthOptions } from "~/libs/auth"
+import type { NextApiRequest, NextApiResponse } from "next"
 
-export async function GET(request: Request) {
-  const session = await getServerSession(nextAuthOptions)
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, nextAuthOptions)
 
   if (!session) {
     return new NextResponse(
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
     )
   }
 
-  return NextResponse.json({
+  return res.json({
     authenticated: !!session,
     session,
   })

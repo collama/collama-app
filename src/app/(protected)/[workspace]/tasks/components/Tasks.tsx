@@ -148,7 +148,7 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
   }, [workspaceName])
 
   useAsyncEffect(async () => {
-    const resp = await api.task.getFilter.query({
+    const resp = await api.task.filterAndSort.query({
       filter: filterSetting.filter,
       sort: filterSetting.sort,
       name: workspaceName,

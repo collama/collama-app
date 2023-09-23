@@ -3,13 +3,14 @@ import { prisma } from "~/server/db"
 import { type PrismaClient } from "@prisma/client"
 import { type Adapter, type User } from "next-auth/adapters"
 import Credentials from "next-auth/providers/credentials"
-import { compare } from "bcrypt"
 import { env } from "~/env.mjs"
 import ms from "ms"
-import { type AuthOptions } from "next-auth/src"
-import { getServerSession, type Session } from "next-auth"
+import { type AuthOptions } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import dayjs from "dayjs"
 import { randomUUID } from "crypto"
+import { type Session } from "next-auth"
+import { type NextApiRequest, type NextApiResponse } from "next"
 
 const adapter = PrismaAdapter(
   prisma as unknown as PrismaClient
@@ -53,7 +54,7 @@ export const nextAuthOptions: AuthOptions = {
           return null
         }
 
-        const isValidPassword = await compare(
+        const isValidPassword = await Bun.password.verify(
           credentials.password,
           user.password
         )
@@ -114,7 +115,18 @@ export const nextAuthOptions: AuthOptions = {
       }
     },
   },
-  debug: env.NODE_ENV === "production",
+  debug: env.NODE_ENV !== "production",
+  logger: {
+    error(code, metadata) {
+      console.error(code, metadata)
+    },
+    warn(code) {
+      console.warn(code)
+    },
+    debug(code, metadata) {
+      console.debug(code, metadata)
+    },
+  },
 }
 
 export const getAuthSession = async (): Promise<Session | null> => {

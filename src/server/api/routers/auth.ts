@@ -1,6 +1,5 @@
 import { publicProcedure } from "~/server/api/trpc"
 import z from "zod"
-import { hash } from "bcrypt"
 import { env } from "~/env.mjs"
 import { UserExisted } from "~/libs/constants/errors"
 
@@ -23,7 +22,10 @@ export const signUp = publicProcedure
       throw UserExisted
     }
 
-    const hashPassword = await hash(input.password, env.SALT_ROUND)
+    const hashPassword = await Bun.password.hash(input.password, {
+      algorithm: "bcrypt",
+      cost: env.SALT_ROUND,
+    })
 
     return ctx.prisma.user.create({
       data: {

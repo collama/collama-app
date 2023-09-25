@@ -6,7 +6,9 @@ import { TeamRole } from "~/server/api/providers/permission/team-role"
 import { WorkspacePermission } from "~/server/api/providers/permission/workspace-permisison"
 
 interface CanUserAccessTask {
-  slug: string
+  id?: string
+  slug?: string
+  workspaceSlug?: string
   userId: string
   allowedRoles: Role[]
 }
@@ -18,7 +20,8 @@ interface CanUserAccessTeam {
 }
 
 interface CanUserAccessWorkspace {
-  slug: string
+  id?: string
+  slug?: string
   userId: string
   allowedRoles: Role[]
 }
@@ -28,12 +31,19 @@ export const canUserAccessTask = async (
   data: CanUserAccessTask
 ) => {
   const taskPermission = new TaskPermission(prisma)
-  const role = await taskPermission.checkFor(data.slug, data.userId)
-  if (!role) {
-    return false
+  if (data.id !== undefined) {
+    return taskPermission.canAccessById(data.id, data.userId)
   }
 
-  return role.in(data.allowedRoles)
+  if (data.slug !== undefined && data.workspaceSlug !== undefined) {
+    return taskPermission.canAccessBySlug(
+      data.slug,
+      data.workspaceSlug,
+      data.userId
+    )
+  }
+
+  throw new Error("Invalid input")
 }
 export const canUserAccessTeam = async (
   prisma: PrismaClient,
@@ -53,12 +63,15 @@ export const canUserAccessWorkspace = async (
   data: CanUserAccessWorkspace
 ) => {
   const taskPermission = new WorkspacePermission(prisma)
-  const role = await taskPermission.checkFor(data.slug, data.userId)
-  if (!role) {
-    return false
+  if (data.id !== undefined) {
+    return taskPermission.canAccessById(data.id, data.userId)
   }
 
-  return role.in(data.allowedRoles)
+  if (data.slug !== undefined) {
+    return taskPermission.canAccessBySlug(data.slug, data.userId)
+  }
+
+  throw new Error("Invalid input")
 }
 
 export const permissionExtension = Prisma.defineExtension((prisma) => {
@@ -66,7 +79,12 @@ export const permissionExtension = Prisma.defineExtension((prisma) => {
     model: {
       task: {
         async canUserAccess<T>(this: T, data: CanUserAccessTask) {
-          return canUserAccessTask(prisma as PrismaClient, data)
+          const result = await canUserAccessTask(prisma as PrismaClient, data)
+          return {
+            canAccess: result.canAccess(data.allowedRoles),
+            role: result.role,
+            task: result.task,
+          }
         },
       },
       team: {

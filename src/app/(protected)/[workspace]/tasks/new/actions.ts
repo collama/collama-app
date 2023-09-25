@@ -9,6 +9,6 @@ export const executeTaskAction = createAction(taskRouter.execute)
 
 export const inviteMemberToTaskAction = createAction(taskRouter.inviteMember)
 
-export const deleteTaskAction = createAction(taskRouter.deleteById)
+export const deleteTaskBySlugAction = createAction(taskRouter.deleteBySlug)
 
 export const deleteMemberOnTaskAction = createAction(taskRouter.removeMember)

@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth/next"
 import dayjs from "dayjs"
 import { randomUUID } from "crypto"
 import { type Session } from "next-auth"
-import { type NextApiRequest, type NextApiResponse } from "next"
+import crypto from "crypto"
 
 const adapter = PrismaAdapter(
   prisma as unknown as PrismaClient
@@ -54,10 +54,10 @@ export const nextAuthOptions: AuthOptions = {
           return null
         }
 
-        const isValidPassword = await Bun.password.verify(
-          credentials.password,
-          user.password
-        )
+        const hash = crypto
+          .pbkdf2Sync(credentials.password, user.salt, 1000, 64, "sha512")
+          .toString(`hex`)
+        const isValidPassword = hash === user.password
 
         if (!isValidPassword) {
           return null

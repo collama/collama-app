@@ -9,8 +9,8 @@ interface Props {
 }
 
 export default async function WorkspacePage({ params }: PageProps<Props>) {
-  const workspace = await api.workspace.getBySlugPublic.query({
-    workspaceSlug: params.workspace,
+  const workspace = await api.workspace.getBySlug.query({
+    slug: params.workspace,
   })
 
   if (!workspace) {

@@ -11,9 +11,9 @@ import { Tag } from "~/ui/Tag"
 import { toFullDate } from "~/common/utils/datetime"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { useNotification } from "~/ui/Notification"
-import { removeMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import useAsyncEffect from "use-async-effect"
 import { sleep } from "~/common/utils"
+import { removeMemberOnTaskAction } from "~/actions/task.action"
 
 const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
   {
@@ -41,17 +41,17 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
 
 export function TaskMember({
   taskSlug,
-  workspaceName,
+  workspaceSlug,
 }: InviteMemberToTaskProps) {
   const { data, loading } = useAwaited(
     api.task.getMembers.query({
       slug: taskSlug,
-      workspaceSlug: workspaceName,
+      workspaceSlug,
     })
   )
 
   const {
-    mutate: deleteMember,
+    mutate: removeMember,
     status,
     error,
   } = useAction(removeMemberOnTaskAction)
@@ -83,19 +83,19 @@ export function TaskMember({
     }
   }, [status])
 
-  const actionCol: ColumnType<MembersOnTaskIncludeUserTeam> = {
+  const actionColumn: ColumnType<MembersOnTaskIncludeUserTeam> = {
     title: "Action",
     id: "id",
-    render: (id: string) => <RemoveIcon onClick={() => deleteMember({ id })} />,
+    render: (id: string) => <RemoveIcon onClick={() => removeMember({ id })} />,
   }
 
   return (
     <>
       <div className="space-y-6">
-        <InviteMemberToTask workspaceName={workspaceName} taskSlug={taskSlug} />
+        <InviteMemberToTask workspaceSlug={workspaceSlug} taskSlug={taskSlug} />
         <Table
           data={data}
-          columns={[...columns, actionCol]}
+          columns={[...columns, actionColumn]}
           loading={loading}
         />
       </div>

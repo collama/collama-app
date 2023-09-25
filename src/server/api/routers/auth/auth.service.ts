@@ -1,10 +1,19 @@
 import type { z } from "zod"
-import type { signUpInput } from "~/server/api/routers/auth/dto/signUpInput"
-import { UserExisted } from "~/libs/constants/errors"
-import { env } from "~/env.mjs"
-import { prisma } from "~/server/db"
+import { type SignUpInput } from "~/server/api/routers/auth/dto/signUpInput"
+import { type ExtendedPrismaClient } from "~/server/db"
+import crypto from "crypto"
+import { createWorkspace } from "~/server/api/routers/workspace/workspace.service"
+import { UserAlreadyExist } from "~/server/errors/auth.error"
 
-export const signUp = async (input: z.infer<typeof signUpInput>) => {
+interface AuthProcedureInput<T = unknown> {
+  prisma: ExtendedPrismaClient
+  input: T
+}
+
+export const signUp = async ({
+  input,
+  prisma,
+}: AuthProcedureInput<z.infer<typeof SignUpInput>>) => {
   const user = await prisma.user.findFirst({
     where: {
       email: input.email,
@@ -12,19 +21,37 @@ export const signUp = async (input: z.infer<typeof signUpInput>) => {
   })
 
   if (user) {
-    throw UserExisted
+    throw new UserAlreadyExist()
   }
 
-  const hashPassword = await Bun.password.hash(input.password, {
-    algorithm: "bcrypt",
-    cost: env.SALT_ROUND,
-  })
+  const salt = crypto.randomBytes(16).toString("hex")
+  const hashPassword = crypto
+    .pbkdf2Sync(input.password, salt, 1000, 64, "sha512")
+    .toString(`hex`)
 
-  return prisma.user.create({
+  const createdUser = await prisma.user.create({
     data: {
       email: input.email,
       username: input.username.toLowerCase(),
       password: hashPassword,
+      salt,
     },
   })
+
+  await createWorkspace({
+    input: {
+      name: input.username,
+    },
+    session: {
+      user: {
+        id: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.username,
+      },
+      expires: new Date().toISOString(),
+    },
+    prisma,
+  })
+
+  return createdUser
 }

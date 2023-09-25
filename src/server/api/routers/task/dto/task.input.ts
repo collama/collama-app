@@ -11,12 +11,13 @@ export const CreateTaskInput = z.object({
 
 export const ExecuteTaskInput = z.object({
   slug: zSlug,
+  workspaceSlug: zSlug,
   variables: z.record(z.string()),
 })
 
 export const InviteMemberInput = z.object({
-  workspaceName: z.string(),
-  taskSlug: z.string(),
+  slug: zSlug,
+  workspaceSlug: zSlug,
   emailOrTeamName: z.string().email().or(z.string()),
   role: z.nativeEnum(Role),
 })
@@ -26,11 +27,12 @@ export const DeleteTaskInput = z.object({
 })
 
 export const RemoveMemberInput = z.object({
-  id: zSlug,
+  id: z.string(),
 })
 
 export const GetTaskBySlugInput = z.object({
   slug: zSlug,
+  workspaceSlug: zSlug,
 })
 
 export const GetMembersSlugInput = z.object({

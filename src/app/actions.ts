@@ -6,6 +6,6 @@ import * as workspaceRouter from "~/server/api/routers/workspace/workspace.route
 export const createWorkspaceAction = createAction(
   workspaceRouter.createWorkspace
 )
-export const deleteMemberOnWorkspaceAction = createAction(
-  workspaceRouter.deleteMemberOnWorkspaceById
+export const removeMemberOnWorkspaceAction = createAction(
+  workspaceRouter.removeMemberOnWorkspaceById
 )

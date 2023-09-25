@@ -1,92 +1,125 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import * as workspaceService from "~/server/api/routers/workspace/workspace.service"
 import {
   CreateWorkspaceInput,
-  DeleteMemberOnWorkspaceByIdInput,
-  GetBySlugInput,
-  GetBySlugPublicInput,
-  GetMemberOnWorkspaceBySlugInput,
-  GetMembersOnWorkspaceInput,
   InviteMemberToWorkspaceInput,
-  RemoveMemberOnWorkspaceByIdInput,
-  RenameWorkspaceInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
+import {
+  TaskProtectedManagers,
+  TaskProtectedReaders,
+} from "~/server/api/providers/permission/role"
+import {
+  canAccessWorkspaceMiddleware,
+  WorkspaceIdInput,
+  WorkspaceSlugInput,
+} from "~/server/api/middlewares/permission/workspace-permission"
 
 export const createWorkspace = protectedProcedure
   .input(CreateWorkspaceInput)
   .mutation(({ ctx, input }) =>
-    workspaceService.createWorkspace(input, ctx.session)
-  )
-
-export const renameWorkspace = protectedProcedure
-  .input(RenameWorkspaceInput)
-  .mutation(({ ctx, input }) =>
-    workspaceService.renameWorkspace(input, ctx.session)
+    workspaceService.createWorkspace({
+      input,
+      session: ctx.session,
+      prisma: ctx.prisma,
+    })
   )
 
 export const inviteMemberToWorkspace = protectedProcedure
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: TaskProtectedManagers,
+  })
+  .use(canAccessWorkspaceMiddleware)
   .input(InviteMemberToWorkspaceInput)
-  .mutation(({ input }) => workspaceService.inviteMemberToWorkspace(input))
+  .mutation(({ input, ctx }) =>
+    workspaceService.inviteMemberToWorkspace({
+      input,
+      session: ctx.session,
+      prisma: ctx.prisma,
+      workspace: ctx.workspace,
+    })
+  )
 
 export const updateMemberRoleOnWorkspace = protectedProcedure
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: TaskProtectedManagers,
+  })
+  .use(canAccessWorkspaceMiddleware)
   .input(UpdateMemberRoleInWorkspaceInput)
-  .mutation(({ ctx, input }) =>
-    workspaceService.updateMemberRoleInWorkspace(input, ctx.session)
-  )
+  .mutation(({ ctx, input }) => {
+    return workspaceService.updateMemberRoleInWorkspace({
+      input,
+      session: ctx.session,
+      prisma: ctx.prisma,
+      workspace: ctx.workspace,
+    })
+  })
 
 export const removeMemberOnWorkspaceById = protectedProcedure
-  .input(RemoveMemberOnWorkspaceByIdInput)
-  .mutation(({ ctx, input }) =>
-    workspaceService.removeMemberOnWorkspaceById(input, ctx.session)
-  )
+  .input(WorkspaceIdInput)
+  .meta({
+    allowedRoles: TaskProtectedManagers,
+  })
+  .use(canAccessWorkspaceMiddleware)
+  .input(WorkspaceIdInput)
+  .mutation(({ ctx, input }) => {
+    return workspaceService.removeMemberOnWorkspaceById({
+      input,
+      session: ctx.session,
+      prisma: ctx.prisma,
+      workspace: ctx.workspace,
+    })
+  })
 
-export const deleteMemberOnWorkspaceById = protectedProcedure
-  .input(DeleteMemberOnWorkspaceByIdInput)
-  .mutation(({ input }) => workspaceService.deleteMemberOnWorkspaceById(input))
-
-const count = protectedProcedure.query(({ ctx }) =>
-  workspaceService.count(ctx.session)
-)
-
-const getFirst = protectedProcedure.query(({ ctx }) =>
-  workspaceService.getFirst(ctx.session)
-)
-
-const getBySlugPublic = publicProcedure
-  .input(GetBySlugPublicInput)
-  .query(({ input }) => workspaceService.getBySlugPublic(input))
+const count = protectedProcedure.query(({ ctx }) => {
+  return workspaceService.count({
+    session: ctx.session,
+    prisma: ctx.prisma,
+  })
+})
 
 const getBySlug = protectedProcedure
-  .input(GetBySlugInput)
-  .query(({ ctx, input }) => workspaceService.getBySlug(input, ctx.session))
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: TaskProtectedReaders,
+  })
+  .use(canAccessWorkspaceMiddleware)
+  .input(WorkspaceSlugInput)
+  .query(({ ctx, input }) => {
+    return workspaceService.getBySlug({
+      prisma: ctx.prisma,
+      input,
+    })
+  })
 
-const getAll = protectedProcedure.query(({ ctx }) =>
-  workspaceService.getAll(ctx.session)
-)
+const belongToWorkspaces = protectedProcedure.query(({ ctx }) => {
+  return workspaceService.belongToWorkspaces({
+    session: ctx.session,
+    prisma: ctx.prisma,
+  })
+})
 
 const getMembersOnWorkspace = protectedProcedure
-  .input(GetMembersOnWorkspaceInput)
-  .query(({ ctx, input }) =>
-    workspaceService.getMembersOnWorkspace(input, ctx.session)
-  )
-
-export const getMemberOnWorkspaceBySlug = protectedProcedure
-  .input(GetMemberOnWorkspaceBySlugInput)
-  .query(({ ctx, input }) =>
-    workspaceService.getMemberOnWorkspaceBySlug(input, ctx.session)
-  )
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: TaskProtectedReaders,
+  })
+  .use(canAccessWorkspaceMiddleware)
+  .input(WorkspaceSlugInput)
+  .query(({ ctx, input }) => {
+    return workspaceService.getMembersOnWorkspace({
+      input,
+      session: ctx.session,
+      prisma: ctx.prisma,
+      workspace: ctx.workspace,
+    })
+  })
 
 export const workspaceTRPCRouter = createTRPCRouter({
   count,
-  getFirst,
-  getBySlugPublic,
   getBySlug,
-  getAll,
+  getAll: belongToWorkspaces,
   getMembersOnWorkspace,
-  getMemberOnWorkspaceBySlug,
 })

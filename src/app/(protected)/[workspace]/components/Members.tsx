@@ -7,7 +7,7 @@ import { type ColumnType, Table } from "~/ui/Table"
 import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
 import { toFullDate } from "~/common/utils/datetime"
 import { IconX } from "@tabler/icons-react"
-import { deleteMemberOnWorkspaceAction } from "~/app/actions"
+import { removeMemberOnWorkspaceAction } from "~/app/actions"
 import { useNotification } from "~/ui/Notification"
 import useAsyncEffect from "use-async-effect"
 import { sleep } from "~/common/utils"
@@ -49,7 +49,7 @@ export const Members = (props: Props) => {
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteMemberOnWorkspaceAction)
+  } = useAction(removeMemberOnWorkspaceAction)
   const [notice, holder] = useNotification()
 
   const actionCol: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [

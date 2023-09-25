@@ -16,6 +16,7 @@ import { ZodError } from "zod"
 import { prisma } from "~/server/db"
 import { type Session } from "next-auth"
 import { getAuthSession } from "~/libs/auth"
+import { Role } from "~/server/api/providers/permission/role"
 
 /**
  * 1. CONTEXT
@@ -48,6 +49,8 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   }
 }
 
+export type Context = ReturnType<typeof createInnerTRPCContext>
+
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
@@ -65,6 +68,10 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   })
 }
 
+export interface Meta {
+  allowedRoles: Role[]
+}
+
 /**
  * 2. INITIALIZATION
  *
@@ -73,19 +80,22 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
  * errors on the backend.
  */
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    }
-  },
-})
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .meta<Meta>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.cause instanceof ZodError ? error.cause.flatten() : null,
+        },
+      }
+    },
+  })
 
 /**
  * Helper to create validated server actions from trpc procedures, or build inline actions using the
@@ -141,3 +151,5 @@ const validateSession = t.middleware(({ ctx, next }) => {
 export const publicProcedure = t.procedure
 
 export const protectedProcedure = publicProcedure.use(validateSession)
+
+export const middleware = t.middleware

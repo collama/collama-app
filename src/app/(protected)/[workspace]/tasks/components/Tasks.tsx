@@ -12,7 +12,6 @@ import { NoSsrWarp } from "~/components/NoSsr"
 import { type PageSize, Pagination } from "~/ui/Pagination"
 import { Filter } from "~/ui/Filter"
 import useAsyncEffect from "use-async-effect"
-import { upsertFilterAction } from "~/app/(protected)/[workspace]/tasks/components/actions"
 import {
   FilterOperator,
   type FilterValue,
@@ -21,7 +20,6 @@ import {
 import { Sort } from "~/ui/Sort"
 import Link from "next/link"
 import urlJoin from "url-join"
-import { deleteTaskBySlugAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import { useNotification } from "~/ui/Notification"
 import { sleep } from "~/common/utils"
 import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
@@ -30,6 +28,10 @@ import type {
   PageNumberCounters,
   PageNumberPagination,
 } from "prisma-extension-pagination/dist/types"
+import {
+  deleteTaskBySlugAction,
+  upsertFilterAction,
+} from "~/actions/task.action"
 
 const columns: ColumnType[] = [
   {
@@ -151,7 +153,7 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     const resp = await api.task.filterAndSort.query({
       filter: filterSetting.filter,
       sort: filterSetting.sort,
-      slug: workspaceSlug,
+      workspaceSlug: workspaceSlug,
       page: pages.page,
       limit: pages.limit,
     })
@@ -174,7 +176,9 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
       title: "Task",
       type: "string",
       render: (name: string, record) => (
-        <Link href={urlJoin("/", workspaceSlug, record.slug)}>{name}</Link>
+        <Link href={urlJoin("/", workspaceSlug, record.slug as string)}>
+          {name}
+        </Link>
       ),
     },
   ]
@@ -183,7 +187,13 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     {
       title: "Action",
       id: "id",
-      render: (id: string) => <RemoveIcon onClick={() => deleteTask({ id })} />,
+      render: (id: string, record) => (
+        <RemoveIcon
+          onClick={() =>
+            deleteTask({ slug: record.slug as string, workspaceSlug })
+          }
+        />
+      ),
     },
   ]
 

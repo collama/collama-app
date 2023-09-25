@@ -6,7 +6,7 @@ import MembersOnTasksCreateArgs = Prisma.MembersOnTasksCreateArgs
 interface InviteMemberData {
   emailOrTeamName: string
   taskSlug: string
-  workspaceName: string
+  workspaceSlug: string
   role: PrismaRole
 }
 
@@ -21,7 +21,7 @@ export const inviteUserToTaskExtension = Prisma.defineExtension((prisma) => {
         async inviteMember<T>(this: T, data: InviteMemberData) {
           const workspace = await prisma.workspace.findFirst({
             where: {
-              name: data.workspaceName,
+              slug: data.workspaceSlug,
             },
           })
 
@@ -35,7 +35,7 @@ export const inviteUserToTaskExtension = Prisma.defineExtension((prisma) => {
             },
             workspace: {
               connect: {
-                name: data.workspaceName,
+                name: data.workspaceSlug,
               },
             },
             role: data.role,

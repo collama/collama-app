@@ -52,3 +52,7 @@ export const TaskAdmin = new Role(PrismaRole.Admin)
 export const TaskWriter = new Role(PrismaRole.Writer)
 export const TaskReader = new Role(PrismaRole.Reader)
 export const TaskPublic = new Role(PrismaRole.Public)
+
+export const TaskProtectedManagers = [TaskOwner, TaskAdmin]
+export const TaskProtectedWriters = [...TaskProtectedManagers, TaskWriter]
+export const TaskProtectedReaders = [...TaskProtectedWriters, TaskReader]

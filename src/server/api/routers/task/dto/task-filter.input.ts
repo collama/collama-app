@@ -27,7 +27,7 @@ const SortInput = z
 export const FilterAndSortInput = z.object({
   filter: FilterInput,
   sort: SortInput,
-  name: z.string(),
+  slug: z.string(),
   page: z.number(),
   limit: z.number(),
 })

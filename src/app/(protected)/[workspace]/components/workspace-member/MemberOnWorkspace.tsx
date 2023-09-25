@@ -13,9 +13,9 @@ enum Tab {
 }
 
 interface Props {
-  workspaceName: string
+  workspaceSlug: string
 }
-export function MemberOnWorkspace({ workspaceName }: Props) {
+export function MemberOnWorkspace({ workspaceSlug }: Props) {
   const [tab, setTab] = useState(Tab.Workspace)
 
   return (
@@ -36,39 +36,39 @@ export function MemberOnWorkspace({ workspaceName }: Props) {
       </section>
       <div className="mt-2">
         {tab === Tab.Workspace ? (
-          <Workspace workspaceName={workspaceName} />
+          <Workspace workspaceSlug={workspaceSlug} />
         ) : (
-          <Team workspaceName={workspaceName} />
+          <Team workspaceSlug={workspaceSlug} />
         )}
       </div>
     </div>
   )
 }
 
-const Workspace = ({ workspaceName }: Props) => {
+const Workspace = ({ workspaceSlug }: Props) => {
   return (
     <>
       <div className="mt-4 space-y-6">
         <div className="rounded-lg border p-6">
-          <InviteForm workspaceName={workspaceName} />
+          <InviteForm workspaceSlug={workspaceSlug} />
         </div>
         <div>
-          <Members workspaceName={workspaceName} />
+          <Members workspaceSlug={workspaceSlug} />
         </div>
       </div>
     </>
   )
 }
 
-const Team = ({ workspaceName }: Props) => {
+const Team = ({ workspaceSlug }: Props) => {
   return (
     <>
       <div className="mt-4 space-y-6">
         <div className="rounded-lg border p-6">
-          <CreateTeamForm workspaceName={workspaceName} />
+          <CreateTeamForm workspaceSlug={workspaceSlug} />
         </div>
         <div>
-          <Teams workspaceName={workspaceName} />
+          <Teams workspaceSlug={workspaceSlug} />
         </div>
       </div>
     </>

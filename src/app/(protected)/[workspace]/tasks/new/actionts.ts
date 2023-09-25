@@ -1,20 +1,14 @@
 "use server"
 
 import { createAction } from "~/server/api/trpc"
-import {
-  createTask,
-  deleteMemberOnTask,
-  deleteTask,
-  executeTask,
-  inviteMemberToTask,
-} from "~/server/api/routers/task"
+import * as taskRouter from "~/server/api/routers/task/task.router"
 
-export const createTaskAction = createAction(createTask)
+export const createTaskAction = createAction(taskRouter.create)
 
-export const executeTaskAction = createAction(executeTask)
+export const executeTaskAction = createAction(taskRouter.execute)
 
-export const inviteMemberToTaskAction = createAction(inviteMemberToTask)
+export const inviteMemberToTaskAction = createAction(taskRouter.inviteMember)
 
-export const deleteTaskAction = createAction(deleteTask)
+export const deleteTaskAction = createAction(taskRouter.deleteById)
 
-export const deleteMemberOnTaskAction = createAction(deleteMemberOnTask)
+export const deleteMemberOnTaskAction = createAction(taskRouter.removeMember)

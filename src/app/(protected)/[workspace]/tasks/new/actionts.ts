@@ -2,19 +2,19 @@
 
 import { createAction } from "~/server/api/trpc"
 import {
-  createTask,
-  deleteMemberOnTask,
-  deleteTask,
-  executeTask,
-  inviteMemberToTask,
-} from "~/server/api/routers/task"
+  create as createTask,
+  deleteBySlug as deleteTaskBySlug,
+  execute as executeTask,
+  inviteMember as inviteMemberOnTask,
+  removeMember as removeMemberOnTask,
+} from "~/server/api/routers/task/task-router"
 
 export const createTaskAction = createAction(createTask)
 
 export const executeTaskAction = createAction(executeTask)
 
-export const inviteMemberToTaskAction = createAction(inviteMemberToTask)
+export const inviteMemberOnTaskAction = createAction(inviteMemberOnTask)
 
-export const deleteTaskAction = createAction(deleteTask)
+export const deleteTaskBySlugAction = createAction(deleteTaskBySlug)
 
-export const deleteMemberOnTaskAction = createAction(deleteMemberOnTask)
+export const removeMemberOnTaskAction = createAction(removeMemberOnTask)

@@ -9,7 +9,7 @@ export class Role {
     PrismaRole.Public,
   ]
 
-  private readonly currentPriority: number
+  readonly currentPriority: number
 
   constructor(private readonly role: PrismaRole) {
     this.currentPriority = this.priorityOf(this.role)
@@ -35,14 +35,20 @@ export class Role {
   gte(role: Role): boolean {
     return !this.lt(role)
   }
+
+  in(roles: Role[]): boolean {
+    for (const role of roles) {
+      if (role.value() === this.role) {
+        return true
+      }
+    }
+
+    return false
+  }
 }
 
-export const RoleOwner = new Role(PrismaRole.Owner)
-export const RoleAdmin = new Role(PrismaRole.Admin)
-export const RoleWriter = new Role(PrismaRole.Writer)
-export const RoleReader = new Role(PrismaRole.Reader)
-export const RolePublic = new Role(PrismaRole.Public)
-
-export interface HandlePermission {
-  checkFor(userId: string, role: Role): Promise<Role | null>
-}
+export const TaskOwner = new Role(PrismaRole.Owner)
+export const TaskAdmin = new Role(PrismaRole.Admin)
+export const TaskWriter = new Role(PrismaRole.Writer)
+export const TaskReader = new Role(PrismaRole.Reader)
+export const TaskPublic = new Role(PrismaRole.Public)

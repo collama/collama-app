@@ -7,17 +7,18 @@ import {
 import { InviteStatus, Role } from "@prisma/client"
 import type { z } from "zod"
 import type { Session } from "next-auth"
-import { TaskNotFound } from "~/server/api/routers/task/task-error"
+import {
+  NoPermissionToInviteMembers,
+  TaskNotFound,
+} from "~/server/api/routers/task/task.error"
 import type {
   CreateTaskInput,
   DeleteTaskInput,
   ExecuteTaskInput,
-  InviteMemberInput,
-  RemoveMemberInput,
-} from "~/server/api/routers/task/dto/task.input"
-import type {
   GetMembersSlugInput,
   GetTaskBySlugInput,
+  InviteMemberInput,
+  RemoveMemberInput,
 } from "~/server/api/routers/task/dto/task.input"
 import { serializePrompt } from "~/server/api/services/task"
 import {
@@ -27,12 +28,17 @@ import {
   getVariableContents,
 } from "~/server/api/services/prompt"
 import { createProvider } from "~/server/api/services/llm/llm"
-import { prisma } from "~/server/db"
+import { type ExtendedPrismaClient, prisma } from "~/server/db"
 import Cryptr from "cryptr"
 import { env } from "~/env.mjs"
 import { transformFilter, transformSort } from "~/services/prisma"
 import type { FilterValue, SortValue } from "~/common/types/props"
 import type { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
+import {
+  TaskAdmin,
+  TaskOwner,
+  TaskWriter,
+} from "~/server/api/providers/permission/role"
 
 const crypto = new Cryptr(env.ENCRYPTION_KEY)
 
@@ -121,11 +127,23 @@ export const execute = async (input: z.infer<typeof ExecuteTaskInput>) => {
 }
 
 export const inviteMember = async (
-  input: z.infer<typeof InviteMemberInput>
+  prisma: ExtendedPrismaClient,
+  input: z.infer<typeof InviteMemberInput>,
+  session: Session
 ) => {
-  return await prisma.membersOnTasks.inviteMember({
+  const canAccess = await prisma.task.canUserAccess({
+    slug: input.taskSlug,
+    userId: session.user.id,
+    allowedRoles: [TaskOwner, TaskAdmin, TaskWriter],
+  })
+
+  if (!canAccess) {
+    throw new NoPermissionToInviteMembers()
+  }
+
+  return prisma.membersOnTasks.inviteMember({
     emailOrTeamName: input.emailOrTeamName,
-    taskName: input.taskName,
+    taskSlug: input.taskSlug,
     role: input.role,
     workspaceName: input.workspaceName,
   })

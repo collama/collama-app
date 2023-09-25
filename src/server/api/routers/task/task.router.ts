@@ -1,4 +1,4 @@
-import * as taskService from "~/server/api/routers/task/task-service"
+import * as taskService from "~/server/api/routers/task/task.service"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import {
   CreateTaskInput,
@@ -31,8 +31,8 @@ export const deleteBySlug = protectedProcedure
 
 export const inviteMember = protectedProcedure
   .input(InviteMemberInput)
-  .mutation(async ({ input }) => {
-    return taskService.inviteMember(input)
+  .mutation(async ({ input, ctx }) => {
+    return taskService.inviteMember(ctx.prisma, input, ctx.session)
   })
 
 export const removeMember = protectedProcedure

@@ -21,7 +21,7 @@ import {
 import { Sort } from "~/ui/Sort"
 import Link from "next/link"
 import urlJoin from "url-join"
-import { deleteTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { deleteTaskBySlugAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import { useNotification } from "~/ui/Notification"
 import { sleep } from "~/common/utils"
 import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
@@ -95,7 +95,7 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
     mutate: deleteTask,
     status: deleteTaskStatus,
     error: deleteTaskError,
-  } = useAction(deleteTaskAction)
+  } = useAction(deleteTaskBySlugAction)
   const [notice, holder] = useNotification()
 
   const [filterSetting, setFilterSetting] = useState<FilterSettingState>(

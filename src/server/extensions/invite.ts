@@ -5,7 +5,7 @@ import MembersOnTasksCreateArgs = Prisma.MembersOnTasksCreateArgs
 
 interface InviteMemberData {
   emailOrTeamName: string
-  taskName: string
+  taskSlug: string
   workspaceName: string
   role: PrismaRole
 }
@@ -30,7 +30,7 @@ export const inviteUserToTaskExtension = Prisma.defineExtension((prisma) => {
           const insertData: MembersOnTasksCreateArgs["data"] = {
             task: {
               connect: {
-                name: data.taskName,
+                slug: data.taskSlug,
               },
             },
             workspace: {

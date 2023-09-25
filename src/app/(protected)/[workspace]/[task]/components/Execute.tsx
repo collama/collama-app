@@ -12,7 +12,11 @@ import { executeTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actio
 import { capitalizeFirstLetter } from "~/common/utils"
 import { Spin } from "~/ui/Spinner"
 
+const schema = z.record(z.string())
+
 export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
+  const form = useZodForm({ schema })
+
   const { data, loading } = useAwaited(
     api.task.getPromptVariables.query({ slug: task.slug })
   )
@@ -22,10 +26,6 @@ export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
     data: resp,
     error,
   } = useAction(executeTaskAction)
-
-  const schema = z.record(z.string())
-
-  const form = useZodForm({ schema })
 
   return (
     <div>

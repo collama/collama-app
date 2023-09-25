@@ -13,55 +13,55 @@ import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.in
 
 export const create = protectedProcedure
   .input(CreateTaskInput)
-  .mutation(async ({ ctx, input }) => {
+  .mutation( ({ ctx, input }) => {
     return taskService.create(input, ctx.session)
   })
 
 export const execute = protectedProcedure
   .input(ExecuteTaskInput)
-  .mutation(async ({ input }) => {
+  .mutation( ({ input }) => {
     return taskService.execute(input)
   })
 
-export const deleteBySlug = protectedProcedure
+export const deleteById = protectedProcedure
   .input(DeleteTaskInput)
-  .mutation(async ({ input }) => {
-    return taskService.deleteBySlug(input)
+  .mutation( ({ input }) => {
+    return taskService.deleteById(input)
   })
 
 export const inviteMember = protectedProcedure
   .input(InviteMemberInput)
-  .mutation(async ({ input, ctx }) => {
+  .mutation( ({ input, ctx }) => {
     return taskService.inviteMember(ctx.prisma, input, ctx.session)
   })
 
 export const removeMember = protectedProcedure
   .input(RemoveMemberInput)
-  .mutation(async ({ input }) => {
+  .mutation( ({ input }) => {
     return taskService.removeMember(input)
   })
 
-export const getBySlug = protectedProcedure
+const getBySlug = protectedProcedure
   .input(GetTaskBySlugInput)
-  .query(async ({ input, ctx }) => {
+  .query( ({ input, ctx }) => {
     return taskService.getBySlug(input, ctx.session)
   })
 
-export const getPromptVariables = protectedProcedure
+const getPromptVariables = protectedProcedure
   .input(GetTaskBySlugInput)
-  .query(async ({ input }) => {
+  .query( ({ input }) => {
     return taskService.getPromptVariables(input)
   })
 
-export const getMembers = protectedProcedure
+const getMembers = protectedProcedure
   .input(GetMembersSlugInput)
-  .query(async ({ input }) => {
+  .query( ({ input }) => {
     return taskService.getMembers(input)
   })
 
-export const filterAndSort = protectedProcedure
+const filterAndSort = protectedProcedure
   .input(FilterAndSortInput)
-  .query(async ({ input }) => {
+  .query( ({ input }) => {
     return taskService.filterAndSort(input)
   })
 

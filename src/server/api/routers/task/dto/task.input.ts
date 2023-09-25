@@ -1,16 +1,16 @@
 import { z } from "zod"
-import { zId } from "~/common/validation"
+import { zSlug } from "~/common/validation"
 import { Role } from "@prisma/client"
 
 export const CreateTaskInput = z.object({
   name: z.string().nonempty(),
   prompt: z.string().optional(),
   description: z.string().nullable(),
-  workspaceName: zId,
+  workspaceName: zSlug,
 })
 
 export const ExecuteTaskInput = z.object({
-  slug: zId,
+  slug: zSlug,
   variables: z.record(z.string()),
 })
 
@@ -22,18 +22,18 @@ export const InviteMemberInput = z.object({
 })
 
 export const DeleteTaskInput = z.object({
-  slug: zId,
+  id: z.string(),
 })
 
 export const RemoveMemberInput = z.object({
-  id: zId,
+  id: zSlug,
 })
 
 export const GetTaskBySlugInput = z.object({
-  slug: zId,
+  slug: zSlug,
 })
 
 export const GetMembersSlugInput = z.object({
-  slug: zId,
-  workspaceSlug: zId,
+  slug: zSlug,
+  workspaceSlug: zSlug,
 })

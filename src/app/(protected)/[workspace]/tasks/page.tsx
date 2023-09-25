@@ -6,5 +6,5 @@ type TaskPageProps = {
 }
 
 export default function TaskPage({ params }: PageProps<TaskPageProps>) {
-  return <Tasks workspaceName={params.workspace} />
+  return <Tasks workspaceSlug={params.workspace} />
 }

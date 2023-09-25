@@ -7,8 +7,8 @@ import { type ColumnType, Table } from "~/ui/Table"
 import { type MembersOnTeamsIncludeUser } from "~/common/types/prisma"
 import { Tag } from "~/ui/Tag"
 import { toFullDate } from "~/common/utils/datetime"
-import { RemoveIcon } from "~/app/component/RemoveIcon"
-import { deleteMemberOnTeamAction } from "~/app/(protected)/[workspace]/actions"
+import { RemoveIcon } from "~/app/components/RemoveIcon"
+import { deleteMemberOnTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { useNotification } from "~/ui/Notification"
 import useAsyncEffect from "use-async-effect"
@@ -44,7 +44,7 @@ export const Members = ({ teamSlug, workspaceSlug }: TeamPageParams) => {
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteMemberOnTeamAction)
+  } = useAction(deleteMemberOnTeamByIdAction)
   const [notice, holder] = useNotification()
 
   useEffect(() => {

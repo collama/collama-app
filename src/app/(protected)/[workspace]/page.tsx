@@ -9,8 +9,8 @@ interface Props {
 }
 
 export default async function WorkspacePage({ params }: PageProps<Props>) {
-  const workspace = await api.workspace.getByNamePublic.query({
-    workspaceName: params.workspace,
+  const workspace = await api.workspace.getBySlugPublic.query({
+    workspaceSlug: params.workspace,
   })
 
   if (!workspace) {
@@ -20,7 +20,7 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
   return (
     <div>
       <Suspense fallback={<Loading />}>
-        <MemberOnWorkspace workspaceName={workspace.name} />
+        <MemberOnWorkspace workspaceSlug={workspace.name} />
       </Suspense>
     </div>
   )

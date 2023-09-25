@@ -21,7 +21,7 @@ const schema = z.object({
 })
 
 interface Props {
-  workspaceName: string
+  workspaceSlug: string
 }
 
 export const InviteForm = (props: Props) => {
@@ -76,7 +76,7 @@ export const InviteForm = (props: Props) => {
             inviteMember({
               email: data.email,
               role: data.role,
-              workspaceName: props.workspaceName,
+              workspaceSlug: props.workspaceSlug,
             })
           })}
         >

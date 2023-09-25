@@ -29,18 +29,15 @@ import {
 } from "~/server/api/services/prompt"
 import { createProvider } from "~/server/api/services/llm/llm"
 import { type ExtendedPrismaClient, prisma } from "~/server/db"
-import Cryptr from "cryptr"
-import { env } from "~/env.mjs"
 import { transformFilter, transformSort } from "~/services/prisma"
 import type { FilterValue, SortValue } from "~/common/types/props"
 import type { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
+import { cryptoTr } from "~/server/api/providers/crypto-provider"
 import {
   TaskAdmin,
   TaskOwner,
   TaskWriter,
 } from "~/server/api/providers/permission/role"
-
-const crypto = new Cryptr(env.ENCRYPTION_KEY)
 
 const createSlug = (text: string): string => {
   return slugify(text, {
@@ -119,7 +116,7 @@ export const execute = async (input: z.infer<typeof ExecuteTaskInput>) => {
   if (!apiKey) throw ApiKeyNotFound
 
   const provider = createProvider("openai", {
-    apiKey: crypto.decrypt(apiKey.value),
+    apiKey: cryptoTr.decrypt(apiKey.value),
     model: "gpt-3.5-turbo",
   })
 
@@ -149,10 +146,10 @@ export const inviteMember = async (
   })
 }
 
-export const deleteBySlug = async (input: z.infer<typeof DeleteTaskInput>) => {
+export const deleteById = async (input: z.infer<typeof DeleteTaskInput>) => {
   return await prisma.task.delete({
     where: {
-      slug: input.slug,
+      id: input.id,
     },
   })
 }
@@ -241,7 +238,7 @@ export const filterAndSort = async (
       where: {
         ...filters,
         workspace: {
-          name: input.name,
+          slug: input.slug,
         },
       },
       orderBy: sorts,

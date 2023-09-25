@@ -2,7 +2,7 @@
 import { type ColumnType, Table } from "~/ui/Table"
 import useAwaited from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import { RemoveIcon } from "~/app/component/RemoveIcon"
+import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { type ApiKeyIncludeUser } from "~/common/types/prisma"
 import { toFullDate } from "~/common/utils/datetime"
 import { Tag } from "~/ui/Tag"

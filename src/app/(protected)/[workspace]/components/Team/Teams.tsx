@@ -8,7 +8,7 @@ import { type Team } from "@prisma/client"
 import { toFullDate } from "~/common/utils/datetime"
 import { IconX } from "@tabler/icons-react"
 import { type TeamIncludeOwner } from "~/common/types/prisma"
-import { deleteTeamAction } from "~/app/(protected)/[workspace]/actions"
+import { deleteTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
 import { useEffect } from "react"
 import { useNotification } from "~/ui/Notification"
 import useAsyncEffect from "use-async-effect"
@@ -35,13 +35,13 @@ const columns: ColumnType<TeamIncludeOwner>[] = [
 ]
 
 interface Props {
-  workspaceName: string
+  workspaceSlug: string
 }
 
 export const Teams = (props: Props) => {
   const { data: teams, loading } = useAwaited(
     api.team.teamsOnWorkspace.query({
-      workspaceName: props.workspaceName,
+      workspaceSlug: props.workspaceSlug,
     })
   )
 
@@ -49,7 +49,7 @@ export const Teams = (props: Props) => {
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteTeamAction)
+  } = useAction(deleteTeamByIdAction)
   const [notice, holder] = useNotification()
 
   useAsyncEffect(async () => {
@@ -78,7 +78,7 @@ export const Teams = (props: Props) => {
     render: (name: Team["name"], record) => (
       <Link
         className="hover:text-violet-500"
-        href={`/${props.workspaceName}/teams/${record.slug}`}
+        href={`/${props.workspaceSlug}/teams/${record.slug}`}
       >
         <div>{name}</div>
       </Link>

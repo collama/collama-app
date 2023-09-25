@@ -1,9 +1,9 @@
 import { createTRPCRouter } from "~/server/api/trpc"
-import { workspaceRouter } from "~/server/api/routers/workspace"
-import { apiKeyRouter } from "~/server/api/routers/api-key"
-import { teamRouter } from "~/server/api/routers/team"
-import { filterSettingRouter } from "~/server/api/routers/filter-setting"
+import { workspaceTRPCRouter } from "~/server/api/routers/workspace/workspace.router"
 import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
+import { apiKeyTRPCRouter } from "~/server/api/routers/api-key/api-key.router"
+import { filterSettingTRPCRouter } from "~/server/api/routers/filter-setting/filter-setting.router"
+import { teamTRPCRouter } from "~/server/api/routers/team/team.router"
 
 /**
  * This is the primary router for your server.
@@ -12,10 +12,10 @@ import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
  */
 export const appRouter = createTRPCRouter({
   task: taskTRPCRouter,
-  workspace: workspaceRouter,
-  team: teamRouter,
-  apiKey: apiKeyRouter,
-  filterSetting: filterSettingRouter,
+  workspace: workspaceTRPCRouter,
+  team: teamTRPCRouter,
+  apiKey: apiKeyTRPCRouter,
+  filterSetting: filterSettingTRPCRouter,
 })
 
 // export type definition of API

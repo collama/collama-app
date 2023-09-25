@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation"
 import { api } from "~/trpc/server-invoker"
 import Link from "next/link"
-import CreateWorkspaceForm from "~/app/component/CreateWorkspaceForm"
+import CreateWorkspaceForm from "~/app/components/CreateWorkspaceForm"
 import { getAuthSession } from "~/libs/auth"
-import { Logout } from "~/app/component/Logout"
+import { Logout } from "~/app/components/Logout"
 import { Heading } from "~/components/Heading"
 
 export default async function Page() {

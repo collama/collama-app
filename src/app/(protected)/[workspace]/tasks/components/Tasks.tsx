@@ -25,7 +25,7 @@ import { deleteTaskAction } from "~/app/(protected)/[workspace]/tasks/new/action
 import { useNotification } from "~/ui/Notification"
 import { sleep } from "~/common/utils"
 import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
-import { RemoveIcon } from "~/app/component/RemoveIcon"
+import { RemoveIcon } from "~/app/components/RemoveIcon"
 import type {
   PageNumberCounters,
   PageNumberPagination,

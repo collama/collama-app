@@ -31,8 +31,8 @@ export const deleteById = protectedProcedure
 
 export const inviteMember = protectedProcedure
   .input(InviteMemberInput)
-  .mutation( ({ input }) => {
-    return taskService.inviteMember(input)
+  .mutation( ({ input, ctx }) => {
+    return taskService.inviteMember(ctx.prisma, input, ctx.session)
   })
 
 export const removeMember = protectedProcedure

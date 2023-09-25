@@ -16,7 +16,7 @@ export const ExecuteTaskInput = z.object({
 
 export const InviteMemberInput = z.object({
   workspaceName: z.string(),
-  taskName: z.string(),
+  taskSlug: z.string(),
   emailOrTeamName: z.string().email().or(z.string()),
   role: z.nativeEnum(Role),
 })

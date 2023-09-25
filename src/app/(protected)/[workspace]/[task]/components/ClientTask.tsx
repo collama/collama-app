@@ -16,7 +16,7 @@ enum Tab {
   Member,
 }
 
-export const ClientTask = ({ task, workspaceName, taskName }: Props) => {
+export const ClientTask = ({ task, workspaceName }: Props) => {
   const [tab, setTab] = useState(Tab.Task)
 
   return (
@@ -38,7 +38,7 @@ export const ClientTask = ({ task, workspaceName, taskName }: Props) => {
       {tab === Tab.Task ? (
         <TaskOverview task={task} />
       ) : (
-        <TaskMember workspaceName={workspaceName} taskName={taskName} />
+        <TaskMember workspaceName={workspaceName} taskSlug={task.slug} />
       )}
     </div>
   )

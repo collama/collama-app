@@ -11,7 +11,7 @@ import { Tag } from "~/ui/Tag"
 import { toFullDate } from "~/common/utils/datetime"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { useNotification } from "~/ui/Notification"
-import { deleteMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { removeMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import useAsyncEffect from "use-async-effect"
 import { sleep } from "~/common/utils"
 
@@ -40,12 +40,12 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
 ]
 
 export function TaskMember({
-  taskName,
+  taskSlug,
   workspaceName,
 }: InviteMemberToTaskProps) {
   const { data, loading } = useAwaited(
     api.task.getMembers.query({
-      slug: taskName,
+      slug: taskSlug,
       workspaceSlug: workspaceName,
     })
   )
@@ -54,7 +54,7 @@ export function TaskMember({
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteMemberOnTaskAction)
+  } = useAction(removeMemberOnTaskAction)
   const [notice, holder] = useNotification()
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function TaskMember({
   return (
     <>
       <div className="space-y-6">
-        <InviteMemberToTask workspaceName={workspaceName} taskName={taskName} />
+        <InviteMemberToTask workspaceName={workspaceName} taskSlug={taskSlug} />
         <Table
           data={data}
           columns={[...columns, actionCol]}

@@ -9,7 +9,7 @@ import { Select } from "~/ui/Select"
 import { Button } from "~/ui/Button"
 import { InviteRoleOptions } from "~/common/constants/prisma"
 import { useAction } from "~/trpc/client"
-import { inviteMemberToTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { inviteMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import { useNotification } from "~/ui/Notification"
 import { useEffect } from "react"
 import useAsyncEffect from "use-async-effect"
@@ -21,16 +21,16 @@ const schema = z.object({
 })
 
 export type InviteMemberToTaskProps = {
-  taskName: string
+  taskSlug: string
   workspaceName: string
 }
 
 export const InviteMemberToTask = ({
-  taskName,
+  taskSlug,
   workspaceName,
 }: InviteMemberToTaskProps) => {
   const form = useZodForm({ schema })
-  const { mutate: invite, status, error } = useAction(inviteMemberToTaskAction)
+  const { mutate: invite, status, error } = useAction(inviteMemberOnTaskAction)
   const [notice, holder] = useNotification()
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export const InviteMemberToTask = ({
             invite({
               workspaceName,
               role: data.role,
-              taskName,
+              taskSlug,
               emailOrTeamName: data.emailOrTeamName,
             })
           })}

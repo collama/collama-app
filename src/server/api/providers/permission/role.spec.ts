@@ -1,5 +1,5 @@
 import { Role as PrismaRole } from "@prisma/client"
-import { Role } from "~/server/api/services/types"
+import { Role } from "~/server/api/providers/permission/role"
 
 describe("Role", () => {
   test.each([

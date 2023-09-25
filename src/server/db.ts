@@ -3,6 +3,7 @@ import { env } from "~/env.mjs"
 import { callbackFreeTx } from "~/server/extensions/callback-free-tx"
 import { inviteUserToTaskExtension } from "~/server/extensions/invite"
 import { pagination } from "~/server/extensions/pagination"
+import { permissionExtension } from "~/server/extensions/permission"
 
 const _prisma = () =>
   new PrismaClient({
@@ -11,8 +12,9 @@ const _prisma = () =>
     .$extends(callbackFreeTx)
     .$extends(inviteUserToTaskExtension)
     .$extends(pagination)
+    .$extends(permissionExtension)
 
-type ExtendedPrismaClient = ReturnType<typeof _prisma>
+export type ExtendedPrismaClient = ReturnType<typeof _prisma>
 
 const globalForPrisma = globalThis as unknown as {
   prisma: ExtendedPrismaClient | undefined

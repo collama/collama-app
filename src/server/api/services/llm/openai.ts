@@ -1,9 +1,9 @@
 import OpenAI from "openai"
 import { type LLM } from "~/server/api/services/llm/llm"
-import { type CompletionCreateParamsBase } from "openai/resources/chat/completions"
+import { type ChatCompletionCreateParamsBase } from "openai/resources/chat/completions"
 
 export interface OpenAIProviderOptions
-  extends Omit<CompletionCreateParamsBase, "messages"> {
+  extends Omit<ChatCompletionCreateParamsBase, "messages"> {
   apiKey: string
 }
 

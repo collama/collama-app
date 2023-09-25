@@ -1,6 +1,6 @@
 import {
   OpenAIProvider,
-  OpenAIProviderOptions,
+  type OpenAIProviderOptions,
 } from "~/server/api/services/llm/openai"
 
 export interface LLM {

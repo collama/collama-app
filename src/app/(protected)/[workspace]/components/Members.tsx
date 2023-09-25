@@ -35,13 +35,13 @@ const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
 ]
 
 interface Props {
-  workspaceName: string
+  workspaceSlug: string
 }
 
 export const Members = (props: Props) => {
   const { data: members, loading } = useAwaited(
-    api.workspace.getMembersFromWorkspace.query({
-      name: props.workspaceName,
+    api.workspace.getMembersOnWorkspace.query({
+      slug: props.workspaceSlug,
     })
   )
 

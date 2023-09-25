@@ -1,24 +1,29 @@
 "use server"
 
 import { createAction } from "~/server/api/trpc"
-import {
-  inviteMemberToWorkspace,
-  removeMemberFromWorkspace,
-  updateMemberRoleInWorkspace,
-} from "~/server/api/routers/workspace"
-import {
-  createTeam,
-  deleteTeam,
-  deleteTeamMember,
-  inviteMemberToTeam,
-} from "~/server/api/routers/team"
+import * as teamRouter from "~/server/api/routers/team/team.router"
+import * as workspaceRouter from "~/server/api/routers/workspace/workspace.router"
 
 export const inviteMemberToWorkspaceAction = createAction(
-  inviteMemberToWorkspace
+  workspaceRouter.inviteMemberToWorkspace
 )
-export const removeMemberAction = createAction(removeMemberFromWorkspace)
-export const updateMemberRoleAction = createAction(updateMemberRoleInWorkspace)
-export const createTeamAction = createAction(createTeam)
-export const inviteMemberToTeamAction = createAction(inviteMemberToTeam)
-export const deleteTeamAction = createAction(deleteTeam)
-export const deleteMemberOnTeamAction = createAction(deleteTeamMember)
+
+export const removeMemberOnWorkspaceByIdAction = createAction(
+  workspaceRouter.removeMemberOnWorkspaceById
+)
+
+export const updateMemberRoleOnWorkspaceAction = createAction(
+  workspaceRouter.updateMemberRoleOnWorkspace
+)
+
+export const createTeamAction = createAction(teamRouter.createTeam)
+
+export const inviteMemberToTeamAction = createAction(
+  teamRouter.inviteMemberToTeam
+)
+
+export const deleteTeamByIdAction = createAction(teamRouter.deleteTeamById)
+
+export const deleteMemberOnTeamByIdAction = createAction(
+  teamRouter.deleteTeamMemberById
+)

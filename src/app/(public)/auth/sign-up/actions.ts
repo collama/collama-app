@@ -1,6 +1,6 @@
 "use server"
 
-import { signUp } from "~/server/api/routers/auth"
 import { createAction } from "~/server/api/trpc"
+import { authSignUp } from "~/server/api/routers/auth/auth.router"
 
-export const signUpAction = createAction(signUp)
+export const signUpAction = createAction(authSignUp)

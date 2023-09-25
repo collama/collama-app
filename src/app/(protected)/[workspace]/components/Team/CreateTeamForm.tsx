@@ -14,7 +14,7 @@ import { sleep } from "~/common/utils"
 import useAsyncEffect from "use-async-effect"
 
 interface Props {
-  workspaceName: string
+  workspaceSlug: string
 }
 
 const schema = z.object({
@@ -64,7 +64,7 @@ export const CreateTeamForm = (props: Props) => {
           onSubmit={form.handleSubmit((data) => {
             createTeam({
               ...data,
-              workspaceName: props.workspaceName,
+              workspaceSlug: props.workspaceSlug,
             })
           })}
         >

@@ -1,12 +1,11 @@
 "use server"
 
 import { createAction } from "~/server/api/trpc"
-import {
-  createWorkspace,
-  deleteMemberOnWorkspace,
-} from "~/server/api/routers/workspace"
+import * as workspaceRouter from "~/server/api/routers/workspace/workspace.router"
 
-export const createWorkspaceAction = createAction(createWorkspace)
+export const createWorkspaceAction = createAction(
+  workspaceRouter.createWorkspace
+)
 export const deleteMemberOnWorkspaceAction = createAction(
-  deleteMemberOnWorkspace
+  workspaceRouter.deleteMemberOnWorkspaceById
 )

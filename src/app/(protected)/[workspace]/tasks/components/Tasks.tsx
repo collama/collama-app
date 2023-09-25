@@ -84,7 +84,7 @@ const checkLoadings = (
   ...loadings: UseTRPCActionResult<never>["status"][]
 ): boolean => loadings.some((loading) => loading === "loading")
 
-export function Tasks({ workspaceName }: { workspaceName: string }) {
+export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
   const router = useRouter()
   const {
     mutate: upsertSetting,
@@ -129,8 +129,8 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
 
   useAsyncEffect(async () => {
     const filterSetting =
-      await api.filterSetting.getFilterSettingByWorkspaceName.query({
-        workspaceName,
+      await api.filterSetting.getFilterSettingByWorkspaceSlug.query({
+        workspaceSlug,
       })
 
     if (!filterSetting?.setting) return
@@ -145,13 +145,13 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
       ...settingValue,
       count: prevState.count + 1,
     }))
-  }, [workspaceName])
+  }, [workspaceSlug])
 
   useAsyncEffect(async () => {
     const resp = await api.task.filterAndSort.query({
       filter: filterSetting.filter,
       sort: filterSetting.sort,
-      name: workspaceName,
+      slug: workspaceSlug,
       page: pages.page,
       limit: pages.limit,
     })
@@ -164,16 +164,17 @@ export function Tasks({ workspaceName }: { workspaceName: string }) {
       filter: filterSetting.filter,
       sort: filterSetting.sort,
     })
-    upsertSetting({ workspaceName, setting })
-  }, [filterSetting.count, workspaceName])
+
+    upsertSetting({ workspaceSlug, setting })
+  }, [filterSetting.count, workspaceSlug])
 
   const nameColumn: ColumnType[] = [
     {
       id: "name",
       title: "Task",
       type: "string",
-      render: (name: string, data) => (
-        <Link href={urlJoin("/", workspaceName, data.slug)}>{name}</Link>
+      render: (name: string, record) => (
+        <Link href={urlJoin("/", workspaceSlug, record.slug)}>{name}</Link>
       ),
     },
   ]

@@ -60,15 +60,15 @@ export const createWorkspace = async ({
   if (!workspace) throw new WorkspaceNotFound()
 
   // TODO: delete it later after iml release Example Model
-  const tasksData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
-    ...task,
-    ownerId: userId,
-    workspaceId: workspace.id,
-  }))
-
-  await prisma.task.createMany({
-    data: tasksData,
-  })
+  // const tasksData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
+  //   ...task,
+  //   ownerId: userId,
+  //   workspaceId: workspace.id,
+  // }))
+  //
+  // await prisma.task.createMany({
+  //   data: tasksData,
+  // })
 
   return workspace
 }
@@ -159,7 +159,6 @@ export const getBySlug = ({
   WorkspaceProcedureInput<z.infer<typeof WorkspaceSlugInput>>,
   "prisma" | "input"
 >) => {
-  console.log("tttt", input)
   return prisma.workspace.findFirst({
     where: {
       slug: input.slug,

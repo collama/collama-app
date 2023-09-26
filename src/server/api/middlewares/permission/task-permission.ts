@@ -1,6 +1,6 @@
 import { experimental_standaloneMiddleware, TRPCError } from "@trpc/server"
 import type { Context, Meta } from "~/server/api/trpc"
-import { NoPermissionToInviteMembers } from "~/server/errors/task.error"
+import { NoPermission } from "~/server/errors/task.error"
 import { z } from "zod"
 import { zSlug } from "~/common/validation"
 
@@ -49,9 +49,10 @@ export const canAccessTaskMiddleware = experimental_standaloneMiddleware<{
       allowedRoles: meta?.allowedRoles ?? [],
     })
   }
+  console.log({ permission, input, meta })
 
   if (!permission.canAccess) {
-    throw new NoPermissionToInviteMembers()
+    throw new NoPermission()
   }
 
   return next({

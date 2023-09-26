@@ -7,10 +7,6 @@ import type {
   ExecuteTaskInput,
   InviteMemberInput,
 } from "~/server/api/routers/task/dto/task.input"
-import type {
-  GetMembersSlugInput,
-  GetTaskBySlugInput,
-} from "~/server/api/routers/task/dto/task.input"
 import { serializePrompt } from "~/server/api/services/task"
 import {
   fillVariables,
@@ -19,13 +15,19 @@ import {
   getVariableContents,
 } from "~/server/api/services/prompt"
 import { createProvider } from "~/server/api/services/llm/llm"
-import { type ExtendedPrismaClient, prisma } from "~/server/db"
+import { type ExtendedPrismaClient } from "~/server/db"
 import { transformFilter, transformSort } from "~/services/prisma"
 import type { FilterValue, SortValue } from "~/common/types/props"
 import { cryptoTr } from "~/server/api/providers/crypto-provider"
-import { MemberNotFound, TaskNotFound } from "~/server/errors/task.error"
+import {
+  CannotRemoveOwner,
+  MemberNotFound,
+  TaskNotFound,
+} from "~/server/errors/task.error"
 import { ApiKeyNotFound } from "~/server/errors/api-key.error"
 import { type FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
+import { RemoveTaskMemberInput } from "~/server/api/routers/task/dto/task.input"
+import { TaskSlugInput } from "~/server/api/middlewares/permission/task-permission"
 
 interface TaskProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
@@ -45,6 +47,7 @@ const createSlug = (text: string): string => {
 }
 
 export const create = async (
+  prisma: ExtendedPrismaClient,
   input: z.infer<typeof CreateTaskInput>,
   session: Session
 ) => {
@@ -91,6 +94,7 @@ export const create = async (
 export const execute = async ({
   input,
   task,
+  prisma,
 }: TaskProcedureInput<z.infer<typeof ExecuteTaskInput>>) => {
   const prompt = serializePrompt(task.prompt)
   const contents = getContent(prompt.content)
@@ -113,16 +117,18 @@ export const execute = async ({
 
 export const inviteMember = async ({
   input,
+  prisma,
+  task,
 }: TaskProcedureInput<z.infer<typeof InviteMemberInput>>) => {
   return prisma.membersOnTasks.inviteMember({
     emailOrTeamName: input.emailOrTeamName,
-    taskSlug: input.slug,
     role: input.role,
-    workspaceSlug: input.workspaceSlug,
+    taskId: task.id,
+    workspaceId: task.workspaceId,
   })
 }
 
-export const deleteById = async ({ task }: TaskProcedureInput) => {
+export const deleteById = async ({ task, prisma }: TaskProcedureInput) => {
   return prisma.task.delete({
     where: {
       id: task.id,
@@ -130,10 +136,13 @@ export const deleteById = async ({ task }: TaskProcedureInput) => {
   })
 }
 
-export const removeMember = async ({ task }: TaskProcedureInput) => {
-  const member = await prisma.membersOnTasks.findFirst({
+export const removeMember = async ({
+  input,
+  prisma,
+}: TaskProcedureInput<z.infer<typeof RemoveTaskMemberInput>>) => {
+  const member = await prisma.membersOnTasks.findUnique({
     where: {
-      id: task.id,
+      id: input.memberId,
     },
   })
 
@@ -141,9 +150,13 @@ export const removeMember = async ({ task }: TaskProcedureInput) => {
     throw new MemberNotFound()
   }
 
+  if (member.role === Role.Owner) {
+    throw new CannotRemoveOwner()
+  }
+
   return prisma.membersOnTasks.delete({
     where: {
-      id: member.id,
+      id: input.memberId,
     },
   })
 }
@@ -151,7 +164,8 @@ export const removeMember = async ({ task }: TaskProcedureInput) => {
 export const getBySlug = async ({
   session,
   task,
-}: TaskProcedureInput<z.infer<typeof GetTaskBySlugInput>>) => {
+  prisma,
+}: TaskProcedureInput<z.infer<typeof TaskSlugInput>>) => {
   return prisma.task.findUnique({
     where: {
       id: task.id,
@@ -168,16 +182,10 @@ export const getPromptVariables = ({ task }: TaskProcedureInput) => {
   return getVariableContents(prompt.content)
 }
 
-export const getMembers = async ({
-  input,
-  task,
-}: TaskProcedureInput<z.infer<typeof GetMembersSlugInput>>) => {
+export const getMembers = async ({ task, prisma }: TaskProcedureInput) => {
   return prisma.membersOnTasks.findMany({
     where: {
       taskId: task.id,
-      workspace: {
-        name: input.workspaceSlug,
-      },
     },
     include: {
       user: true,
@@ -189,6 +197,7 @@ export const getMembers = async ({
 export const filterAndSort = async ({
   input,
   session,
+  prisma,
 }: Omit<TaskProcedureInput<z.infer<typeof FilterAndSortInput>>, "task">) => {
   const teams = await prisma.membersOnTeams.findMany({
     where: {
@@ -208,7 +217,7 @@ export const filterAndSort = async ({
       where: {
         ...filters,
         membersOnTasks: {
-          every: {
+          some: {
             OR: [
               {
                 userId: session.user.id,

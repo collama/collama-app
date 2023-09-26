@@ -80,6 +80,7 @@ export const permissionExtension = Prisma.defineExtension((prisma) => {
       task: {
         async canUserAccess<T>(this: T, data: CanUserAccessTask) {
           const result = await canUserAccessTask(prisma as PrismaClient, data)
+          console.log("123 result", result)
           return {
             canAccess: result.canAccess(data.allowedRoles),
             role: result.role,

@@ -1,12 +1,12 @@
 import { InviteStatus, Prisma, type Role as PrismaRole } from "@prisma/client"
 import { isEmail } from "~/common/utils"
-import { WorkspaceNotFound } from "~/common/errors"
 import MembersOnTasksCreateArgs = Prisma.MembersOnTasksCreateArgs
+import { WorkspaceNotFound } from "~/server/errors/workspace.error"
 
 interface InviteMemberData {
   emailOrTeamName: string
-  taskSlug: string
-  workspaceSlug: string
+  taskId: string
+  workspaceId: string
   role: PrismaRole
 }
 
@@ -21,21 +21,21 @@ export const inviteUserToTaskExtension = Prisma.defineExtension((prisma) => {
         async inviteMember<T>(this: T, data: InviteMemberData) {
           const workspace = await prisma.workspace.findFirst({
             where: {
-              slug: data.workspaceSlug,
+              id: data.workspaceId,
             },
           })
 
-          if (!workspace) throw WorkspaceNotFound
+          if (!workspace) throw new WorkspaceNotFound()
 
           const insertData: MembersOnTasksCreateArgs["data"] = {
             task: {
               connect: {
-                slug: data.taskSlug,
+                id: data.taskId,
               },
             },
             workspace: {
               connect: {
-                name: data.workspaceSlug,
+                id: data.workspaceId,
               },
             },
             role: data.role,

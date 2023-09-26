@@ -4,14 +4,20 @@ export class TaskNotFound extends Error {
   }
 }
 
-export class NoPermissionToInviteMembers extends Error {
+export class NoPermission extends Error {
   constructor() {
-    super("You do not have permission to invite members to this task")
+    super("You do not have permission to do this action")
   }
 }
 
 export class MemberNotFound extends Error {
   constructor() {
     super("Member not found")
+  }
+}
+
+export class CannotRemoveOwner extends Error {
+  constructor() {
+    super("You cannot remove owner")
   }
 }

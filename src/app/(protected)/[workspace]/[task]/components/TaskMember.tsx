@@ -80,7 +80,9 @@ export function TaskMember({ task }: InviteMemberToTaskProps) {
   const actionColumn: ColumnType<MembersOnTaskIncludeUserTeam> = {
     title: "Action",
     id: "id",
-    render: (id: string) => <RemoveIcon onClick={() => removeMember({ id })} />,
+    render: (memberId: string) => (
+      <RemoveIcon onClick={() => removeMember({ id: task.id, memberId })} />
+    ),
   }
 
   return (

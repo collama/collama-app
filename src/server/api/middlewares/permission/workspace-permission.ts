@@ -1,8 +1,8 @@
 import { experimental_standaloneMiddleware, TRPCError } from "@trpc/server"
 import type { Context, Meta } from "~/server/api/trpc"
-import { NoPermissionToInviteMembers } from "~/server/errors/task.error"
 import { z } from "zod"
 import { zSlug } from "~/common/validation"
+import { NoPermission } from "~/server/errors/task.error"
 
 export const WorkspaceSlugInput = z.object({
   slug: zSlug,
@@ -40,7 +40,7 @@ export const canAccessWorkspaceMiddleware = experimental_standaloneMiddleware<{
   })
 
   if (!permission.canAccess) {
-    throw new NoPermissionToInviteMembers()
+    throw new NoPermission()
   }
 
   return next({

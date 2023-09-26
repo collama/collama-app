@@ -27,8 +27,8 @@ export const InviteMemberInput = z
   })
   .merge(TaskIdInput)
 
-export const GetTaskBySlugInput = z
+export const RemoveTaskMemberInput = z
   .object({
-    workspaceSlug: zSlug,
+    memberId: z.string(),
   })
-  .merge(TaskSlugInput)
+  .merge(TaskIdInput)

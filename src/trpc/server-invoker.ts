@@ -34,7 +34,7 @@ export const api = experimental_createTRPCNextAppDirServer<typeof appRouter>({
               prisma,
               headers: {
                 cookie: cookies().toString(),
-                "x-trpc-source": "rsc-invoke",
+                "x-trpc-source": "rsc-invoker",
               } as never,
             }
           },

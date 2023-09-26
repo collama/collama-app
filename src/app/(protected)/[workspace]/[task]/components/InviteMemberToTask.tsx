@@ -1,6 +1,6 @@
 "use client"
 
-import { Role } from "@prisma/client"
+import { Role, Task } from "@prisma/client"
 import { Controller, FormProvider } from "react-hook-form"
 import useZodForm from "~/common/form"
 import { z } from "zod"
@@ -21,14 +21,10 @@ const schema = z.object({
 })
 
 export type InviteMemberToTaskProps = {
-  taskSlug: string
-  workspaceSlug: string
+  task: Task
 }
 
-export const InviteMemberToTask = ({
-  taskSlug,
-  workspaceSlug,
-}: InviteMemberToTaskProps) => {
+export const InviteMemberToTask = ({ task }: InviteMemberToTaskProps) => {
   const form = useZodForm({ schema })
   const { mutate: invite, status, error } = useAction(inviteMemberOnTaskAction)
   const [notice, holder] = useNotification()
@@ -65,8 +61,7 @@ export const InviteMemberToTask = ({
         <form
           onSubmit={form.handleSubmit((data) => {
             invite({
-              slug: taskSlug,
-              workspaceSlug,
+              id: task.id,
               role: data.role,
               emailOrTeamName: data.emailOrTeamName,
             })

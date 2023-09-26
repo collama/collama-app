@@ -3,16 +3,13 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import {
   CreateTaskInput,
   ExecuteTaskInput,
-  GetMembersSlugInput,
   GetTaskBySlugInput,
   InviteMemberInput,
-  RemoveMemberInput,
 } from "~/server/api/routers/task/dto/task.input"
 import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import {
   canAccessTaskMiddleware,
   TaskIdInput,
-  TaskSlugInput,
 } from "~/server/api/middlewares/permission/task-permission"
 import {
   TaskProtectedReaders,
@@ -72,7 +69,6 @@ export const removeMember = protectedProcedure
     allowedRoles: TaskProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
-  .input(RemoveMemberInput)
   .mutation(({ input, ctx }) => {
     return taskService.removeMember({
       ...ctx,
@@ -81,7 +77,7 @@ export const removeMember = protectedProcedure
   })
 
 const getBySlug = protectedProcedure
-  .input(TaskSlugInput)
+  .input(GetTaskBySlugInput)
   .meta({
     allowedRoles: TaskProtectedReaders,
   })
@@ -100,7 +96,7 @@ const getPromptVariables = protectedProcedure
     allowedRoles: TaskProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
-  .input(GetTaskBySlugInput)
+  .input(TaskIdInput)
   .query(({ input, ctx }) => {
     return taskService.getPromptVariables({
       ...ctx,
@@ -114,7 +110,7 @@ const getMembers = protectedProcedure
     allowedRoles: TaskProtectedReaders,
   })
   .use(canAccessTaskMiddleware)
-  .input(GetMembersSlugInput)
+  .input(TaskIdInput)
   .query(({ input, ctx }) => {
     return taskService.getMembers({
       ...ctx,

@@ -16,7 +16,7 @@ import { ZodError } from "zod"
 import { prisma } from "~/server/db"
 import { type Session } from "next-auth"
 import { getAuthSession } from "~/libs/auth"
-import { Role } from "~/server/api/providers/permission/role"
+import { type Role } from "~/server/api/providers/permission/role"
 
 /**
  * 1. CONTEXT
@@ -59,7 +59,6 @@ export type Context = ReturnType<typeof createInnerTRPCContext>
  */
 export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   // Fetch stuff that depends on the request
-
   const session = await getAuthSession()
 
   return createInnerTRPCContext({

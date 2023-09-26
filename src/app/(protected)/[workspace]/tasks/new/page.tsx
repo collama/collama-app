@@ -6,10 +6,8 @@ import { Controller } from "react-hook-form"
 import { z } from "zod"
 import { useRouter } from "next/navigation"
 import type { PageProps } from "~/common/types/props"
-import { zId } from "~/common/validation"
 import { TipTap } from "~/ui/RichText"
 import { useEffect, useState } from "react"
-import { createTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
 import { type JSONContent } from "@tiptap/react"
 import urlJoin from "url-join"
 import { Input } from "~/ui/Input"
@@ -18,6 +16,7 @@ import { useNotification } from "~/ui/Notification"
 import useAsyncEffect from "use-async-effect"
 import { sleep } from "~/common/utils"
 import cx from "classnames"
+import { createTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actions"
 
 const schema = z.object({
   name: z.string().nonempty(),

@@ -39,15 +39,9 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
   },
 ]
 
-export function TaskMember({
-  taskSlug,
-  workspaceSlug,
-}: InviteMemberToTaskProps) {
+export function TaskMember({ task }: InviteMemberToTaskProps) {
   const { data, loading } = useAwaited(
-    api.task.getMembers.query({
-      slug: taskSlug,
-      workspaceSlug,
-    })
+    api.task.getMembers.query({ id: task.id })
   )
 
   const {
@@ -92,7 +86,7 @@ export function TaskMember({
   return (
     <>
       <div className="space-y-6">
-        <InviteMemberToTask workspaceSlug={workspaceSlug} taskSlug={taskSlug} />
+        <InviteMemberToTask task={task} />
         <Table
           data={data}
           columns={[...columns, actionColumn]}

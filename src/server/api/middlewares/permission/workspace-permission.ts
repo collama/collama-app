@@ -32,7 +32,6 @@ export const canAccessWorkspaceMiddleware = experimental_standaloneMiddleware<{
     })
   }
 
-  console.log("www", input)
   const permission = await ctx.prisma.workspace.canUserAccess({
     id: input.id,
     slug: input.slug,

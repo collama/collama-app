@@ -1,6 +1,11 @@
 import { z } from "zod"
 import { zSlug } from "~/common/validation"
 import { Role } from "@prisma/client"
+import { WorkspaceIdInput } from "~/server/api/middlewares/permission/workspace-permission"
+import {
+  TaskIdInput,
+  TaskSlugInput,
+} from "~/server/api/middlewares/permission/task-permission"
 
 export const CreateTaskInput = z.object({
   name: z.string().nonempty(),
@@ -9,33 +14,21 @@ export const CreateTaskInput = z.object({
   workspaceName: zSlug,
 })
 
-export const ExecuteTaskInput = z.object({
-  slug: zSlug,
-  workspaceSlug: zSlug,
-  variables: z.record(z.string()),
-})
+export const ExecuteTaskInput = z
+  .object({
+    variables: z.record(z.string()),
+  })
+  .merge(TaskIdInput)
 
-export const InviteMemberInput = z.object({
-  slug: zSlug,
-  workspaceSlug: zSlug,
-  emailOrTeamName: z.string().email().or(z.string()),
-  role: z.nativeEnum(Role),
-})
+export const InviteMemberInput = z
+  .object({
+    emailOrTeamName: z.string().email().or(z.string()),
+    role: z.nativeEnum(Role),
+  })
+  .merge(TaskIdInput)
 
-export const DeleteTaskInput = z.object({
-  id: z.string(),
-})
-
-export const RemoveMemberInput = z.object({
-  id: z.string(),
-})
-
-export const GetTaskBySlugInput = z.object({
-  slug: zSlug,
-  workspaceSlug: zSlug,
-})
-
-export const GetMembersSlugInput = z.object({
-  slug: zSlug,
-  workspaceSlug: zSlug,
-})
+export const GetTaskBySlugInput = z
+  .object({
+    workspaceSlug: zSlug,
+  })
+  .merge(TaskSlugInput)

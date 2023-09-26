@@ -34,13 +34,21 @@ export const canAccessTaskMiddleware = experimental_standaloneMiddleware<{
     })
   }
 
-  const permission = await ctx.prisma.task.canUserAccess({
-    id: input.id,
-    slug: input.slug,
-    workspaceSlug: input.workspaceSlug,
-    userId: ctx.session.user.id,
-    allowedRoles: meta?.allowedRoles ?? [],
-  })
+  let permission
+  if (input.id) {
+    permission = await ctx.prisma.task.canUserAccess({
+      id: input.id,
+      userId: ctx.session.user.id,
+      allowedRoles: meta?.allowedRoles ?? [],
+    })
+  } else {
+    permission = await ctx.prisma.task.canUserAccess({
+      slug: input.slug,
+      workspaceSlug: input.workspaceSlug,
+      userId: ctx.session.user.id,
+      allowedRoles: meta?.allowedRoles ?? [],
+    })
+  }
 
   if (!permission.canAccess) {
     throw new NoPermissionToInviteMembers()

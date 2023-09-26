@@ -11,6 +11,7 @@ import dayjs from "dayjs"
 import { randomUUID } from "crypto"
 import { type Session } from "next-auth"
 import crypto from "crypto"
+import { NextApiRequest, NextApiResponse } from "next"
 
 const adapter = PrismaAdapter(
   prisma as unknown as PrismaClient
@@ -40,6 +41,7 @@ export const nextAuthOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
+        console.log("credentials", credentials)
         if (!credentials?.email || !credentials.password) {
           return null
         }
@@ -129,6 +131,13 @@ export const nextAuthOptions: AuthOptions = {
   },
 }
 
-export const getAuthSession = async (): Promise<Session | null> => {
+export const getAuthSession = async (
+  req?: NextApiRequest,
+  res?: NextApiResponse
+): Promise<Session | null> => {
+  if (req && res) {
+    return getServerSession(req, res, nextAuthOptions)
+  }
+
   return getServerSession(nextAuthOptions)
 }

@@ -1,11 +1,7 @@
+import { Role } from "@prisma/client"
 import { z } from "zod"
 import { zSlug } from "~/common/validation"
-import { Role } from "@prisma/client"
-import { WorkspaceIdInput } from "~/server/api/middlewares/permission/workspace-permission"
-import {
-  TaskIdInput,
-  TaskSlugInput,
-} from "~/server/api/middlewares/permission/task-permission"
+import { TaskIdInput } from "~/server/api/middlewares/permission/task-permission"
 
 export const CreateTaskInput = z.object({
   name: z.string().nonempty(),

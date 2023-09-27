@@ -1,9 +1,9 @@
+import { useState } from "react"
+import { type FilterValue } from "~/common/types/props"
 import { Button } from "~/ui/Button"
+import { FilterForm } from "~/ui/Filter/FilterForm"
 import { Popover } from "~/ui/Popover"
 import { type ColumnType } from "~/ui/Table"
-import { FilterForm } from "~/ui/Filter/FilterForm"
-import { type FilterValue } from "~/common/types/props"
-import { useState } from "react"
 
 export function Filter({
   columns,

@@ -1,8 +1,8 @@
 import { experimental_standaloneMiddleware, TRPCError } from "@trpc/server"
-import type { Context, Meta } from "~/server/api/trpc"
-import { NoPermission } from "~/server/errors/task.error"
 import { z } from "zod"
 import { zSlug } from "~/common/validation"
+import type { Context, Meta } from "~/server/api/trpc"
+import { NoPermission } from "~/server/errors/task.error"
 
 export const TaskSlugInput = z.object({
   slug: zSlug,

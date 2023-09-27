@@ -1,6 +1,6 @@
+import { TeamRole } from "@prisma/client"
 import z from "zod"
 import { zSlug } from "~/common/validation"
-import { TeamRole } from "@prisma/client"
 
 export const CreateTeamInput = z.object({
   name: z.string(),

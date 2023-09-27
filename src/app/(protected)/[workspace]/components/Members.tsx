@@ -1,18 +1,19 @@
 "use client"
 
-import { api, useAction } from "~/trpc/client"
-import useAwaited from "~/hooks/useAwaited"
-import Loading from "~/ui/loading"
-import { type ColumnType, Table } from "~/ui/Table"
-import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
-import { toFullDate } from "~/common/utils/datetime"
+import { type Workspace } from "@prisma/client"
 import { IconX } from "@tabler/icons-react"
-import { removeMemberOnWorkspaceAction } from "~/app/actions"
-import { useNotification } from "~/ui/Notification"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
 import { useEffect } from "react"
+import useAsyncEffect from "use-async-effect"
+import { removeMemberOnWorkspaceAction } from "~/app/actions"
+import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
+import { sleep } from "~/common/utils"
+import { toFullDate } from "~/common/utils/datetime"
+import useAwaited from "~/hooks/useAwaited"
+import { api, useAction } from "~/trpc/client"
+import { useNotification } from "~/ui/Notification"
+import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
+import Loading from "~/ui/loading"
 
 const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
   {
@@ -35,13 +36,13 @@ const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
 ]
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
 
-export const Members = (props: Props) => {
+export const Members = ({ workspace }: Props) => {
   const { data: members, loading } = useAwaited(
     api.workspace.getMembersOnWorkspace.query({
-      slug: props.workspaceSlug,
+      slug: workspace.slug,
     })
   )
 

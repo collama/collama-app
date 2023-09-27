@@ -1,5 +1,5 @@
-import type { FC, PropsWithChildren } from "react"
 import cx from "classnames"
+import type { FC, PropsWithChildren } from "react"
 
 type TagColor = "green" | "red" | "normal"
 interface TagProps extends PropsWithChildren {

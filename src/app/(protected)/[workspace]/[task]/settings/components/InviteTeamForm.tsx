@@ -1,10 +1,10 @@
 "use client"
 
-import { z } from "zod"
-import { useAction } from "~/trpc/client"
-import useZodForm from "~/common/form"
 import { FormProvider } from "react-hook-form"
+import { z } from "zod"
 import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/[task]/settings/actions"
+import useZodForm from "~/common/form"
+import { useAction } from "~/trpc/client"
 
 const schema = z.object({
   email: z.string().email(),

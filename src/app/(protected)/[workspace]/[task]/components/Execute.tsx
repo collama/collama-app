@@ -1,16 +1,16 @@
 "use client"
 
+import { Controller, FormProvider } from "react-hook-form"
+import { z } from "zod"
+import { executeTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actions"
+import useZodForm from "~/common/form"
 import { type TaskIncludeOwner } from "~/common/types/prisma"
+import { capitalizeFirstLetter } from "~/common/utils"
 import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import useZodForm from "~/common/form"
-import { z } from "zod"
-import { Controller, FormProvider } from "react-hook-form"
-import { Input } from "~/ui/Input"
 import { Button } from "~/ui/Button"
-import { capitalizeFirstLetter } from "~/common/utils"
+import { Input } from "~/ui/Input"
 import { Spin } from "~/ui/Spinner"
-import { executeTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actions"
 
 const schema = z.record(z.string())
 

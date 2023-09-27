@@ -1,7 +1,8 @@
 import { InviteStatus, Prisma, type Role as PrismaRole } from "@prisma/client"
 import { isEmail } from "~/common/utils"
-import MembersOnTasksCreateArgs = Prisma.MembersOnTasksCreateArgs
 import { WorkspaceNotFound } from "~/server/errors/workspace.error"
+
+import MembersOnTasksCreateArgs = Prisma.MembersOnTasksCreateArgs
 
 interface InviteMemberData {
   emailOrTeamName: string

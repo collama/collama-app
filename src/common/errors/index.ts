@@ -9,8 +9,9 @@ export const ApiKeyNotFound = new Error("api key not found")
 
 // Create
 export const FailedToCreateTask = new Error("failed to create task")
-export const FailedToInviteMemberToTeam = new Error("failed to invite member to team")
-
+export const FailedToInviteMemberToTeam = new Error(
+  "failed to invite member to team"
+)
 
 // Delete
 export const CanNotRemoveOwner = new Error("can not remove owner")

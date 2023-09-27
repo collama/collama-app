@@ -1,7 +1,7 @@
+import cx from "classnames"
 import type { FC, Key } from "react"
 import { Notice } from "~/ui/Notification/components/Notice"
 import type { OpenConfig, Placement } from "~/ui/Notification/interface"
-import cx from "classnames"
 
 interface NoticeListProps {
   configList?: OpenConfig[]

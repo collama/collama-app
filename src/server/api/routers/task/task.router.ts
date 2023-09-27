@@ -1,12 +1,3 @@
-import * as taskService from "~/server/api/routers/task/task.service"
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
-import {
-  CreateTaskInput,
-  ExecuteTaskInput,
-  InviteMemberInput,
-  RemoveTaskMemberInput,
-} from "~/server/api/routers/task/dto/task.input"
-import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import {
   canAccessTaskMiddleware,
   TaskIdInput,
@@ -16,6 +7,15 @@ import {
   TaskProtectedReaders,
   TaskProtectedWriters,
 } from "~/server/api/providers/permission/role"
+import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
+import {
+  CreateTaskInput,
+  ExecuteTaskInput,
+  InviteMemberInput,
+  RemoveTaskMemberInput,
+} from "~/server/api/routers/task/dto/task.input"
+import * as taskService from "~/server/api/routers/task/task.service"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const create = protectedProcedure
   .input(CreateTaskInput)

@@ -1,6 +1,6 @@
-import { WorkspacePermission } from "~/server/api/providers/permission/workspace-permisison"
 import type { PrismaClient, Task } from "@prisma/client"
 import { Role } from "~/server/api/providers/permission/role"
+import { WorkspacePermission } from "~/server/api/providers/permission/workspace-permisison"
 import { TaskNotFound } from "~/server/errors/task.error"
 
 export class MembersOnTasksPermission {

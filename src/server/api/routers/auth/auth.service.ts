@@ -1,8 +1,8 @@
+import crypto from "crypto"
 import type { z } from "zod"
 import { type SignUpInput } from "~/server/api/routers/auth/dto/signUpInput"
-import { type ExtendedPrismaClient } from "~/server/db"
-import crypto from "crypto"
 import { createWorkspace } from "~/server/api/routers/workspace/workspace.service"
+import { type ExtendedPrismaClient } from "~/server/db"
 import { UserAlreadyExist } from "~/server/errors/auth.error"
 
 interface AuthProcedureInput<T = unknown> {

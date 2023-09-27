@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { api } from "~/trpc/server-invoker"
+import { api } from "~/trpc/server-http"
 
 interface Props {}
 

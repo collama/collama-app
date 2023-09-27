@@ -1,18 +1,18 @@
 "use client"
 
+import { type Team, type Workspace } from "@prisma/client"
+import { IconX } from "@tabler/icons-react"
+import Link from "next/link"
+import { useEffect } from "react"
+import useAsyncEffect from "use-async-effect"
+import { deleteTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
+import { type TeamIncludeOwner } from "~/common/types/prisma"
+import { sleep } from "~/common/utils"
+import { toFullDate } from "~/common/utils/datetime"
 import useAwaited from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import Link from "next/link"
-import { type ColumnType, Table } from "~/ui/Table"
-import { type Team } from "@prisma/client"
-import { toFullDate } from "~/common/utils/datetime"
-import { IconX } from "@tabler/icons-react"
-import { type TeamIncludeOwner } from "~/common/types/prisma"
-import { deleteTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
-import { useEffect } from "react"
 import { useNotification } from "~/ui/Notification"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
+import { type ColumnType, Table } from "~/ui/Table"
 
 const columns: ColumnType<TeamIncludeOwner>[] = [
   {
@@ -35,13 +35,13 @@ const columns: ColumnType<TeamIncludeOwner>[] = [
 ]
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
 
-export const Teams = (props: Props) => {
+export const Teams = ({ workspace }: Props) => {
   const { data: teams, loading } = useAwaited(
     api.team.teamsOnWorkspace.query({
-      workspaceSlug: props.workspaceSlug,
+      workspaceSlug: workspace.slug,
     })
   )
 
@@ -66,7 +66,10 @@ export const Teams = (props: Props) => {
   useEffect(() => {
     if (status === "error" && error) {
       notice.open({
-        content: { message: "Failed to delete member", description: error.message },
+        content: {
+          message: "Failed to delete member",
+          description: error.message,
+        },
         status: "error",
       })
     }
@@ -78,7 +81,7 @@ export const Teams = (props: Props) => {
     render: (name: Team["name"], record) => (
       <Link
         className="hover:text-violet-500"
-        href={`/${props.workspaceSlug}/teams/${record.slug}`}
+        href={`/${workspace.slug}/teams/${record.slug}`}
       >
         <div>{name}</div>
       </Link>
@@ -97,7 +100,11 @@ export const Teams = (props: Props) => {
 
   return (
     <>
-      <Table data={teams} columns={[nameCol, ...columns, actionCol]} loading={loading}/>
+      <Table
+        data={teams}
+        columns={[nameCol, ...columns, actionCol]}
+        loading={loading}
+      />
       {holder}
     </>
   )

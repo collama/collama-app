@@ -1,5 +1,5 @@
-import { type TaskIncludeOwner } from "~/common/types/prisma"
 import { Execute } from "~/app/(protected)/[workspace]/[task]/components/Execute"
+import { type TaskIncludeOwner } from "~/common/types/prisma"
 
 interface Props {
   task: TaskIncludeOwner

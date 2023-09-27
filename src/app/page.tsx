@@ -1,10 +1,10 @@
-import { redirect } from "next/navigation"
-import { api } from "~/trpc/server-invoker"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import CreateWorkspaceForm from "~/app/components/CreateWorkspaceForm"
-import { getAuthSession } from "~/libs/auth"
 import { Logout } from "~/app/components/Logout"
 import { Heading } from "~/components/Heading"
+import { getAuthSession } from "~/libs/auth"
+import { api } from "~/trpc/server-http"
 
 export default async function Page() {
   const session = await getAuthSession()

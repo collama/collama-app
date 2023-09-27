@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState } from "react"
-import { TaskOverview } from "~/app/(protected)/[workspace]/[task]/components/TaskOverview"
 import { type InviteMemberToTaskProps } from "~/app/(protected)/[workspace]/[task]/components/InviteMemberToTask"
+import { TaskMember } from "~/app/(protected)/[workspace]/[task]/components/TaskMember"
+import { TaskOverview } from "~/app/(protected)/[workspace]/[task]/components/TaskOverview"
 import type { TaskIncludeOwner } from "~/common/types/prisma"
 import { Button } from "~/ui/Button"
-import { TaskMember } from "~/app/(protected)/[workspace]/[task]/components/TaskMember"
 
 interface Props extends InviteMemberToTaskProps {
   task: TaskIncludeOwner

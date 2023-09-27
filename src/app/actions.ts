@@ -1,7 +1,7 @@
 "use server"
 
-import { createAction } from "~/server/api/trpc"
 import * as workspaceRouter from "~/server/api/routers/workspace/workspace.router"
+import { createAction } from "~/server/api/trpc"
 
 export const createWorkspaceAction = createAction(
   workspaceRouter.createWorkspace

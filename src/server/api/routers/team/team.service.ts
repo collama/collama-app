@@ -1,6 +1,11 @@
 import { InviteStatus, Role } from "@prisma/client"
-import { prisma } from "~/server/db"
+import type { Session } from "next-auth"
 import type { z } from "zod"
+import {
+  CanNotRemoveOwner,
+  UserNotFound,
+  WorkspaceNotFound,
+} from "~/common/errors"
 import type {
   CreateTeamInput,
   InviteMemberToTeamInput,
@@ -8,15 +13,10 @@ import type {
   TeamsOnWorkspaceInput,
 } from "~/server/api/routers/team/dto/team.input"
 import {
-  DeleteTeamByIdInput,
-  GetTeamBySlugInput,
+  type DeleteTeamByIdInput,
+  type GetTeamBySlugInput,
 } from "~/server/api/routers/team/dto/team.input"
-import type { Session } from "next-auth"
-import {
-  CanNotRemoveOwner,
-  UserNotFound,
-  WorkspaceNotFound,
-} from "~/common/errors"
+import { prisma } from "~/server/db"
 
 export const createTeam = (
   input: z.infer<typeof CreateTeamInput>,
@@ -107,7 +107,9 @@ export const inviteMemberToTeam = (
     })
   })
 
-export const teamsOnWorkspace = (input: z.infer<typeof TeamsOnWorkspaceInput>) =>
+export const teamsOnWorkspace = (
+  input: z.infer<typeof TeamsOnWorkspaceInput>
+) =>
   prisma.team.findMany({
     where: {
       workspace: {

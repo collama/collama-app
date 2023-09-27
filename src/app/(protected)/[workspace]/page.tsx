@@ -1,8 +1,8 @@
-import { api } from "~/trpc/server-invoker"
-import { type PageProps } from "~/common/types/props"
 import React, { Suspense } from "react"
-import Loading from "~/ui/loading"
 import { MemberOnWorkspace } from "~/app/(protected)/[workspace]/components/workspace-member/MemberOnWorkspace"
+import { type PageProps } from "~/common/types/props"
+import { api } from "~/trpc/server-http"
+import Loading from "~/ui/loading"
 
 interface Props {
   workspace: string
@@ -20,7 +20,7 @@ export default async function WorkspacePage({ params }: PageProps<Props>) {
   return (
     <div>
       <Suspense fallback={<Loading />}>
-        <MemberOnWorkspace workspaceSlug={workspace.name} />
+        <MemberOnWorkspace workspace={workspace} />
       </Suspense>
     </div>
   )

@@ -1,22 +1,22 @@
+import { InviteStatus, type Prisma, Role, type Workspace } from "@prisma/client"
+import type { Session } from "next-auth"
 import type { z } from "zod"
+import type {
+  WorkspaceIdInput,
+  WorkspaceSlugInput,
+} from "~/server/api/middlewares/permission/workspace-permission"
 import type {
   CreateWorkspaceInput,
   InviteMemberToWorkspaceInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
-import { InviteStatus, type Prisma, Role, type Workspace } from "@prisma/client"
-import type { Session } from "next-auth"
-import { type ExtendedPrismaClient, prisma } from "~/server/db"
 import { seedTasks } from "~/server/api/routers/workspace/seeds/workspace"
+import { type ExtendedPrismaClient, prisma } from "~/server/db"
+import { UserNotFound } from "~/server/errors/user.error"
 import {
   WorkspaceMemberNotFound,
   WorkspaceNotFound,
 } from "~/server/errors/workspace.error"
-import { UserNotFound } from "~/server/errors/user.error"
-import type {
-  WorkspaceIdInput,
-  WorkspaceSlugInput,
-} from "~/server/api/middlewares/permission/workspace-permission"
 
 interface WorkspaceProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
@@ -93,13 +93,14 @@ export const getMembersOnWorkspace = async ({
 export const inviteMemberToWorkspace = ({
   input,
   prisma,
+  workspace,
 }: WorkspaceProcedureInput<z.infer<typeof InviteMemberToWorkspaceInput>>) => {
   return prisma.membersOnWorkspaces.create({
     data: {
       role: input.role,
       workspace: {
         connect: {
-          slug: input.slug,
+          id: workspace.id,
         },
       },
       user: {

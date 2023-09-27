@@ -1,5 +1,5 @@
-import type { EditorProps } from "@tiptap/pm/view"
 import { Key } from "./CommandList"
+import type { EditorProps } from "@tiptap/pm/view"
 
 export const TipTapProps: EditorProps = {
   attributes: {

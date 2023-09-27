@@ -1,4 +1,3 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import {
   CreateTeamInput,
   DeleteTeamMemberByIdInput,
@@ -9,6 +8,7 @@ import {
   TeamsOnWorkspaceInput,
 } from "~/server/api/routers/team/dto/team.input"
 import * as teamService from "~/server/api/routers/team/team.service"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const createTeam = protectedProcedure
   .input(CreateTeamInput)

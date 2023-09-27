@@ -1,17 +1,17 @@
-import { type BaseSyntheticEvent, useState } from "react"
-import { NodeViewWrapper } from "@tiptap/react"
+import { IconPawFilled } from "@tabler/icons-react"
 import { type NodeViewProps } from "@tiptap/core"
-import { Popover } from "~/ui/Popover"
-import useZodForm from "~/common/form"
-import { z } from "zod"
+import { NodeViewWrapper } from "@tiptap/react"
+import { type BaseSyntheticEvent, useState } from "react"
 import { Controller } from "react-hook-form"
-import { Input } from "~/ui/Input"
+import { z } from "zod"
+import useZodForm from "~/common/form"
 import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
+import { Popover } from "~/ui/Popover"
 import {
   VARIABLE_COLOR,
   type VariableType,
 } from "~/ui/RichText/components/VariableNode"
-import { IconPawFilled } from "@tabler/icons-react"
 
 export const CreateVariable = ({
   deleteNode,

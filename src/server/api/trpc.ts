@@ -6,17 +6,16 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
 import { experimental_createServerActionHandler } from "@trpc/next/app-dir/server"
 import { initTRPC, TRPCError } from "@trpc/server"
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
+import { type Session } from "next-auth"
 import { headers } from "next/headers"
 import superjson from "superjson"
 import { ZodError } from "zod"
-import { prisma } from "~/server/db"
-import { type Session } from "next-auth"
 import { getAuthSession } from "~/libs/auth"
 import { type Role } from "~/server/api/providers/permission/role"
+import { prisma } from "~/server/db"
 
 /**
  * 1. CONTEXT

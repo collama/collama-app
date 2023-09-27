@@ -1,18 +1,18 @@
 "use client"
 
 import { Provider } from "@prisma/client"
+import { useEffect } from "react"
 import { Controller, FormProvider } from "react-hook-form"
-import { useAction } from "~/trpc/client"
+import useAsyncEffect from "use-async-effect"
+import { z } from "zod"
 import { createApiKeyAction } from "~/app/(protected)/[workspace]/settings/keys/new/actions"
 import useZodForm from "~/common/form"
-import { z } from "zod"
+import { sleep } from "~/common/utils"
+import { useAction } from "~/trpc/client"
 import { Button } from "~/ui/Button"
 import { Input } from "~/ui/Input"
-import { Select } from "~/ui/Select"
 import { useNotification } from "~/ui/Notification"
-import { useEffect } from "react"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
+import { Select } from "~/ui/Select"
 
 const schema = z.object({
   title: z.string(),
@@ -71,7 +71,11 @@ export const InsertApiKey = () => {
                 <Controller
                   name="title"
                   render={({ field }) => (
-                    <Input {...field} placeholder="Your key title" disabled={loading} />
+                    <Input
+                      {...field}
+                      placeholder="Your key title"
+                      disabled={loading}
+                    />
                   )}
                 />
                 <Controller
@@ -90,7 +94,11 @@ export const InsertApiKey = () => {
               <Controller
                 name="value"
                 render={({ field }) => (
-                  <Input {...field} placeholder="Enter your key" disabled={loading}/>
+                  <Input
+                    {...field}
+                    placeholder="Enter your key"
+                    disabled={loading}
+                  />
                 )}
               />
               <Button htmlType="submit" type="primary" loading={loading}>

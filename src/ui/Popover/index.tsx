@@ -1,12 +1,12 @@
 "use client"
 
-import { type FC, type PropsWithChildren, type ReactNode } from "react"
 import {
   Popover as PopoverWarped,
   PopoverContent,
   PopoverTrigger,
 } from "./components/PopoverContent"
 import { type Placement } from "@floating-ui/react"
+import { type FC, type PropsWithChildren, type ReactNode } from "react"
 
 interface PopoverProps extends PropsWithChildren {
   content: ReactNode

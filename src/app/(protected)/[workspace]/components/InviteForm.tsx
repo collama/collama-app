@@ -1,19 +1,19 @@
 "use client"
 
-import { z } from "zod"
-import useZodForm from "~/common/form"
-import { Controller, FormProvider } from "react-hook-form"
-import { useAction } from "~/trpc/client"
-import { Role } from "@prisma/client"
-import Loading from "~/ui/loading"
+import { Role, type Workspace } from "@prisma/client"
 import { useEffect } from "react"
-import { inviteMemberToWorkspaceAction } from "~/app/(protected)/[workspace]/actions"
-import { Input } from "~/ui/Input"
-import { Button } from "~/ui/Button"
-import { Select } from "~/ui/Select"
-import { useNotification } from "~/ui/Notification"
-import { sleep } from "~/common/utils"
+import { Controller, FormProvider } from "react-hook-form"
 import useAsyncEffect from "use-async-effect"
+import { z } from "zod"
+import { inviteMemberToWorkspaceAction } from "~/app/(protected)/[workspace]/actions"
+import useZodForm from "~/common/form"
+import { sleep } from "~/common/utils"
+import { useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
+import { useNotification } from "~/ui/Notification"
+import { Select } from "~/ui/Select"
+import Loading from "~/ui/loading"
 
 const schema = z.object({
   email: z.string().email(),
@@ -21,10 +21,10 @@ const schema = z.object({
 })
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
 
-export const InviteForm = (props: Props) => {
+export const InviteForm = ({ workspace }: Props) => {
   const {
     mutate: inviteMember,
     status,
@@ -57,7 +57,7 @@ export const InviteForm = (props: Props) => {
       notice.open({
         content: {
           message: "Failed to invite user",
-          description: error.message
+          description: error.message,
         },
         status: "error",
       })
@@ -74,9 +74,9 @@ export const InviteForm = (props: Props) => {
         <form
           onSubmit={form.handleSubmit((data) => {
             inviteMember({
+              id: workspace.id,
               email: data.email,
               role: data.role,
-              workspaceSlug: props.workspaceSlug,
             })
           })}
         >

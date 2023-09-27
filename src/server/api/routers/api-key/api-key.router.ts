@@ -1,9 +1,9 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import * as apiKeyService from "~/server/api/routers/api-key/api-key.service"
 import {
   CreateApiKeyInput,
   DeleteApiKeyInput,
 } from "~/server/api/routers/api-key/dto/api-key.input"
-import * as apiKeyService from "~/server/api/routers/api-key/api-key.service"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const createApiKey = protectedProcedure
   .input(CreateApiKeyInput)

@@ -1,18 +1,18 @@
 "use client"
 
+import { useEffect } from "react"
+import useAsyncEffect from "use-async-effect"
+import { deleteMemberOnTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
+import { type TeamPageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
+import { RemoveIcon } from "~/app/components/RemoveIcon"
+import { type MembersOnTeamsIncludeUser } from "~/common/types/prisma"
+import { sleep } from "~/common/utils"
+import { toFullDate } from "~/common/utils/datetime"
 import useAwaited from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import { type TeamPageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
-import { type ColumnType, Table } from "~/ui/Table"
-import { type MembersOnTeamsIncludeUser } from "~/common/types/prisma"
-import { Tag } from "~/ui/Tag"
-import { toFullDate } from "~/common/utils/datetime"
-import { RemoveIcon } from "~/app/components/RemoveIcon"
-import { deleteMemberOnTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
-import { useEffect } from "react"
 import { useNotification } from "~/ui/Notification"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
+import { type ColumnType, Table } from "~/ui/Table"
+import { Tag } from "~/ui/Tag"
 
 const columns: ColumnType<MembersOnTeamsIncludeUser>[] = [
   {

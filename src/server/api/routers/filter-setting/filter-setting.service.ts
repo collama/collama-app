@@ -1,8 +1,8 @@
-import { prisma } from "~/server/db"
+import type { Session } from "next-auth"
+import type { z } from "zod"
 import type { GetFilterSettingByWorkspaceSlugInput } from "~/server/api/routers/filter-setting/dto/filter-setting.input"
 import type { UpsertFilterInput } from "~/server/api/routers/filter-setting/dto/filter-setting.input"
-import type { z } from "zod"
-import type { Session } from "next-auth"
+import { prisma } from "~/server/db"
 
 export const getFilterSettingByWorkspaceSlug = (
   input: z.infer<typeof GetFilterSettingByWorkspaceSlugInput>,

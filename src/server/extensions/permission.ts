@@ -1,8 +1,8 @@
 import { Prisma, type PrismaClient } from "@prisma/client"
-import { TaskPermission } from "~/server/api/providers/permission/task-permission"
 import { type Role } from "~/server/api/providers/permission/role"
+import { TaskPermission } from "~/server/api/providers/permission/task-permission"
 import { TeamPermission } from "~/server/api/providers/permission/team-permisison"
-import { TeamRole } from "~/server/api/providers/permission/team-role"
+import { type TeamRole } from "~/server/api/providers/permission/team-role"
 import { WorkspacePermission } from "~/server/api/providers/permission/workspace-permisison"
 
 interface CanUserAccessTask {

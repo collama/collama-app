@@ -42,7 +42,10 @@ export const fillVariables = (
 const checkIsVariables = (content: Content): content is VariableContent =>
   content.type === "variable"
 
-const removeDuplicateVariable = (res: VariableContent[], cur: VariableContent) => {
+const removeDuplicateVariable = (
+  res: VariableContent[],
+  cur: VariableContent
+) => {
   if (!res.some((item) => item.attrs.text === cur.attrs.text)) {
     res.push(cur)
   }

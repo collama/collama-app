@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <div className='overflow-y-hidden'>
+    <div className="overflow-y-hidden">
       <Heading />
       <div className="flex h-[80vh] w-full justify-center pt-10">
         <div>{children}</div>

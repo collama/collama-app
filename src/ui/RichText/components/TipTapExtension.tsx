@@ -1,19 +1,18 @@
-import StarterKit from "@tiptap/starter-kit"
-
 import { type Editor, Extension, type Range } from "@tiptap/core"
-import Suggestion from "@tiptap/suggestion"
 import { ReactRenderer } from "@tiptap/react"
-import tippy, { type Instance } from "tippy.js"
-import {
-  VARIABLE_COLOR,
-  VariableNode,
-} from "~/ui/RichText/components/VariableNode"
-import { CommandList, Key } from "~/ui/RichText/components/CommandList"
+import StarterKit from "@tiptap/starter-kit"
+import Suggestion from "@tiptap/suggestion"
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
 } from "@tiptap/suggestion/src/suggestion"
+import tippy, { type Instance } from "tippy.js"
+import { CommandList, Key } from "~/ui/RichText/components/CommandList"
 import { CreateVariableNode } from "~/ui/RichText/components/CreateVariableNode"
+import {
+  VARIABLE_COLOR,
+  VariableNode,
+} from "~/ui/RichText/components/VariableNode"
 
 type CommandProps = {
   editor: Editor

@@ -1,6 +1,6 @@
+import { IconPawFilled } from "@tabler/icons-react"
 import { mergeAttributes, Node, type NodeViewProps } from "@tiptap/core"
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react"
-import { IconPawFilled } from "@tabler/icons-react"
 import { nanoid } from "nanoid"
 
 export type VariableType = "text" | "number"
@@ -9,7 +9,7 @@ type VariableColor = Record<VariableType, string>
 
 export const VARIABLE_COLOR: VariableColor = {
   text: "text-indigo-700",
-  number: "text-blue-700"
+  number: "text-blue-700",
 }
 
 const Variable = (props: NodeViewProps) => {

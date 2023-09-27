@@ -1,19 +1,19 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
-import * as workspaceService from "~/server/api/routers/workspace/workspace.service"
-import {
-  CreateWorkspaceInput,
-  InviteMemberToWorkspaceInput,
-  UpdateMemberRoleInWorkspaceInput,
-} from "~/server/api/routers/workspace/dto/workspace.input"
-import {
-  TaskProtectedManagers,
-  TaskProtectedReaders,
-} from "~/server/api/providers/permission/role"
 import {
   canAccessWorkspaceMiddleware,
   WorkspaceIdInput,
   WorkspaceSlugInput,
 } from "~/server/api/middlewares/permission/workspace-permission"
+import {
+  TaskProtectedManagers,
+  TaskProtectedReaders,
+} from "~/server/api/providers/permission/role"
+import {
+  CreateWorkspaceInput,
+  InviteMemberToWorkspaceInput,
+  UpdateMemberRoleInWorkspaceInput,
+} from "~/server/api/routers/workspace/dto/workspace.input"
+import * as workspaceService from "~/server/api/routers/workspace/workspace.service"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const createWorkspace = protectedProcedure
   .input(CreateWorkspaceInput)
@@ -26,7 +26,7 @@ export const createWorkspace = protectedProcedure
   )
 
 export const inviteMemberToWorkspace = protectedProcedure
-  .input(WorkspaceSlugInput)
+  .input(WorkspaceIdInput)
   .meta({
     allowedRoles: TaskProtectedManagers,
   })

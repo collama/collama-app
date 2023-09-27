@@ -1,9 +1,9 @@
-import { prisma } from "~/server/db"
-import type { z } from "zod"
-import type { CreateApiKeyInput } from "~/server/api/routers/api-key/dto/api-key.input"
-import { cryptoTr } from "~/server/api/providers/crypto-provider"
 import type { Session } from "next-auth"
+import type { z } from "zod"
+import { cryptoTr } from "~/server/api/providers/crypto-provider"
+import type { CreateApiKeyInput } from "~/server/api/routers/api-key/dto/api-key.input"
 import type { DeleteApiKeyInput } from "~/server/api/routers/api-key/dto/api-key.input"
+import { prisma } from "~/server/db"
 
 const createHint = (value: string) =>
   value.slice(0, 3) +
@@ -31,13 +31,14 @@ export const deleteApiKeyById = (input: z.infer<typeof DeleteApiKeyInput>) =>
     },
   })
 
-export const getAll = (session: Session) => prisma.apiKey.findMany({
-  where: {
-    owner: {
-      id: session.user.id,
+export const getAll = (session: Session) =>
+  prisma.apiKey.findMany({
+    where: {
+      owner: {
+        id: session.user.id,
+      },
     },
-  },
-  include: {
-    owner: true,
-  },
-})
+    include: {
+      owner: true,
+    },
+  })

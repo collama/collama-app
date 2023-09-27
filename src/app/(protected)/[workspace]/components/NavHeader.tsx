@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useState } from "react"
 import { IconSelector, IconSettings2 } from "@tabler/icons-react"
+import { useRef, useState } from "react"
 import { useClickAway } from "react-use"
 import Avatar from "~/app/(protected)/[workspace]/components/Avatar"
 

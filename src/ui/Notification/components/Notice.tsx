@@ -1,8 +1,3 @@
-import { forwardRef, type Key, useCallback, useEffect, useState } from "react"
-import {
-  type NoticeConfig,
-  type NotifyStatus,
-} from "~/ui/Notification/interface"
 import {
   IconAlertTriangleFilled,
   IconCircleCheckFilled,
@@ -12,6 +7,11 @@ import {
   type TablerIconsProps,
 } from "@tabler/icons-react"
 import cx from "classnames"
+import { forwardRef, type Key, useCallback, useEffect, useState } from "react"
+import {
+  type NoticeConfig,
+  type NotifyStatus,
+} from "~/ui/Notification/interface"
 
 interface NoticeProps extends Omit<NoticeConfig, "onClose"> {
   eventKey: Key

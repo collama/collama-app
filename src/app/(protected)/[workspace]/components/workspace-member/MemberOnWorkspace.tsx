@@ -6,6 +6,7 @@ import { Members } from "~/app/(protected)/[workspace]/components/Members"
 import { CreateTeamForm } from "~/app/(protected)/[workspace]/components/Team/CreateTeamForm"
 import { Teams } from "~/app/(protected)/[workspace]/components/Team/Teams"
 import { Button } from "~/ui/Button"
+import { Workspace } from "@prisma/client"
 
 enum Tab {
   Workspace,
@@ -13,9 +14,9 @@ enum Tab {
 }
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
-export function MemberOnWorkspace({ workspaceSlug }: Props) {
+export function MemberOnWorkspace({ workspace }: Props) {
   const [tab, setTab] = useState(Tab.Workspace)
 
   return (
@@ -36,39 +37,39 @@ export function MemberOnWorkspace({ workspaceSlug }: Props) {
       </section>
       <div className="mt-2">
         {tab === Tab.Workspace ? (
-          <Workspace workspaceSlug={workspaceSlug} />
+          <Workspace workspace={workspace} />
         ) : (
-          <Team workspaceSlug={workspaceSlug} />
+          <Team workspace={workspace} />
         )}
       </div>
     </div>
   )
 }
 
-const Workspace = ({ workspaceSlug }: Props) => {
+const Workspace = ({ workspace }: Props) => {
   return (
     <>
       <div className="mt-4 space-y-6">
         <div className="rounded-lg border p-6">
-          <InviteForm workspaceSlug={workspaceSlug} />
+          <InviteForm workspace={workspace} />
         </div>
         <div>
-          <Members workspaceSlug={workspaceSlug} />
+          <Members workspace={workspace} />
         </div>
       </div>
     </>
   )
 }
 
-const Team = ({ workspaceSlug }: Props) => {
+const Team = ({ workspace }: Props) => {
   return (
     <>
       <div className="mt-4 space-y-6">
         <div className="rounded-lg border p-6">
-          <CreateTeamForm workspaceSlug={workspaceSlug} />
+          <CreateTeamForm workspace={workspace} />
         </div>
         <div>
-          <Teams workspaceSlug={workspaceSlug} />
+          <Teams workspace={workspace} />
         </div>
       </div>
     </>

@@ -1,18 +1,18 @@
 "use client"
 
-import { z } from "zod"
-import useZodForm from "~/common/form"
-import { Controller } from "react-hook-form"
-import { Button } from "~/ui/Button"
-import Link from "next/link"
+import cx from "classnames"
 import { signIn, useSession } from "next-auth/react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useAction } from "~/trpc/client"
+import { Controller } from "react-hook-form"
+import { z } from "zod"
 import { signUpAction } from "~/app/(public)/auth/sign-up/actions"
+import useZodForm from "~/common/form"
+import { useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
 import { Input } from "~/ui/Input"
 import { useNotification } from "~/ui/Notification"
-import cx from "classnames"
 
 const schema = z.object({
   email: z.string().email(),

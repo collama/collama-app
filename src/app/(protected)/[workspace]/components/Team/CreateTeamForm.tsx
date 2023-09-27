@@ -1,20 +1,21 @@
 "use client"
 
+import { type Workspace } from "@prisma/client"
+import { useEffect } from "react"
+import { Controller, FormProvider } from "react-hook-form"
+import useAsyncEffect from "use-async-effect"
 import { z } from "zod"
-import { useAction } from "~/trpc/client"
 import { createTeamAction } from "~/app/(protected)/[workspace]/actions"
 import useZodForm from "~/common/form"
-import { useEffect } from "react"
-import Loading from "~/ui/loading"
-import { Controller, FormProvider } from "react-hook-form"
-import { Input } from "~/ui/Input"
-import { Button } from "~/ui/Button"
-import { useNotification } from "~/ui/Notification"
 import { sleep } from "~/common/utils"
-import useAsyncEffect from "use-async-effect"
+import { useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
+import { useNotification } from "~/ui/Notification"
+import Loading from "~/ui/loading"
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
 
 const schema = z.object({
@@ -64,7 +65,7 @@ export const CreateTeamForm = (props: Props) => {
           onSubmit={form.handleSubmit((data) => {
             createTeam({
               ...data,
-              workspaceSlug: props.workspaceSlug,
+              workspaceSlug: props.workspace.slug,
             })
           })}
         >

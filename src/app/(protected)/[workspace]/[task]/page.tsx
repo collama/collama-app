@@ -1,8 +1,8 @@
+import { Suspense } from "react"
+import { ClientTask } from "~/app/(protected)/[workspace]/[task]/components/ClientTask"
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
-import { Suspense } from "react"
 import Loading from "~/ui/loading"
-import { ClientTask } from "~/app/(protected)/[workspace]/[task]/components/ClientTask"
 
 interface TaskProps {
   task: string

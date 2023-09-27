@@ -1,10 +1,10 @@
+import { type ReactElement } from "react"
 import {
   DateCondition,
   FilterCondition,
   type FilterConditionProps,
   StringCondition,
 } from "~/ui/Filter/FilterCondition"
-import { type ReactElement } from "react"
 
 export const FILTER_FORM_NAME = "filter"
 

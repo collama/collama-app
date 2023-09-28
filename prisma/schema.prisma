@@ -239,7 +239,6 @@ model Team {
   membersOnWorkspaces MembersOnWorkspaces[]
   membersOnTeams      MembersOnTeams[]
 
-  @@unique([name, workspaceId])
   @@unique([slug, workspaceId])
   @@map("teams")
 }

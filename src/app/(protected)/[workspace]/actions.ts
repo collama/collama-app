@@ -24,6 +24,6 @@ export const inviteMemberToTeamAction = createAction(
 
 export const deleteTeamByIdAction = createAction(teamRouter.deleteTeamById)
 
-export const deleteMemberOnTeamByIdAction = createAction(
-  teamRouter.deleteTeamMemberById
+export const removeTeamMemberByIdAction = createAction(
+  teamRouter.removeTeamMemberById
 )

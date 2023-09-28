@@ -48,7 +48,7 @@ export const InviteForm = ({ workspace }: Props) => {
         status: "success",
       })
       await sleep(500)
-      window.location.reload()
+      // window.location.reload()
     }
   }, [status])
 

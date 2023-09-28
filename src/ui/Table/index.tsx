@@ -52,7 +52,7 @@ export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="h-[20vh] ">
+      <div className="h-[20vh]">
         <Empty />
       </div>
     )

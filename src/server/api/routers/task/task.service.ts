@@ -20,6 +20,7 @@ import {
   getVariableContents,
 } from "~/server/api/services/prompt"
 import { serializePrompt } from "~/server/api/services/task"
+import { createSlug } from "~/server/api/utils/slug"
 import { type ExtendedPrismaClient } from "~/server/db"
 import { ApiKeyNotFound } from "~/server/errors/api-key.error"
 import {
@@ -34,16 +35,6 @@ interface TaskProcedureInput<T = unknown> {
   input: T
   session: Session
   task: Task
-}
-
-const createSlug = (text: string): string => {
-  return slugify(text, {
-    replacement: "-", // replace spaces with replacement character, defaults to `-`
-    lower: true, // convert to lower case, defaults to `false`
-    strict: true, // strip special characters except replacement, defaults to `false`
-    locale: "en", // language code of the locale to use
-    trim: true, // trim leading and trailing replacement chars, defaults to `true`
-  })
 }
 
 export const create = async (

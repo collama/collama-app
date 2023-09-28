@@ -18,3 +18,9 @@ export const UpdateMemberRoleInWorkspaceInput = z.object({
   id: z.string(),
   role: z.nativeEnum(Role),
 })
+
+export const RemoveWorkspaceMemberInput = z
+  .object({
+    memberId: z.string(),
+  })
+  .merge(WorkspaceIdInput)

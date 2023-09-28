@@ -10,8 +10,10 @@ import type {
   InviteMemberToWorkspaceInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
+import { RemoveWorkspaceMemberInput } from "~/server/api/routers/workspace/dto/workspace.input"
 import { seedTasks } from "~/server/api/routers/workspace/seeds/workspace"
 import { type ExtendedPrismaClient, prisma } from "~/server/db"
+import { CannotRemoveOwner } from "~/server/errors/task.error"
 import { UserNotFound } from "~/server/errors/user.error"
 import {
   WorkspaceMemberNotFound,
@@ -186,21 +188,27 @@ export const belongToWorkspaces = async ({
 export const removeMemberOnWorkspaceById = async ({
   input,
   prisma,
-}: WorkspaceProcedureInput<z.infer<typeof WorkspaceIdInput>>) => {
+}: WorkspaceProcedureInput<z.infer<typeof RemoveWorkspaceMemberInput>>) => {
   const member = await prisma.membersOnWorkspaces.findFirst({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
     select: {
       role: true,
     },
   })
 
-  if (!member) throw new UserNotFound()
+  if (!member) {
+    throw new UserNotFound()
+  }
+
+  if (member.role === Role.Owner) {
+    throw new CannotRemoveOwner()
+  }
 
   return prisma.membersOnWorkspaces.delete({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
   })
 }

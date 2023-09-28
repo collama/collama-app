@@ -10,6 +10,7 @@ import {
 import {
   CreateWorkspaceInput,
   InviteMemberToWorkspaceInput,
+  RemoveWorkspaceMemberInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
 import * as workspaceService from "~/server/api/routers/workspace/workspace.service"
@@ -63,7 +64,7 @@ export const removeMemberOnWorkspaceById = protectedProcedure
     allowedRoles: TaskProtectedManagers,
   })
   .use(canAccessWorkspaceMiddleware)
-  .input(WorkspaceIdInput)
+  .input(RemoveWorkspaceMemberInput)
   .mutation(({ ctx, input }) => {
     return workspaceService.removeMemberOnWorkspaceById({
       input,
@@ -102,12 +103,12 @@ const belongToWorkspaces = protectedProcedure.query(({ ctx }) => {
 })
 
 const getMembersOnWorkspace = protectedProcedure
-  .input(WorkspaceSlugInput)
+  .input(WorkspaceIdInput)
   .meta({
     allowedRoles: TaskProtectedReaders,
   })
   .use(canAccessWorkspaceMiddleware)
-  .input(WorkspaceSlugInput)
+  .input(WorkspaceIdInput)
   .query(({ ctx, input }) => {
     return workspaceService.getMembersOnWorkspace({
       input,

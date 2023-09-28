@@ -15,6 +15,7 @@ import superjson from "superjson"
 import { ZodError } from "zod"
 import { getAuthSession } from "~/libs/auth"
 import { type Role } from "~/server/api/providers/permission/role"
+import { type TeamRole } from "~/server/api/providers/permission/team-role"
 import { prisma } from "~/server/db"
 
 /**
@@ -67,7 +68,8 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
 }
 
 export interface Meta {
-  allowedRoles: Role[]
+  allowedRoles?: Role[]
+  allowedTeamRoles?: TeamRole[]
 }
 
 /**

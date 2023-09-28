@@ -1,18 +1,24 @@
 "use client"
 
+import { type Team } from "@prisma/client"
 import { useEffect } from "react"
 import useAsyncEffect from "use-async-effect"
-import { deleteMemberOnTeamByIdAction } from "~/app/(protected)/[workspace]/actions"
-import { type TeamPageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
+import { removeTeamMemberByIdAction } from "~/app/(protected)/[workspace]/actions"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { type MembersOnTeamsIncludeUser } from "~/common/types/prisma"
 import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
-import useAwaited from "~/hooks/useAwaited"
+import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
 import { useNotification } from "~/ui/Notification"
 import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
+
+interface Props {
+  workspaceSlug: string
+  teamSlug: string
+  team: Team
+}
 
 const columns: ColumnType<MembersOnTeamsIncludeUser>[] = [
   {
@@ -36,15 +42,16 @@ const columns: ColumnType<MembersOnTeamsIncludeUser>[] = [
   },
 ]
 
-export const Members = ({ teamSlug, workspaceSlug }: TeamPageParams) => {
-  const { data } = useAwaited(
-    api.team.membersOnTeam.query({ teamSlug, workspaceSlug })
+export const Members = ({ teamSlug, workspaceSlug, team }: Props) => {
+  const { data } = useAwaitedFn(
+    () => api.team.getMembersByTeamId.query({ id: team.id }),
+    []
   )
   const {
-    mutate: deleteMember,
+    mutate: removeTeamMemberById,
     status,
     error,
-  } = useAction(deleteMemberOnTeamByIdAction)
+  } = useAction(removeTeamMemberByIdAction)
   const [notice, holder] = useNotification()
 
   useEffect(() => {
@@ -76,8 +83,17 @@ export const Members = ({ teamSlug, workspaceSlug }: TeamPageParams) => {
   const actionCol: ColumnType<MembersOnTeamsIncludeUser> = {
     title: "Action",
     id: "id",
-    render: (id: string) => {
-      return <RemoveIcon onClick={() => deleteMember({ id })} />
+    render: (memberId: string) => {
+      return (
+        <RemoveIcon
+          onClick={() =>
+            removeTeamMemberById({
+              id: team.id,
+              memberId,
+            })
+          }
+        />
+      )
     },
   }
 

@@ -8,12 +8,11 @@ import { removeMemberOnWorkspaceAction } from "~/app/actions"
 import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
 import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
-import useAwaited from "~/hooks/useAwaited"
+import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
 import { useNotification } from "~/ui/Notification"
 import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
-import Loading from "~/ui/loading"
 
 const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
   {
@@ -40,10 +39,12 @@ interface Props {
 }
 
 export const Members = ({ workspace }: Props) => {
-  const { data: members, loading } = useAwaited(
-    api.workspace.getMembersOnWorkspace.query({
-      slug: workspace.slug,
-    })
+  const { data: members, loading } = useAwaitedFn(
+    () =>
+      api.workspace.getMembersOnWorkspace.query({
+        id: workspace.id,
+      }),
+    []
   )
 
   const {
@@ -57,8 +58,11 @@ export const Members = ({ workspace }: Props) => {
     {
       title: "Action",
       id: "id",
-      render: (id: string) => (
-        <span className="table-icon" onClick={() => deleteMember({ id })}>
+      render: (memberId: string) => (
+        <span
+          className="table-icon"
+          onClick={() => deleteMember({ id: workspace.id, memberId })}
+        >
           <IconX />
         </span>
       ),
@@ -88,10 +92,6 @@ export const Members = ({ workspace }: Props) => {
       })
     }
   }, [status, error])
-
-  if (loading) {
-    return <Loading />
-  }
 
   if (!members) {
     return <div>Empty</div>

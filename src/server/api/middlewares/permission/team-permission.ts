@@ -4,20 +4,20 @@ import { zSlug } from "~/common/validation"
 import type { Context, Meta } from "~/server/api/trpc"
 import { NoPermission } from "~/server/errors/task.error"
 
-export const TaskSlugInput = z.object({
-  slug: zSlug,
+export const TeamSlugInput = z.object({
   workspaceSlug: zSlug,
+  slug: zSlug,
 })
 
-export type TaskSlugInput = z.infer<typeof TaskSlugInput>
+export type TeamSlugInput = z.infer<typeof TeamSlugInput>
 
-export const TaskIdInput = z.object({
+export const TeamIdInput = z.object({
   id: z.string(),
 })
 
-export type TaskIdInput = z.infer<typeof TaskIdInput>
+export type TeamIdInput = z.infer<typeof TeamIdInput>
 
-export const canAccessTaskMiddleware = experimental_standaloneMiddleware<{
+export const canAccessTeamMiddleware = experimental_standaloneMiddleware<{
   ctx: Context // defaults to 'object' if not defined
   input: {
     id?: string
@@ -34,12 +34,12 @@ export const canAccessTaskMiddleware = experimental_standaloneMiddleware<{
     })
   }
 
-  const permission = await ctx.prisma.task.canUserAccess({
+  const permission = await ctx.prisma.team.canUserAccess({
     id: input.id,
     slug: input.slug,
     workspaceSlug: input.workspaceSlug,
     userId: ctx.session.user.id,
-    allowedRoles: meta?.allowedRoles ?? [],
+    allowedRoles: meta?.allowedTeamRoles ?? [],
   })
 
   if (!permission.canAccess) {
@@ -50,7 +50,6 @@ export const canAccessTaskMiddleware = experimental_standaloneMiddleware<{
     ctx: {
       ...ctx,
       session: ctx.session,
-      task: permission.task,
     },
   })
 })

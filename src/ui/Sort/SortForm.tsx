@@ -1,13 +1,13 @@
-import { Controller, useFieldArray } from "react-hook-form"
-import { Select } from "~/ui/Select"
-import { Button } from "~/ui/Button"
-import useZodForm from "~/common/form"
-import { z } from "zod"
 import { IconX } from "@tabler/icons-react"
-import { type ColumnType } from "~/ui/Table"
-import { HandleFormError } from "~/ui/Filter/FilterCondition"
-import { SORT_CONDITION, SORT_FORM_NAME } from "~/ui/Sort/contants"
+import { Controller, useFieldArray } from "react-hook-form"
+import { z } from "zod"
+import useZodForm from "~/common/form"
 import { type Sort, type SortValue } from "~/common/types/props"
+import { Button } from "~/ui/Button"
+import { HandleFormError } from "~/ui/Filter/FilterCondition"
+import { Select } from "~/ui/Select"
+import { SORT_CONDITION, SORT_FORM_NAME } from "~/ui/Sort/contants"
+import { type ColumnType } from "~/ui/Table"
 
 const DEFAULT_VALUE = { columns: "", condition: "asc" }
 export const sortSchema = z.object({

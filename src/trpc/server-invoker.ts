@@ -5,9 +5,9 @@ import { experimental_nextCacheLink } from "@trpc/next/app-dir/links/nextCache"
 import { experimental_createTRPCNextAppDirServer } from "@trpc/next/app-dir/server"
 import { cookies } from "next/headers"
 import SuperJSON from "superjson"
+import { getAuthSession } from "~/libs/auth"
 import { appRouter } from "~/server/api/root"
 import { prisma } from "~/server/db"
-import { getAuthSession } from "~/libs/auth"
 
 /**
  * This client invokes procedures directly on the server without fetching over HTTP.
@@ -34,7 +34,7 @@ export const api = experimental_createTRPCNextAppDirServer<typeof appRouter>({
               prisma,
               headers: {
                 cookie: cookies().toString(),
-                "x-trpc-source": "rsc-invoke",
+                "x-trpc-source": "rsc-invoker",
               } as never,
             }
           },

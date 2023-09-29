@@ -1,19 +1,19 @@
+import React, { useEffect } from "react"
+import useAsyncEffect from "use-async-effect"
+import { removeMemberOnTaskAction } from "~/actions/task.action"
 import {
   InviteMemberToTask,
   type InviteMemberToTaskProps,
 } from "~/app/(protected)/[workspace]/[task]/components/InviteMemberToTask"
-import React, { useEffect } from "react"
-import { type ColumnType, Table } from "~/ui/Table"
+import { RemoveIcon } from "~/app/components/RemoveIcon"
+import type { MembersOnTaskIncludeUserTeam } from "~/common/types/prisma"
+import { sleep } from "~/common/utils"
+import { toFullDate } from "~/common/utils/datetime"
 import useAwaited from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
-import type { MembersOnTaskIncludeUserTeam } from "~/common/types/prisma"
-import { Tag } from "~/ui/Tag"
-import { toFullDate } from "~/common/utils/datetime"
-import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { useNotification } from "~/ui/Notification"
-import { removeMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
+import { type ColumnType, Table } from "~/ui/Table"
+import { Tag } from "~/ui/Tag"
 
 const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
   {
@@ -39,19 +39,13 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
   },
 ]
 
-export function TaskMember({
-  taskSlug,
-  workspaceName,
-}: InviteMemberToTaskProps) {
+export function TaskMember({ task }: InviteMemberToTaskProps) {
   const { data, loading } = useAwaited(
-    api.task.getMembers.query({
-      slug: taskSlug,
-      workspaceSlug: workspaceName,
-    })
+    api.task.getMembers.query({ id: task.id })
   )
 
   const {
-    mutate: deleteMember,
+    mutate: removeMember,
     status,
     error,
   } = useAction(removeMemberOnTaskAction)
@@ -83,19 +77,21 @@ export function TaskMember({
     }
   }, [status])
 
-  const actionCol: ColumnType<MembersOnTaskIncludeUserTeam> = {
+  const actionColumn: ColumnType<MembersOnTaskIncludeUserTeam> = {
     title: "Action",
     id: "id",
-    render: (id: string) => <RemoveIcon onClick={() => deleteMember({ id })} />,
+    render: (memberId: string) => (
+      <RemoveIcon onClick={() => removeMember({ id: task.id, memberId })} />
+    ),
   }
 
   return (
     <>
       <div className="space-y-6">
-        <InviteMemberToTask workspaceName={workspaceName} taskSlug={taskSlug} />
+        <InviteMemberToTask task={task} />
         <Table
           data={data}
-          columns={[...columns, actionCol]}
+          columns={[...columns, actionColumn]}
           loading={loading}
         />
       </div>

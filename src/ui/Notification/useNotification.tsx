@@ -1,11 +1,7 @@
 import {
-  type ReactElement,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+  Notifications,
+  type NotificationsRef,
+} from "./components/Notifications"
 import {
   type NotificationAPI,
   type NotifyStatus,
@@ -13,9 +9,13 @@ import {
   type Task,
 } from "./interface"
 import {
-  Notifications,
-  type NotificationsRef,
-} from "./components/Notifications"
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { defaultGetContainer, mergeConfig } from "~/ui/Notification/ultis"
 
 type NotificationConfig = {

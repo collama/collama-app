@@ -1,17 +1,17 @@
 "use client"
 
-import { api, useAction } from "~/trpc/client"
-import useAwaited from "~/hooks/useAwaited"
-import Loading from "~/ui/loading"
-import { type ColumnType, Table } from "~/ui/Table"
-import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
-import { toFullDate } from "~/common/utils/datetime"
+import { type Workspace } from "@prisma/client"
 import { IconX } from "@tabler/icons-react"
-import { deleteMemberOnWorkspaceAction } from "~/app/actions"
-import { useNotification } from "~/ui/Notification"
-import useAsyncEffect from "use-async-effect"
-import { sleep } from "~/common/utils"
 import { useEffect } from "react"
+import useAsyncEffect from "use-async-effect"
+import { removeMemberOnWorkspaceAction } from "~/app/actions"
+import { type MemberOnWorkspaceIncludeUserMail } from "~/common/types/prisma"
+import { sleep } from "~/common/utils"
+import { toFullDate } from "~/common/utils/datetime"
+import { useAwaitedFn } from "~/hooks/useAwaited"
+import { api, useAction } from "~/trpc/client"
+import { useNotification } from "~/ui/Notification"
+import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
 
 const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
@@ -35,29 +35,34 @@ const columns: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
 ]
 
 interface Props {
-  workspaceSlug: string
+  workspace: Workspace
 }
 
-export const Members = (props: Props) => {
-  const { data: members, loading } = useAwaited(
-    api.workspace.getMembersOnWorkspace.query({
-      slug: props.workspaceSlug,
-    })
+export const Members = ({ workspace }: Props) => {
+  const { data: members, loading } = useAwaitedFn(
+    () =>
+      api.workspace.getMembersOnWorkspace.query({
+        id: workspace.id,
+      }),
+    []
   )
 
   const {
     mutate: deleteMember,
     status,
     error,
-  } = useAction(deleteMemberOnWorkspaceAction)
+  } = useAction(removeMemberOnWorkspaceAction)
   const [notice, holder] = useNotification()
 
   const actionCol: ColumnType<MemberOnWorkspaceIncludeUserMail>[] = [
     {
       title: "Action",
       id: "id",
-      render: (id: string) => (
-        <span className="table-icon" onClick={() => deleteMember({ id })}>
+      render: (memberId: string) => (
+        <span
+          className="table-icon"
+          onClick={() => deleteMember({ id: workspace.id, memberId })}
+        >
           <IconX />
         </span>
       ),
@@ -87,10 +92,6 @@ export const Members = (props: Props) => {
       })
     }
   }, [status, error])
-
-  if (loading) {
-    return <Loading />
-  }
 
   if (!members) {
     return <div>Empty</div>

@@ -1,6 +1,6 @@
-import { type FC, type ReactNode } from "react"
 import Link from "next/link"
-import urlJoin from "url-join";
+import { type FC, type ReactNode } from "react"
+import urlJoin from "url-join"
 
 export type CrumbItem = {
   label: ReactNode // e.g., Python
@@ -18,10 +18,9 @@ export const Breadcrumbs: FC<BreadcrumbsProps> = ({ items }) => {
         const isLastItem = i === items.length - 1
         if (!isLastItem) {
           return (
-            <span className='text-neutral-400 ' key={i}>
+            <span className="text-neutral-400 " key={i}>
               <Link
-                href={urlJoin('/', crumb.path)}
-
+                href={urlJoin("/", crumb.path)}
                 className="hover:text-neutral-600 hover:underline"
               >
                 {crumb.label}
@@ -31,7 +30,11 @@ export const Breadcrumbs: FC<BreadcrumbsProps> = ({ items }) => {
             </span>
           )
         } else {
-          return <span key={crumb.path} className='cursor-default'>{crumb.label}</span>
+          return (
+            <span key={crumb.path} className="cursor-default">
+              {crumb.label}
+            </span>
+          )
         }
       })}
     </div>

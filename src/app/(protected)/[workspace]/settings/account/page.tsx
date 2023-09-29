@@ -1,10 +1,10 @@
 "use client"
 
 import { type ChangeEvent, useEffect, useState } from "react"
-import { api, useAction } from "~/trpc/client"
-import { createPresignedUrlAction } from "~/app/(protected)/[workspace]/settings/account/actions"
 import useAsyncEffect from "use-async-effect"
+import { createPresignedUrlAction } from "~/app/(protected)/[workspace]/settings/account/actions"
 import useAwaited from "~/hooks/useAwaited"
+import { api, useAction } from "~/trpc/client"
 
 export default function AccountPage() {
   const { data: user, loading } = useAwaited(api.user.getUser.query())

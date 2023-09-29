@@ -1,8 +1,8 @@
-import { useEditor, EditorContent, type JSONContent } from "@tiptap/react"
-import { TipTapProps } from "~/ui/RichText/components/TipTapProps"
-import { TipTapExtensions } from "~/ui/RichText/components/TipTapExtension"
 import type { Editor } from "@tiptap/core"
+import { useEditor, EditorContent, type JSONContent } from "@tiptap/react"
 import { useCallback, useEffect } from "react"
+import { TipTapExtensions } from "~/ui/RichText/components/TipTapExtension"
+import { TipTapProps } from "~/ui/RichText/components/TipTapProps"
 
 export function TipTap({
   onChange,

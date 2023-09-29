@@ -1,8 +1,8 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { Breadcrumbs as UiBreadcrumbs, type CrumbItem } from "~/ui/Breadcrumbs"
 import { capitalizeFirstLetter } from "~/common/utils"
+import { Breadcrumbs as UiBreadcrumbs, type CrumbItem } from "~/ui/Breadcrumbs"
 
 const parsePathname = (pathname: string) => {
   const paths = pathname.split("/")

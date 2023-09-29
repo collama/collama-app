@@ -1,25 +1,24 @@
+import { IconX } from "@tabler/icons-react"
 import { useState } from "react"
 import { Controller, useFieldArray } from "react-hook-form"
-import { Select } from "~/ui/Select"
-import { Button } from "~/ui/Button"
-import useZodForm from "~/common/form"
 import { z } from "zod"
-import {
-  FILTER_CONDITIONS,
-  FILTER_FORM_NAME,
-  type FilterType,
-} from "~/ui/Filter/constants"
-import { IconX } from "@tabler/icons-react"
-import { type ColumnType } from "~/ui/Table"
-import {
-  type FilterConditionProps,
-  HandleFormError,
-} from "~/ui/Filter/FilterCondition"
+import useZodForm from "~/common/form"
 import {
   type Filter,
   FilterOperator,
   type FilterValue,
 } from "~/common/types/props"
+import { Button } from "~/ui/Button"
+import {
+  DateCondition,
+  FilterCondition,
+  type FilterConditionProps,
+  HandleFormError,
+  StringCondition,
+} from "~/ui/Filter/FilterCondition"
+import { FILTER_FORM_NAME, type FilterType } from "~/ui/Filter/constants"
+import { Select } from "~/ui/Select"
+import { type ColumnType } from "~/ui/Table"
 
 const DEFAULT_VALUE = { columns: "", condition: "", value: "" }
 const filterSchema = z.object({
@@ -80,8 +79,19 @@ export function FilterForm({
   }, {})
 
   const renderFilter = (type: FilterType, props: FilterConditionProps) => {
-    const Component = FILTER_CONDITIONS[type]
-    return <Component {...props} />
+    if (type === "string") {
+      return <StringCondition {...props} />
+    }
+
+    if (type === "boolean") {
+      return <FilterCondition {...props} />
+    }
+
+    if (type === "date") {
+      return <DateCondition {...props} />
+    }
+
+    return null
   }
 
   return (

@@ -1,11 +1,10 @@
 import Link from "next/link"
-import { api } from "~/trpc/server-invoker"
+import { api } from "~/trpc/server-http"
 
 interface Props {}
 
 export default async function WorkspaceGroup({}: Props) {
   const workspaces = await api.workspace.getAll.query()
-  console.log(workspaces)
 
   return (
     <div className="w-full p-2 py-2">

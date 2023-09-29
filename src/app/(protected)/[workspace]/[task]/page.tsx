@@ -1,8 +1,8 @@
-import type { PageProps } from "~/common/types/props"
-import { api } from "~/trpc/server-invoker"
 import { Suspense } from "react"
-import Loading from "~/ui/loading"
 import { ClientTask } from "~/app/(protected)/[workspace]/[task]/components/ClientTask"
+import type { PageProps } from "~/common/types/props"
+import { api } from "~/trpc/server-http"
+import Loading from "~/ui/loading"
 
 interface TaskProps {
   task: string
@@ -12,6 +12,7 @@ interface TaskProps {
 export default async function TaskPage({ params }: PageProps<TaskProps>) {
   const task = await api.task.getBySlug.query({
     slug: params.task,
+    workspaceSlug: params.workspace,
   })
 
   if (!task) {
@@ -20,11 +21,7 @@ export default async function TaskPage({ params }: PageProps<TaskProps>) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <ClientTask
-        task={task}
-        taskName={params.task}
-        workspaceName={params.workspace}
-      />
+      <ClientTask task={task} />
     </Suspense>
   )
 }

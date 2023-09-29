@@ -1,7 +1,7 @@
+import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 import { nextAuthOptions } from "~/libs/auth"
-import type { NextApiRequest, NextApiResponse } from "next"
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, nextAuthOptions)

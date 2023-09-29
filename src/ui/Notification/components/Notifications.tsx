@@ -5,9 +5,9 @@ import {
   useImperativeHandle,
   useState,
 } from "react"
-import { type OpenConfig, type Placement } from "~/ui/Notification/interface"
 import { createPortal } from "react-dom"
 import { NoticeList } from "~/ui/Notification/components/NoticeList"
+import { type OpenConfig, type Placement } from "~/ui/Notification/interface"
 
 type Placements = Partial<Record<Placement, OpenConfig[]>>
 

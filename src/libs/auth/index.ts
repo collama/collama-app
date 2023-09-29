@@ -1,16 +1,17 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "~/server/db"
 import { type PrismaClient } from "@prisma/client"
+import { randomUUID } from "crypto"
+import crypto from "crypto"
+import dayjs from "dayjs"
+import ms from "ms"
+import { type NextApiRequest, type NextApiResponse } from "next"
+import { type AuthOptions } from "next-auth"
+import { type Session } from "next-auth"
 import { type Adapter, type User } from "next-auth/adapters"
+import { getServerSession } from "next-auth/next"
 import Credentials from "next-auth/providers/credentials"
 import { env } from "~/env.mjs"
-import ms from "ms"
-import { type AuthOptions } from "next-auth"
-import { getServerSession } from "next-auth/next"
-import dayjs from "dayjs"
-import { randomUUID } from "crypto"
-import { type Session } from "next-auth"
-import { type NextApiRequest, type NextApiResponse } from "next"
+import { prisma } from "~/server/db"
 
 const adapter = PrismaAdapter(
   prisma as unknown as PrismaClient
@@ -40,6 +41,7 @@ export const nextAuthOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
+        console.log("credentials", credentials)
         if (!credentials?.email || !credentials.password) {
           return null
         }
@@ -54,10 +56,10 @@ export const nextAuthOptions: AuthOptions = {
           return null
         }
 
-        const isValidPassword = await Bun.password.verify(
-          credentials.password,
-          user.password
-        )
+        const hash = crypto
+          .pbkdf2Sync(credentials.password, user.salt, 1000, 64, "sha512")
+          .toString(`hex`)
+        const isValidPassword = hash === user.password
 
         if (!isValidPassword) {
           return null
@@ -129,6 +131,13 @@ export const nextAuthOptions: AuthOptions = {
   },
 }
 
-export const getAuthSession = async (): Promise<Session | null> => {
+export const getAuthSession = async (
+  req?: NextApiRequest,
+  res?: NextApiResponse
+): Promise<Session | null> => {
+  if (req && res) {
+    return getServerSession(req, res, nextAuthOptions)
+  }
+
   return getServerSession(nextAuthOptions)
 }

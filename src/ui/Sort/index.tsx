@@ -1,9 +1,9 @@
+import { useState } from "react"
+import { type SortValue } from "~/common/types/props"
 import { Button } from "~/ui/Button"
 import { Popover } from "~/ui/Popover"
-import { type ColumnType } from "~/ui/Table"
-import { type SortValue } from "~/common/types/props"
 import { SortForm } from "~/ui/Sort/SortForm"
-import { useState } from "react"
+import { type ColumnType } from "~/ui/Table"
 
 export function Sort({
   columns,

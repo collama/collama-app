@@ -1,36 +1,42 @@
-import type { PageProps } from "~/common/types/props"
 import { InviteTeamForm } from "./components/InviteTeamForm"
 import { Members } from "./components/Members"
-import { api } from "~/trpc/server-invoker"
+import type { PageProps } from "~/common/types/props"
+import { TeamNotFound } from "~/server/errors/team.error"
+import { api } from "~/trpc/server-http"
 
 interface Props {
   team: string
   workspace: string
 }
 
-export type TeamPageParams = {
-  teamSlug: string
-  workspaceSlug: string
-}
-
 export default async function TeamPage({ params }: PageProps<Props>) {
+  console.log("params", params)
   const team = await api.team.getTeamBySlug.query({
-    teamSlug: params.team,
+    slug: params.team,
     workspaceSlug: params.workspace,
   })
+
+  if (!team) {
+    throw new TeamNotFound()
+  }
 
   return (
     <div className="mt-4 space-y-6 p-6">
       <div>
-        <h2 className='text-xl font-bold'>{team?.name ?? "Team name"}</h2>
+        <h2 className="text-xl font-bold">{team?.name ?? "Team name"}</h2>
       </div>
       <div className="rounded-lg border p-6">
         <InviteTeamForm
+          team={team}
           teamSlug={params.team}
           workspaceSlug={params.workspace}
         />
       </div>
-      <Members teamSlug={params.team} workspaceSlug={params.workspace} />
+      <Members
+        team={team}
+        teamSlug={params.team}
+        workspaceSlug={params.workspace}
+      />
     </div>
   )
 }

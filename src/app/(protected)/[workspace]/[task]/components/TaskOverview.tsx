@@ -1,7 +1,11 @@
-import { type TaskIncludeOwner } from "~/common/types/prisma"
 import { Execute } from "~/app/(protected)/[workspace]/[task]/components/Execute"
+import { type TaskIncludeOwner } from "~/common/types/prisma"
 
-export const TaskOverview = ({ task }: { task: TaskIncludeOwner }) => {
+interface Props {
+  task: TaskIncludeOwner
+}
+
+export const TaskOverview = ({ task }: Props) => {
   return (
     <div>
       <Execute task={task} />

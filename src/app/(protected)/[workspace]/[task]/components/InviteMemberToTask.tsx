@@ -1,19 +1,19 @@
 "use client"
 
-import { Role } from "@prisma/client"
-import { Controller, FormProvider } from "react-hook-form"
-import useZodForm from "~/common/form"
-import { z } from "zod"
-import { Input } from "~/ui/Input"
-import { Select } from "~/ui/Select"
-import { Button } from "~/ui/Button"
-import { InviteRoleOptions } from "~/common/constants/prisma"
-import { useAction } from "~/trpc/client"
-import { inviteMemberOnTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
-import { useNotification } from "~/ui/Notification"
+import { Role, type Task } from "@prisma/client"
 import { useEffect } from "react"
+import { Controller, FormProvider } from "react-hook-form"
 import useAsyncEffect from "use-async-effect"
+import { z } from "zod"
+import { inviteMemberOnTaskAction } from "~/actions/task.action"
+import { InviteRoleOptions } from "~/common/constants/prisma"
+import useZodForm from "~/common/form"
 import { sleep } from "~/common/utils"
+import { useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
+import { useNotification } from "~/ui/Notification"
+import { Select } from "~/ui/Select"
 
 const schema = z.object({
   emailOrTeamName: z.string().email().or(z.string()),
@@ -21,14 +21,10 @@ const schema = z.object({
 })
 
 export type InviteMemberToTaskProps = {
-  taskSlug: string
-  workspaceName: string
+  task: Task
 }
 
-export const InviteMemberToTask = ({
-  taskSlug,
-  workspaceName,
-}: InviteMemberToTaskProps) => {
+export const InviteMemberToTask = ({ task }: InviteMemberToTaskProps) => {
   const form = useZodForm({ schema })
   const { mutate: invite, status, error } = useAction(inviteMemberOnTaskAction)
   const [notice, holder] = useNotification()
@@ -65,9 +61,8 @@ export const InviteMemberToTask = ({
         <form
           onSubmit={form.handleSubmit((data) => {
             invite({
-              workspaceName,
+              id: task.id,
               role: data.role,
-              taskSlug,
               emailOrTeamName: data.emailOrTeamName,
             })
           })}

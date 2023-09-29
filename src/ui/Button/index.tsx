@@ -1,6 +1,6 @@
+import cx from "classnames"
 import type { PropsWithChildren, ReactNode } from "react"
 import { forwardRef } from "react"
-import cx from "classnames"
 import { Spin } from "~/ui/Spinner"
 
 type ButtonType = "primary" | "default" | "text"

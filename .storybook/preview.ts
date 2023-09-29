@@ -1,9 +1,7 @@
-import type { Preview } from "@storybook/react"
-
-import { withThemeByClassName } from "@storybook/addon-styling"
-
 /* TODO: update import to your tailwind styles file. If you're using Angular, inject this through your angular.json config instead */
 import "../src/styles/globals.css"
+import { withThemeByClassName } from "@storybook/addon-styling"
+import type { Preview } from "@storybook/react"
 
 const preview: Preview = {
   parameters: {

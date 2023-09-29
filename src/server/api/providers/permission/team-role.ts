@@ -48,3 +48,6 @@ export class TeamRole {
 export const TeamOwner = new TeamRole(PrismaTeamRole.Owner)
 export const TeamAdmin = new TeamRole(PrismaTeamRole.Admin)
 export const TeamMember = new TeamRole(PrismaTeamRole.Member)
+
+export const TeamProtectedManagers = [TeamOwner, TeamAdmin]
+export const TeamProtectedMembers = [...TeamProtectedManagers, TeamMember]

@@ -1,5 +1,5 @@
-import { z } from "zod"
 import { Provider } from "@prisma/client"
+import { z } from "zod"
 
 export const CreateApiKeyInput = z.object({
   provider: z.enum([Provider.OpenAI, Provider.Cohere]),

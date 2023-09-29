@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { zSlug } from "~/common/validation"
 
 const FilterConditionInput = z.object({
   columns: z.string().nonempty(),
@@ -27,7 +28,7 @@ const SortInput = z
 export const FilterAndSortInput = z.object({
   filter: FilterInput,
   sort: SortInput,
-  slug: z.string(),
+  workspaceSlug: zSlug,
   page: z.number(),
   limit: z.number(),
 })

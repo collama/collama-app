@@ -1,10 +1,5 @@
-import {
-  DateCondition,
-  FilterCondition,
-  type FilterConditionProps,
-  StringCondition,
-} from "~/ui/Filter/FilterCondition"
 import { type ReactElement } from "react"
+import { type FilterConditionProps } from "~/ui/Filter/FilterCondition"
 
 export const FILTER_FORM_NAME = "filter"
 
@@ -28,12 +23,3 @@ export const BOOLEAN_CONDITION: Option[] = [
   { label: "True", value: "true" },
   { label: "False", value: "false" },
 ]
-
-export const FILTER_CONDITIONS: Record<
-  FilterType,
-  (p: FilterConditionProps) => ReactElement
-> = {
-  string: StringCondition,
-  date: DateCondition,
-  boolean: FilterCondition,
-}

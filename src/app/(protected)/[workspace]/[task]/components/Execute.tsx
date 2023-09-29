@@ -1,25 +1,30 @@
 "use client"
 
-import { type TaskIncludeOwner } from "~/common/types/prisma"
-import useAwaited from "~/hooks/useAwaited"
-import { api, useAction } from "~/trpc/client"
-import useZodForm from "~/common/form"
-import { z } from "zod"
 import { Controller, FormProvider } from "react-hook-form"
-import { Input } from "~/ui/Input"
-import { Button } from "~/ui/Button"
-import { executeTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actionts"
+import { z } from "zod"
+import { executeTaskAction } from "~/app/(protected)/[workspace]/tasks/new/actions"
+import useZodForm from "~/common/form"
+import { type TaskIncludeOwner } from "~/common/types/prisma"
 import { capitalizeFirstLetter } from "~/common/utils"
+import { useAwaitedFn } from "~/hooks/useAwaited"
+import { api, useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
 import { Spin } from "~/ui/Spinner"
 
 const schema = z.record(z.string())
 
-export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
-  const form = useZodForm({ schema })
+interface ExecuteTaskProps {
+  task: TaskIncludeOwner
+}
 
-  const { data, loading } = useAwaited(
-    api.task.getPromptVariables.query({ slug: task.slug })
+export const Execute = ({ task }: ExecuteTaskProps) => {
+  const form = useZodForm({ schema })
+  const { data, loading } = useAwaitedFn(
+    () => api.task.getPromptVariables.query({ id: task.id }),
+    [task.id]
   )
+
   const {
     mutate: executeTask,
     status,
@@ -39,7 +44,7 @@ export const Execute = ({ task }: { task: TaskIncludeOwner }) => {
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit((data) =>
-                executeTask({ slug: task.slug, variables: data })
+                executeTask({ id: task.id, variables: data })
               )}
             >
               {loading && (

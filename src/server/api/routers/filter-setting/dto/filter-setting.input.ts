@@ -6,4 +6,6 @@ export const UpsertFilterInput = z.object({
   setting: z.string(),
 })
 
-export const GetFilterSettingByWorkspaceSlugInput = z.object({ workspaceSlug: zSlug })
+export const GetFilterSettingByWorkspaceSlugInput = z.object({
+  workspaceSlug: zSlug,
+})

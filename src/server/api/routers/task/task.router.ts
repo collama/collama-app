@@ -1,68 +1,131 @@
-import * as taskService from "~/server/api/routers/task/task.service"
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import {
+  canAccessTaskMiddleware,
+  TaskIdInput,
+  TaskSlugInput,
+} from "~/server/api/middlewares/permission/task-permission"
+import {
+  TaskProtectedReaders,
+  TaskProtectedWriters,
+} from "~/server/api/providers/permission/role"
+import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import {
   CreateTaskInput,
-  DeleteTaskInput,
   ExecuteTaskInput,
-  GetMembersSlugInput,
-  GetTaskBySlugInput,
   InviteMemberInput,
-  RemoveMemberInput,
+  RemoveTaskMemberInput,
 } from "~/server/api/routers/task/dto/task.input"
-import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
+import * as taskService from "~/server/api/routers/task/task.service"
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const create = protectedProcedure
   .input(CreateTaskInput)
-  .mutation( ({ ctx, input }) => {
-    return taskService.create(input, ctx.session)
+  .mutation(({ ctx, input }) => {
+    return taskService.create(ctx.prisma, input, ctx.session)
   })
 
 export const execute = protectedProcedure
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedWriters,
+  })
+  .use(canAccessTaskMiddleware)
   .input(ExecuteTaskInput)
-  .mutation( ({ input }) => {
-    return taskService.execute(input)
+  .mutation(({ input, ctx }) => {
+    return taskService.execute({
+      ...ctx,
+      input,
+    })
   })
 
-export const deleteById = protectedProcedure
-  .input(DeleteTaskInput)
-  .mutation( ({ input }) => {
-    return taskService.deleteById(input)
+export const deleteBySlug = protectedProcedure
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedWriters,
+  })
+  .use(canAccessTaskMiddleware)
+  .mutation(({ input, ctx }) => {
+    return taskService.deleteById({
+      ...ctx,
+      input,
+    })
   })
 
 export const inviteMember = protectedProcedure
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedWriters,
+  })
+  .use(canAccessTaskMiddleware)
   .input(InviteMemberInput)
-  .mutation( ({ input, ctx }) => {
-    return taskService.inviteMember(ctx.prisma, input, ctx.session)
+  .mutation(({ input, ctx }) => {
+    return taskService.inviteMember({
+      ...ctx,
+      input,
+    })
   })
 
 export const removeMember = protectedProcedure
-  .input(RemoveMemberInput)
-  .mutation( ({ input }) => {
-    return taskService.removeMember(input)
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedWriters,
+  })
+  .use(canAccessTaskMiddleware)
+  .input(RemoveTaskMemberInput)
+  .mutation(({ input, ctx }) => {
+    return taskService.removeMember({
+      ...ctx,
+      input,
+    })
   })
 
 const getBySlug = protectedProcedure
-  .input(GetTaskBySlugInput)
-  .query( ({ input, ctx }) => {
-    return taskService.getBySlug(input, ctx.session)
+  .input(TaskSlugInput)
+  .meta({
+    allowedRoles: TaskProtectedReaders,
+  })
+  .use(canAccessTaskMiddleware)
+  .input(TaskSlugInput)
+  .query(({ input, ctx }) => {
+    return taskService.getBySlug({
+      ...ctx,
+      input,
+    })
   })
 
 const getPromptVariables = protectedProcedure
-  .input(GetTaskBySlugInput)
-  .query( ({ input }) => {
-    return taskService.getPromptVariables(input)
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedWriters,
+  })
+  .use(canAccessTaskMiddleware)
+  .input(TaskIdInput)
+  .query(({ input, ctx }) => {
+    return taskService.getPromptVariables({
+      ...ctx,
+      input,
+    })
   })
 
 const getMembers = protectedProcedure
-  .input(GetMembersSlugInput)
-  .query( ({ input }) => {
-    return taskService.getMembers(input)
+  .input(TaskIdInput)
+  .meta({
+    allowedRoles: TaskProtectedReaders,
+  })
+  .use(canAccessTaskMiddleware)
+  .query(({ input, ctx }) => {
+    return taskService.getMembers({
+      ...ctx,
+      input,
+    })
   })
 
 const filterAndSort = protectedProcedure
   .input(FilterAndSortInput)
-  .query( ({ input }) => {
-    return taskService.filterAndSort(input)
+  .query(({ input, ctx }) => {
+    return taskService.filterAndSort({
+      ...ctx,
+      input,
+    })
   })
 
 export const taskTRPCRouter = createTRPCRouter({

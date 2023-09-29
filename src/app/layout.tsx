@@ -1,7 +1,7 @@
-import "~/styles/globals.css"
 import { Inter } from "next/font/google"
-import { type PropsWithChildren } from "react"
+import React, { type PropsWithChildren } from "react"
 import { NextAuthProvider } from "~/context/NextAuthProvider"
+import "~/styles/globals.css"
 
 const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500"] })
 

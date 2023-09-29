@@ -1,32 +1,44 @@
 import { InviteStatus, Role } from "@prisma/client"
-import { prisma } from "~/server/db"
+import type { Session } from "next-auth"
 import type { z } from "zod"
+import {
+  type TeamIdInput,
+  type TeamSlugInput,
+} from "~/server/api/middlewares/permission/team-permission"
+import { type WorkspaceSlugInput } from "~/server/api/middlewares/permission/workspace-permission"
 import type {
   CreateTeamInput,
   InviteMemberToTeamInput,
-  MembersOnTeamInput,
-  TeamsOnWorkspaceInput,
 } from "~/server/api/routers/team/dto/team.input"
+import { type RemoveMemberByIdInput } from "~/server/api/routers/team/dto/team.input"
+import { createSlug } from "~/server/api/utils/slug"
+import { type ExtendedPrismaClient } from "~/server/db"
 import {
-  DeleteTeamByIdInput,
-  GetTeamBySlugInput,
-} from "~/server/api/routers/team/dto/team.input"
-import type { Session } from "next-auth"
+  CannotRemoveTeamOwner,
+  TeamMemberNotFound,
+} from "~/server/errors/team.error"
+import { UserNotFound } from "~/server/errors/user.error"
 import {
-  CanNotRemoveOwner,
-  UserNotFound,
+  WorkspaceMemberNotFound,
   WorkspaceNotFound,
-} from "~/common/errors"
+} from "~/server/errors/workspace.error"
+
+interface TeamProcedureInput<T = unknown> {
+  prisma: ExtendedPrismaClient
+  input: T
+  session: Session
+}
 
 export const createTeam = (
+  prisma: ExtendedPrismaClient,
   input: z.infer<typeof CreateTeamInput>,
   session: Session
-) =>
-  prisma.$transaction(async (tx) => {
+) => {
+  return prisma.$transaction(async (tx) => {
     const team = await tx.team.create({
       data: {
         name: input.name,
-        slug: input.name.toLowerCase(),
+        slug: createSlug(input.name),
         description: input.description,
         workspace: {
           connect: {
@@ -65,11 +77,13 @@ export const createTeam = (
 
     return team
   })
+}
 
-export const inviteMemberToTeam = (
-  input: z.infer<typeof InviteMemberToTeamInput>
-) =>
-  prisma.$transaction(async (tx) => {
+export const inviteMemberToTeam = ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof InviteMemberToTeamInput>>) => {
+  return prisma.$transaction(async (tx) => {
     const workspace = await tx.workspace.findFirst({
       where: {
         slug: input.workspaceSlug,
@@ -79,7 +93,24 @@ export const inviteMemberToTeam = (
       },
     })
 
-    if (!workspace) throw WorkspaceNotFound
+    if (!workspace) throw new WorkspaceNotFound()
+
+    const user = await tx.user.findUnique({
+      where: {
+        email: input.email,
+      },
+    })
+
+    if (!user) throw new UserNotFound()
+
+    const member = await tx.membersOnWorkspaces.findFirst({
+      where: {
+        userId: user.id,
+        workspaceId: workspace.id,
+      },
+    })
+
+    if (!member) throw new WorkspaceMemberNotFound()
 
     return tx.membersOnTeams.create({
       data: {
@@ -91,51 +122,54 @@ export const inviteMemberToTeam = (
         },
         team: {
           connect: {
-            slug_workspaceId: {
-              slug: input.teamSlug,
-              workspaceId: workspace.id,
-            },
+            id: input.id,
           },
         },
         workspace: {
           connect: {
-            slug: input.workspaceSlug,
+            id: workspace.id,
           },
         },
         status: InviteStatus.Accepted,
       },
     })
   })
+}
 
-export const teamsOnWorkspace = (input: z.infer<typeof TeamsOnWorkspaceInput>) =>
-  prisma.team.findMany({
+export const getTeamsByWorkspaceSlug = ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof WorkspaceSlugInput>>) => {
+  return prisma.team.findMany({
     where: {
       workspace: {
-        slug: input.workspaceSlug,
+        slug: input.slug,
       },
     },
     include: {
       owner: true,
     },
   })
-export const membersOnTeam = (input: z.infer<typeof MembersOnTeamInput>) =>
-  prisma.membersOnTeams.findMany({
+}
+
+export const getMembersByTeamId = ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof TeamIdInput>>) => {
+  return prisma.membersOnTeams.findMany({
     where: {
-      team: {
-        slug: input.teamSlug,
-      },
-      workspace: {
-        slug: input.workspaceSlug,
-      },
+      teamId: input.id,
     },
     include: {
       user: true,
     },
   })
+}
 
-export const getTeamBySlug = async (
-  input: z.infer<typeof GetTeamBySlugInput>
-) => {
+export const getTeamBySlug = async ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof TeamSlugInput>>) => {
   const workspace = await prisma.workspace.findFirst({
     where: {
       slug: input.workspaceSlug,
@@ -145,17 +179,22 @@ export const getTeamBySlug = async (
     },
   })
 
-  if (!workspace) throw WorkspaceNotFound
+  if (!workspace) throw new WorkspaceNotFound()
 
-  return prisma.team.findFirst({
+  return prisma.team.findUnique({
     where: {
-      slug: input.teamSlug,
-      workspaceId: workspace.id,
+      slug_workspaceId: {
+        slug: input.slug,
+        workspaceId: workspace.id,
+      },
     },
   })
 }
 
-export const deleteTeamById = (input: z.infer<typeof DeleteTeamByIdInput>) =>
+export const deleteTeamById = ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof TeamIdInput>>) =>
   prisma.$transaction(async (tx) => {
     await tx.membersOnTasks.deleteMany({
       where: {
@@ -169,32 +208,33 @@ export const deleteTeamById = (input: z.infer<typeof DeleteTeamByIdInput>) =>
       },
     })
 
-    return await tx.team.delete({
+    return tx.team.delete({
       where: {
         id: input.id,
       },
     })
   })
 
-export const deleteTeamMemberById = async (
-  input: z.infer<typeof DeleteTeamByIdInput>
-) => {
+export const removeMemberById = async ({
+  input,
+  prisma,
+}: TeamProcedureInput<z.infer<typeof RemoveMemberByIdInput>>) => {
   const member = await prisma.membersOnTeams.findFirst({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
     select: {
       role: true,
     },
   })
 
-  if (!member) throw UserNotFound
+  if (!member) throw new TeamMemberNotFound()
 
-  if (member.role === Role.Owner) throw CanNotRemoveOwner
+  if (member.role === Role.Owner) throw new CannotRemoveTeamOwner()
 
   return prisma.membersOnTeams.delete({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
   })
 }

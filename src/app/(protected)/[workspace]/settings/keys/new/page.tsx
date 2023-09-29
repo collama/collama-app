@@ -1,13 +1,13 @@
 "use client"
 
-import { useAction } from "~/trpc/client"
-import useZodForm from "~/common/form"
-import { FormProvider } from "react-hook-form"
 import { Provider } from "@prisma/client"
+import { useRouter } from "next/navigation"
+import { FormProvider } from "react-hook-form"
 import { z } from "zod"
 import { createApiKeyAction } from "~/app/(protected)/[workspace]/settings/keys/new/actions"
-import { useRouter } from "next/navigation"
-import { PageProps } from "~/common/types/props"
+import useZodForm from "~/common/form"
+import { type PageProps } from "~/common/types/props"
+import { useAction } from "~/trpc/client"
 
 const schema = z.object({
   title: z.string(),

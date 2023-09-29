@@ -6,16 +6,17 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
 import { experimental_createServerActionHandler } from "@trpc/next/app-dir/server"
 import { initTRPC, TRPCError } from "@trpc/server"
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
+import { type Session } from "next-auth"
 import { headers } from "next/headers"
 import superjson from "superjson"
 import { ZodError } from "zod"
-import { prisma } from "~/server/db"
-import { type Session } from "next-auth"
 import { getAuthSession } from "~/libs/auth"
+import { type Role } from "~/server/api/providers/permission/role"
+import { type TeamRole } from "~/server/api/providers/permission/team-role"
+import { prisma } from "~/server/db"
 
 /**
  * 1. CONTEXT
@@ -48,6 +49,8 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   }
 }
 
+export type Context = ReturnType<typeof createInnerTRPCContext>
+
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
@@ -56,13 +59,17 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  */
 export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   // Fetch stuff that depends on the request
-
   const session = await getAuthSession()
 
   return createInnerTRPCContext({
     headers: opts.req.headers,
     session,
   })
+}
+
+export interface Meta {
+  allowedRoles?: Role[]
+  allowedTeamRoles?: TeamRole[]
 }
 
 /**
@@ -73,19 +80,22 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
  * errors on the backend.
  */
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    }
-  },
-})
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .meta<Meta>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.cause instanceof ZodError ? error.cause.flatten() : null,
+        },
+      }
+    },
+  })
 
 /**
  * Helper to create validated server actions from trpc procedures, or build inline actions using the
@@ -141,3 +151,5 @@ const validateSession = t.middleware(({ ctx, next }) => {
 export const publicProcedure = t.procedure
 
 export const protectedProcedure = publicProcedure.use(validateSession)
+
+export const middleware = t.middleware

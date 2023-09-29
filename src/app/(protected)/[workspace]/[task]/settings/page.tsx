@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import InviteTeamForm from "~/app/(protected)/[workspace]/[task]/settings/components/InviteTeamForm"
-import Loading from "~/ui/loading"
 import { type PageProps } from "~/common/types/props"
+import Loading from "~/ui/loading"
 
 interface Props {
   workspace: string

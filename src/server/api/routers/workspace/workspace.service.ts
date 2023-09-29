@@ -1,47 +1,48 @@
+import { InviteStatus, type Prisma, Role, type Workspace } from "@prisma/client"
+import type { Session } from "next-auth"
 import type { z } from "zod"
 import type {
+  WorkspaceIdInput,
+  WorkspaceSlugInput,
+} from "~/server/api/middlewares/permission/workspace-permission"
+import type {
   CreateWorkspaceInput,
-  DeleteMemberOnWorkspaceByIdInput,
-  GetBySlugInput,
-  GetBySlugPublicInput,
-  GetMemberOnWorkspaceBySlugInput,
-  GetMembersOnWorkspaceInput,
   InviteMemberToWorkspaceInput,
-  RemoveMemberOnWorkspaceByIdInput,
-  RenameWorkspaceInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
+import { RemoveWorkspaceMemberInput } from "~/server/api/routers/workspace/dto/workspace.input"
+import { seedTasks } from "~/server/api/routers/workspace/seeds/workspace"
+import { type ExtendedPrismaClient, prisma } from "~/server/db"
+import { CannotRemoveOwner } from "~/server/errors/task.error"
+import { UserNotFound } from "~/server/errors/user.error"
 import {
-  LastOwnerCanNotRemoved,
-  MemberNotFound,
-  Unauthorized,
-  UserNotFound,
-} from "~/libs/constants/errors"
-import { InviteStatus, type Prisma, Role } from "@prisma/client"
-import { CanNotRemoveOwner, WorkspaceNotFound } from "~/common/errors"
-import { seedTasks } from "~/server/api/routers/seeds/workspace"
-import type { Session } from "next-auth"
-import { prisma } from "~/server/db"
+  WorkspaceMemberNotFound,
+  WorkspaceNotFound,
+} from "~/server/errors/workspace.error"
 
-export const createWorkspace = async (
-  input: z.infer<typeof CreateWorkspaceInput>,
+interface WorkspaceProcedureInput<T = unknown> {
+  prisma: ExtendedPrismaClient
+  input: T
   session: Session
-) => {
-  const userId = session.user.id
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  })
+  workspace: Workspace
+}
 
-  if (!user) throw UserNotFound
+export const createWorkspace = async ({
+  session,
+  input,
+  prisma,
+}: Omit<
+  WorkspaceProcedureInput<z.infer<typeof CreateWorkspaceInput>>,
+  "workspace"
+>) => {
+  const userId = session.user.id
 
   const workspace = await prisma.$transaction(async (tx) => {
     const workspace = await tx.workspace.create({
       data: {
         name: input.name,
         slug: input.name.toLowerCase(),
-        ownerId: user.id,
+        ownerId: userId,
         private: false,
       },
     })
@@ -49,7 +50,7 @@ export const createWorkspace = async (
     await tx.membersOnWorkspaces.create({
       data: {
         workspaceId: workspace.id,
-        userId: user.id,
+        userId,
         role: Role.Owner,
         status: InviteStatus.Accepted,
       },
@@ -58,66 +59,29 @@ export const createWorkspace = async (
     return workspace
   })
 
-  if (!workspace) throw WorkspaceNotFound
+  if (!workspace) throw new WorkspaceNotFound()
 
   // TODO: delete it later after iml release Example Model
-  const taskData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
-    ...task,
-    ownerId: userId,
-    workspaceId: workspace.id,
-  }))
-
-  await prisma.task.createMany({
-    data: taskData,
-  })
+  // const tasksData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
+  //   ...task,
+  //   ownerId: userId,
+  //   workspaceId: workspace.id,
+  // }))
+  //
+  // await prisma.task.createMany({
+  //   data: tasksData,
+  // })
 
   return workspace
 }
 
-export const renameWorkspace = async (
-  input: z.infer<typeof RenameWorkspaceInput>,
-  session: Session
-) => {
-  const userId = session.user.id
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  })
-
-  if (!user) throw UserNotFound
-
-  return prisma.workspace.update({
-    where: {
-      name: input.oldName,
-      ownerId: user.id,
-    },
-    data: {
-      name: input.newName,
-    },
-  })
-}
-
-export const getMembersOnWorkspace = async (
-  input: z.infer<typeof GetMembersOnWorkspaceInput>,
-  session: Session
-) => {
-  const userId = session.user.id
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  })
-
-  if (!user) {
-    throw UserNotFound
-  }
-
+export const getMembersOnWorkspace = async ({
+  prisma,
+  workspace,
+}: WorkspaceProcedureInput) => {
   return prisma.membersOnWorkspaces.findMany({
     where: {
-      workspace: {
-        slug: input.slug,
-      },
+      workspaceId: workspace.id,
     },
     include: {
       user: {
@@ -128,15 +92,17 @@ export const getMembersOnWorkspace = async (
     },
   })
 }
-export const inviteMemberToWorkspace = (
-  input: z.infer<typeof InviteMemberToWorkspaceInput>
-) =>
-  prisma.membersOnWorkspaces.create({
+export const inviteMemberToWorkspace = ({
+  input,
+  prisma,
+  workspace,
+}: WorkspaceProcedureInput<z.infer<typeof InviteMemberToWorkspaceInput>>) => {
+  return prisma.membersOnWorkspaces.create({
     data: {
       role: input.role,
       workspace: {
         connect: {
-          slug: input.workspaceSlug,
+          id: workspace.id,
         },
       },
       user: {
@@ -147,36 +113,22 @@ export const inviteMemberToWorkspace = (
       status: InviteStatus.Accepted,
     },
   })
-export const updateMemberRoleInWorkspace = async (
-  input: z.infer<typeof UpdateMemberRoleInWorkspaceInput>,
-  session: Session
-) => {
+}
+
+export const updateMemberRoleInWorkspace = async ({
+  prisma,
+  input,
+}: WorkspaceProcedureInput<
+  z.infer<typeof UpdateMemberRoleInWorkspaceInput>
+>) => {
   const member = await prisma.membersOnWorkspaces.findFirst({
     where: {
       id: input.id,
     },
   })
-  if (!member) throw MemberNotFound
 
-  const userId = session.user.id
-
-  const owner = await prisma.membersOnWorkspaces.findFirst({
-    where: {
-      userId,
-    },
-  })
-
-  if (!owner) throw UserNotFound
-  if (owner.role !== Role.Owner) throw Unauthorized
-
-  if (owner.role === Role.Owner) {
-    const member = await prisma.membersOnWorkspaces.findUnique({
-      where: {
-        id: input.id,
-      },
-    })
-
-    if (member?.id === userId) throw LastOwnerCanNotRemoved
+  if (!member) {
+    throw new WorkspaceMemberNotFound()
   }
 
   return prisma.membersOnWorkspaces.update({
@@ -188,105 +140,75 @@ export const updateMemberRoleInWorkspace = async (
     },
   })
 }
-export const removeMemberOnWorkspaceById = async (
-  input: z.infer<typeof RemoveMemberOnWorkspaceByIdInput>,
-  session: Session
-) => {
-  const userId = session.user.id
 
-  const owner = await prisma.membersOnWorkspaces.findFirst({
+export const count = ({
+  session,
+  prisma,
+}: Pick<
+  WorkspaceProcedureInput<z.infer<typeof WorkspaceSlugInput>>,
+  "prisma" | "session"
+>) => {
+  return prisma.workspace.count({
     where: {
-      userId,
-    },
-  })
-
-  if (!owner) throw UserNotFound
-
-  if (owner.role !== Role.Owner) throw Unauthorized
-
-  if (owner.role === Role.Owner) {
-    const member = await prisma.membersOnWorkspaces.findUnique({
-      where: {
-        id: input.id,
-      },
-    })
-
-    if (member?.id === userId) throw Unauthorized
-  }
-
-  return prisma.membersOnWorkspaces.delete({
-    where: {
-      id: input.id,
+      ownerId: session.user.id,
     },
   })
 }
-export const getMemberOnWorkspaceBySlug = async (
-  input: z.infer<typeof GetMemberOnWorkspaceBySlugInput>,
-  session: Session
-) => {
-  const userId = session.user.id
-  return prisma.membersOnWorkspaces.findFirst({
+
+export const getBySlug = ({
+  prisma,
+  input,
+}: Pick<
+  WorkspaceProcedureInput<z.infer<typeof WorkspaceSlugInput>>,
+  "prisma" | "input"
+>) => {
+  return prisma.workspace.findFirst({
     where: {
-      workspace: {
-        slug: input.slug,
-      },
-      userId,
+      slug: input.slug,
     },
   })
 }
-export const count = (session: Session) =>
-  prisma.workspace.count({
+
+export const belongToWorkspaces = async ({
+  session,
+  prisma,
+}: Pick<WorkspaceProcedureInput, "session" | "prisma">) => {
+  const members = await prisma.membersOnWorkspaces.findMany({
     where: {
-      ownerId: session.user.id,
+      userId: session.user.id,
+    },
+    include: {
+      workspace: true,
     },
   })
-export const getFirst = (session: Session) =>
-  prisma.workspace.findFirst({
-    where: {
-      ownerId: session.user.id,
-    },
-  })
-export const getBySlugPublic = (input: z.infer<typeof GetBySlugPublicInput>) => prisma.workspace.findFirst({
-    where: {
-      slug: input.workspaceSlug,
-      private: false,
-    },
-  })
-export const getBySlug = (
-  input: z.infer<typeof GetBySlugInput>,
-  session: Session
-) =>
-  prisma.workspace.findFirst({
-    where: {
-      slug: input.workspaceSlug,
-      ownerId: session.user.id,
-    },
-  })
-export const getAll = (session: Session) =>
-  prisma.workspace.findMany({
-    where: {
-      ownerId: session.user.id,
-    },
-  })
-export const deleteMemberOnWorkspaceById = async (
-  input: z.infer<typeof DeleteMemberOnWorkspaceByIdInput>
-) => {
+
+  return members.map((member) => member.workspace)
+}
+
+export const removeMemberOnWorkspaceById = async ({
+  input,
+  prisma,
+}: WorkspaceProcedureInput<z.infer<typeof RemoveWorkspaceMemberInput>>) => {
   const member = await prisma.membersOnWorkspaces.findFirst({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
     select: {
       role: true,
     },
   })
 
-  if (!member) throw UserNotFound
+  if (!member) {
+    throw new UserNotFound()
+  }
 
-  if (member.role === Role.Owner) throw CanNotRemoveOwner
+  if (member.role === Role.Owner) {
+    throw new CannotRemoveOwner()
+  }
 
   return prisma.membersOnWorkspaces.delete({
     where: {
-      id: input.id,
+      id: input.memberId,
     },
   })
 }

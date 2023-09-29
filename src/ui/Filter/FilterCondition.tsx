@@ -5,15 +5,16 @@ import {
   type FieldError,
   type FormState,
 } from "react-hook-form"
-import { Select } from "~/ui/Select"
-import { Input } from "~/ui/Input"
+import { type FilterSchema } from "~/ui/Filter/FilterForm"
+import "~/ui/Filter/constants"
 import {
   BOOLEAN_CONDITION,
   DATE_CONDITION,
   FILTER_FORM_NAME,
   STRING_CONDITION,
 } from "~/ui/Filter/constants"
-import { type FilterSchema } from "~/ui/Filter/FilterForm"
+import { Input } from "~/ui/Input"
+import { Select } from "~/ui/Select"
 
 export const HandleFormError = ({
   condition,

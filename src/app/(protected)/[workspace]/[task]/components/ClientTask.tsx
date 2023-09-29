@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState } from "react"
-import { TaskOverview } from "~/app/(protected)/[workspace]/[task]/components/TaskOverview"
 import { type InviteMemberToTaskProps } from "~/app/(protected)/[workspace]/[task]/components/InviteMemberToTask"
+import { TaskMember } from "~/app/(protected)/[workspace]/[task]/components/TaskMember"
+import { TaskOverview } from "~/app/(protected)/[workspace]/[task]/components/TaskOverview"
 import type { TaskIncludeOwner } from "~/common/types/prisma"
 import { Button } from "~/ui/Button"
-import { TaskMember } from "~/app/(protected)/[workspace]/[task]/components/TaskMember"
 
 interface Props extends InviteMemberToTaskProps {
   task: TaskIncludeOwner
@@ -16,7 +16,7 @@ enum Tab {
   Member,
 }
 
-export const ClientTask = ({ task, workspaceName }: Props) => {
+export const ClientTask = ({ task }: Props) => {
   const [tab, setTab] = useState(Tab.Task)
 
   return (
@@ -38,7 +38,7 @@ export const ClientTask = ({ task, workspaceName }: Props) => {
       {tab === Tab.Task ? (
         <TaskOverview task={task} />
       ) : (
-        <TaskMember workspaceName={workspaceName} taskSlug={task.slug} />
+        <TaskMember task={task} />
       )}
     </div>
   )

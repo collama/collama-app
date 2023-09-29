@@ -1,4 +1,4 @@
-import { api } from "~/trpc/server-invoker"
+import { api } from "~/trpc/server-http"
 
 export default async function APIKeys() {
   const apiKeys = await api.apiKey.getAll.query()

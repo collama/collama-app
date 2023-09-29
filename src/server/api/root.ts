@@ -1,9 +1,9 @@
-import { createTRPCRouter } from "~/server/api/trpc"
-import { workspaceTRPCRouter } from "~/server/api/routers/workspace/workspace.router"
-import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
 import { apiKeyTRPCRouter } from "~/server/api/routers/api-key/api-key.router"
 import { filterSettingTRPCRouter } from "~/server/api/routers/filter-setting/filter-setting.router"
+import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
 import { teamTRPCRouter } from "~/server/api/routers/team/team.router"
+import { workspaceTRPCRouter } from "~/server/api/routers/workspace/workspace.router"
+import { createTRPCRouter } from "~/server/api/trpc"
 
 /**
  * This is the primary router for your server.

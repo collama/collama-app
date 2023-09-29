@@ -1,26 +1,32 @@
 "use client"
-import { Controller, FormProvider } from "react-hook-form"
-import { Input } from "~/ui/Input"
-import { Select } from "~/ui/Select"
-import { TeamRole } from "@prisma/client"
-import { z } from "zod"
-import { useAction } from "~/trpc/client"
-import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/actions"
-import useZodForm from "~/common/form"
-import { Button } from "~/ui/Button"
-import { TeamRoleOptions } from "~/common/constants/prisma"
-import { type TeamPageParams } from "~/app/(protected)/[workspace]/teams/[team]/page"
-import { useNotification } from "~/ui/Notification"
+
+import { type Team, TeamRole } from "@prisma/client"
 import { useEffect } from "react"
+import { Controller, FormProvider } from "react-hook-form"
 import useAsyncEffect from "use-async-effect"
+import { z } from "zod"
+import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/actions"
+import { TeamRoleOptions } from "~/common/constants/prisma"
+import useZodForm from "~/common/form"
 import { sleep } from "~/common/utils"
+import { useAction } from "~/trpc/client"
+import { Button } from "~/ui/Button"
+import { Input } from "~/ui/Input"
+import { useNotification } from "~/ui/Notification"
+import { Select } from "~/ui/Select"
 
 const schema = z.object({
   email: z.string().email(),
   role: z.nativeEnum(TeamRole),
 })
 
-export const InviteTeamForm = ({ teamSlug, workspaceSlug }: TeamPageParams) => {
+interface Props {
+  workspaceSlug: string
+  teamSlug: string
+  team: Team
+}
+
+export const InviteTeamForm = ({ teamSlug, workspaceSlug, team }: Props) => {
   const {
     mutate: inviteMember,
     status,
@@ -60,10 +66,10 @@ export const InviteTeamForm = ({ teamSlug, workspaceSlug }: TeamPageParams) => {
         <form
           onSubmit={form.handleSubmit((data) => {
             inviteMember({
-              workspaceSlug,
-              teamSlug,
+              id: team.id,
               role: data.role,
               email: data.email,
+              workspaceSlug,
             })
           })}
         >

@@ -10,14 +10,13 @@ import {
 } from "~/common/types/props"
 import { Button } from "~/ui/Button"
 import {
+  DateCondition,
+  FilterCondition,
   type FilterConditionProps,
   HandleFormError,
+  StringCondition,
 } from "~/ui/Filter/FilterCondition"
-import {
-  FILTER_CONDITIONS,
-  FILTER_FORM_NAME,
-  type FilterType,
-} from "~/ui/Filter/constants"
+import { FILTER_FORM_NAME, type FilterType } from "~/ui/Filter/constants"
 import { Select } from "~/ui/Select"
 import { type ColumnType } from "~/ui/Table"
 
@@ -80,8 +79,19 @@ export function FilterForm({
   }, {})
 
   const renderFilter = (type: FilterType, props: FilterConditionProps) => {
-    const Component = FILTER_CONDITIONS[type]
-    return <Component {...props} />
+    if (type === "string") {
+      return <StringCondition {...props} />
+    }
+
+    if (type === "boolean") {
+      return <FilterCondition {...props} />
+    }
+
+    if (type === "date") {
+      return <DateCondition {...props} />
+    }
+
+    return null
   }
 
   return (

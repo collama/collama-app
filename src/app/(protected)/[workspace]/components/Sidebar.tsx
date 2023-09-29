@@ -2,9 +2,7 @@ import { type Session } from "next-auth"
 import Link from "next/link"
 import urlJoin from "url-join"
 import { Logout } from "~/app/(protected)/[workspace]/components/Logout"
-import { type PageProps } from "~/common/types/props"
 import { Heading } from "~/components/Heading"
-import { getAuthSession } from "~/libs/auth"
 import { Button } from "~/ui/Button"
 
 interface Props {
@@ -15,7 +13,7 @@ interface Props {
 const menuItems = [
   { name: "Home", path: "/" },
   { name: "Members", path: "/members" },
-  { name: "Task", path: "/tasks" },
+  { name: "Tasks", path: "/tasks" },
   { name: "Setting", path: "/settings" },
 ]
 

@@ -1,6 +1,6 @@
 import React, { Suspense } from "react"
-import { InviteForm } from "~/app/(protected)/[workspace]/components/InviteForm"
-import { Members } from "~/app/(protected)/[workspace]/components/Members"
+import { InviteForm } from "~/app/(protected)/[workspace]/members/components/InviteForm"
+import { Members } from "~/app/(protected)/[workspace]/members/components/Members"
 import { type PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
 import Loading from "~/ui/loading"

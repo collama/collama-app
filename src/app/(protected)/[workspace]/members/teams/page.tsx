@@ -1,6 +1,6 @@
 import React from "react"
-import { CreateTeamForm } from "~/app/(protected)/[workspace]/components/Team/CreateTeamForm"
-import { Teams } from "~/app/(protected)/[workspace]/components/Team/Teams"
+import { CreateTeamForm } from "~/app/(protected)/[workspace]/members/teams/components/CreateTeamForm"
+import { Teams } from "~/app/(protected)/[workspace]/members/teams/components/Teams"
 import { type PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
 

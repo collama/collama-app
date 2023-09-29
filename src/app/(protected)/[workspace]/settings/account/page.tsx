@@ -3,11 +3,10 @@
 import { type ChangeEvent, useEffect, useState } from "react"
 import useAsyncEffect from "use-async-effect"
 import { createPresignedUrlAction } from "~/app/(protected)/[workspace]/settings/account/actions"
-import useAwaited from "~/hooks/useAwaited"
-import { api, useAction } from "~/trpc/client"
+import { useAction } from "~/trpc/client"
 
 export default function AccountPage() {
-  const { data: user, loading } = useAwaited(api.user.getUser.query())
+  // const { data: user, loading } = useAwaited(api.user.getUser.query())
   const [selectedFile, setSelectedFile] = useState<File>()
   const [preview, setPreview] = useState<string>()
 
@@ -65,7 +64,7 @@ export default function AccountPage() {
     <div>
       <h3>Account page</h3>
       <input type="file" onChange={onSelectFile} accept=".jpg,.jpeg,.png" />
-      {user?.avatar && !selectedFile && <img src={user?.avatar} alt="avatar" />}
+      {/*{user?.avatar && !selectedFile && <img src={user?.avatar} alt="avatar" />}*/}
       {selectedFile && <img src={preview} alt="avatar" />}
       <button
         onClick={() => {

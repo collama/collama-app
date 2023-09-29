@@ -52,7 +52,6 @@ export const canUserAccessTeam = async (
   prisma: PrismaClient,
   data: CanUserAccessTeam
 ) => {
-  console.log("testdata", data)
   const taskPermission = new TeamPermission(prisma)
   if (data.id !== undefined) {
     return taskPermission.canAccessById(data.id, data.userId)

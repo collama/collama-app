@@ -12,6 +12,7 @@ import type {
   InviteMemberInput,
 } from "~/server/api/routers/task/dto/task.input"
 import { type RemoveTaskMemberInput } from "~/server/api/routers/task/dto/task.input"
+import { type WorkspaceProcedureInput } from "~/server/api/routers/workspace/workspace.service"
 import { createProvider } from "~/server/api/services/llm/llm"
 import {
   fillVariables,
@@ -37,14 +38,14 @@ interface TaskProcedureInput<T = unknown> {
   task: Task
 }
 
-export const create = async (
-  prisma: ExtendedPrismaClient,
-  input: z.infer<typeof CreateTaskInput>,
-  session: Session
-) => {
+export const create = async ({
+  input,
+  prisma,
+  session,
+}: WorkspaceProcedureInput<z.infer<typeof CreateTaskInput>>) => {
   const workspace = await prisma.workspace.findUnique({
     where: {
-      name: input.workspaceName,
+      slug: input.slug,
     },
   })
 
@@ -157,7 +158,7 @@ export const getBySlug = async ({
   task,
   prisma,
 }: TaskProcedureInput<z.infer<typeof TaskSlugInput>>) => {
-  return prisma.task.findUnique({
+  return prisma.task.findFirst({
     where: {
       id: task.id,
       ownerId: session.user.id,

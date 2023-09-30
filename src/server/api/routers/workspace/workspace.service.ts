@@ -1,26 +1,25 @@
-import { InviteStatus, type Prisma, Role, type Workspace } from "@prisma/client"
+import { InviteStatus, Role, type Workspace } from "@prisma/client"
 import type { Session } from "next-auth"
 import type { z } from "zod"
-import type {
-  WorkspaceIdInput,
-  WorkspaceSlugInput,
-} from "~/server/api/middlewares/permission/workspace-permission"
+import type { WorkspaceSlugInput } from "~/server/api/middlewares/permission/workspace-permission"
 import type {
   CreateWorkspaceInput,
   InviteMemberToWorkspaceInput,
   UpdateMemberRoleInWorkspaceInput,
 } from "~/server/api/routers/workspace/dto/workspace.input"
-import { RemoveWorkspaceMemberInput } from "~/server/api/routers/workspace/dto/workspace.input"
-import { seedTasks } from "~/server/api/routers/workspace/seeds/workspace"
-import { type ExtendedPrismaClient, prisma } from "~/server/db"
+import { type RemoveWorkspaceMemberInput } from "~/server/api/routers/workspace/dto/workspace.input"
+import { type ExtendedPrismaClient } from "~/server/db"
 import { CannotRemoveOwner } from "~/server/errors/task.error"
 import { UserNotFound } from "~/server/errors/user.error"
 import {
+  WorkspaceLimitReached,
   WorkspaceMemberNotFound,
   WorkspaceNotFound,
 } from "~/server/errors/workspace.error"
 
-interface WorkspaceProcedureInput<T = unknown> {
+const NUM_WORKSPACES_LIMIT = 10
+
+export interface WorkspaceProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
   input: T
   session: Session
@@ -37,7 +36,17 @@ export const createWorkspace = async ({
 >) => {
   const userId = session.user.id
 
-  const workspace = await prisma.$transaction(async (tx) => {
+  const totalWorkspaces = await prisma.workspace.count({
+    where: {
+      ownerId: userId,
+    },
+  })
+
+  if (totalWorkspaces > NUM_WORKSPACES_LIMIT) {
+    throw new WorkspaceLimitReached()
+  }
+
+  return prisma.$transaction(async (tx) => {
     const workspace = await tx.workspace.create({
       data: {
         name: input.name,
@@ -58,21 +67,6 @@ export const createWorkspace = async ({
 
     return workspace
   })
-
-  if (!workspace) throw new WorkspaceNotFound()
-
-  // TODO: delete it later after iml release Example Model
-  // const tasksData = seedTasks.map<Prisma.TaskCreateManyInput>((task) => ({
-  //   ...task,
-  //   ownerId: userId,
-  //   workspaceId: workspace.id,
-  // }))
-  //
-  // await prisma.task.createMany({
-  //   data: tasksData,
-  // })
-
-  return workspace
 }
 
 export const getMembersOnWorkspace = async ({

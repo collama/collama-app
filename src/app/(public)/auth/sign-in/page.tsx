@@ -18,7 +18,7 @@ const schema = z.object({
 })
 type SubmitData = z.infer<typeof schema>
 
-export default function Login() {
+export default function Page() {
   const form = useZodForm({
     schema: schema,
   })

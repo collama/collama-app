@@ -4,8 +4,12 @@ import {
   TaskSlugInput,
 } from "~/server/api/middlewares/permission/task-permission"
 import {
-  TaskProtectedReaders,
-  TaskProtectedWriters,
+  canAccessWorkspaceMiddleware,
+  WorkspaceSlugInput,
+} from "~/server/api/middlewares/permission/workspace-permission"
+import {
+  RoleProtectedReaders,
+  RoleProtectedWriters,
 } from "~/server/api/providers/permission/role"
 import { FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import {
@@ -18,15 +22,23 @@ import * as taskService from "~/server/api/routers/task/task.service"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const create = protectedProcedure
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: RoleProtectedReaders,
+  })
+  .use(canAccessWorkspaceMiddleware)
   .input(CreateTaskInput)
   .mutation(({ ctx, input }) => {
-    return taskService.create(ctx.prisma, input, ctx.session)
+    return taskService.create({
+      ...ctx,
+      input,
+    })
   })
 
 export const execute = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedWriters,
+    allowedRoles: RoleProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
   .input(ExecuteTaskInput)
@@ -40,7 +52,7 @@ export const execute = protectedProcedure
 export const deleteBySlug = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedWriters,
+    allowedRoles: RoleProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
   .mutation(({ input, ctx }) => {
@@ -53,7 +65,7 @@ export const deleteBySlug = protectedProcedure
 export const inviteMember = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedWriters,
+    allowedRoles: RoleProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
   .input(InviteMemberInput)
@@ -67,7 +79,7 @@ export const inviteMember = protectedProcedure
 export const removeMember = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedWriters,
+    allowedRoles: RoleProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
   .input(RemoveTaskMemberInput)
@@ -81,7 +93,7 @@ export const removeMember = protectedProcedure
 const getBySlug = protectedProcedure
   .input(TaskSlugInput)
   .meta({
-    allowedRoles: TaskProtectedReaders,
+    allowedRoles: RoleProtectedReaders,
   })
   .use(canAccessTaskMiddleware)
   .input(TaskSlugInput)
@@ -95,7 +107,7 @@ const getBySlug = protectedProcedure
 const getPromptVariables = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedWriters,
+    allowedRoles: RoleProtectedWriters,
   })
   .use(canAccessTaskMiddleware)
   .input(TaskIdInput)
@@ -109,7 +121,7 @@ const getPromptVariables = protectedProcedure
 const getMembers = protectedProcedure
   .input(TaskIdInput)
   .meta({
-    allowedRoles: TaskProtectedReaders,
+    allowedRoles: RoleProtectedReaders,
   })
   .use(canAccessTaskMiddleware)
   .query(({ input, ctx }) => {

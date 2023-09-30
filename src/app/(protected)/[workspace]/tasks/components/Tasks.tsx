@@ -14,7 +14,7 @@ import useAsyncEffect from "use-async-effect"
 import {
   deleteTaskBySlugAction,
   upsertFilterAction,
-} from "~/actions/task.action"
+} from "~/app/(protected)/[workspace]/tasks/actions"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
 import {
   FilterOperator,

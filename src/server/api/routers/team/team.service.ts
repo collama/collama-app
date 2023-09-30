@@ -11,6 +11,7 @@ import type {
   InviteMemberToTeamInput,
 } from "~/server/api/routers/team/dto/team.input"
 import { type RemoveMemberByIdInput } from "~/server/api/routers/team/dto/team.input"
+import { type WorkspaceProcedureInput } from "~/server/api/routers/workspace/workspace.service"
 import { createSlug } from "~/server/api/utils/slug"
 import { type ExtendedPrismaClient } from "~/server/db"
 import {
@@ -23,17 +24,17 @@ import {
   WorkspaceNotFound,
 } from "~/server/errors/workspace.error"
 
-interface TeamProcedureInput<T = unknown> {
+export interface TeamProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
   input: T
   session: Session
 }
 
-export const createTeam = (
-  prisma: ExtendedPrismaClient,
-  input: z.infer<typeof CreateTeamInput>,
-  session: Session
-) => {
+export const createTeam = ({
+  input,
+  prisma,
+  session,
+}: WorkspaceProcedureInput<z.infer<typeof CreateTeamInput>>) => {
   return prisma.$transaction(async (tx) => {
     const team = await tx.team.create({
       data: {
@@ -42,7 +43,7 @@ export const createTeam = (
         description: input.description,
         workspace: {
           connect: {
-            slug: input.workspaceSlug,
+            slug: input.slug,
           },
         },
         owner: {
@@ -58,7 +59,7 @@ export const createTeam = (
         role: Role.Owner,
         workspace: {
           connect: {
-            name: input.workspaceSlug,
+            name: input.slug,
           },
         },
         team: {

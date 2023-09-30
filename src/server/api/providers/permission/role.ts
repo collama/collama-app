@@ -47,12 +47,12 @@ export class Role {
   }
 }
 
-export const TaskOwner = new Role(PrismaRole.Owner)
-export const TaskAdmin = new Role(PrismaRole.Admin)
-export const TaskWriter = new Role(PrismaRole.Writer)
-export const TaskReader = new Role(PrismaRole.Reader)
+export const RoleOwner = new Role(PrismaRole.Owner)
+export const RoleAdmin = new Role(PrismaRole.Admin)
+export const RoleWriter = new Role(PrismaRole.Writer)
+export const RoleReader = new Role(PrismaRole.Reader)
 export const TaskPublic = new Role(PrismaRole.Public)
 
-export const TaskProtectedManagers = [TaskOwner, TaskAdmin]
-export const TaskProtectedWriters = [...TaskProtectedManagers, TaskWriter]
-export const TaskProtectedReaders = [...TaskProtectedWriters, TaskReader]
+export const RoleProtectedManagers = [RoleOwner, RoleAdmin]
+export const RoleProtectedWriters = [...RoleProtectedManagers, RoleWriter]
+export const RoleProtectedReaders = [...RoleProtectedWriters, RoleReader]

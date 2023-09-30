@@ -1,16 +1,15 @@
 import { TeamRole } from "@prisma/client"
 import z from "zod"
 import { zSlug } from "~/common/validation"
-import {
-  TeamIdInput,
-  TeamSlugInput,
-} from "~/server/api/middlewares/permission/team-permission"
+import { TeamIdInput } from "~/server/api/middlewares/permission/team-permission"
+import { WorkspaceSlugInput } from "~/server/api/middlewares/permission/workspace-permission"
 
-export const CreateTeamInput = z.object({
-  name: z.string(),
-  description: z.string(),
-  workspaceSlug: zSlug,
-})
+export const CreateTeamInput = z
+  .object({
+    name: z.string(),
+    description: z.string(),
+  })
+  .merge(WorkspaceSlugInput)
 
 export const InviteMemberToTeamInput = z
   .object({

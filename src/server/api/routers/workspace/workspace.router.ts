@@ -4,8 +4,8 @@ import {
   WorkspaceSlugInput,
 } from "~/server/api/middlewares/permission/workspace-permission"
 import {
-  TaskProtectedManagers,
-  TaskProtectedReaders,
+  RoleProtectedManagers,
+  RoleProtectedReaders,
 } from "~/server/api/providers/permission/role"
 import {
   CreateWorkspaceInput,
@@ -29,7 +29,7 @@ export const createWorkspace = protectedProcedure
 export const inviteMemberToWorkspace = protectedProcedure
   .input(WorkspaceIdInput)
   .meta({
-    allowedRoles: TaskProtectedManagers,
+    allowedRoles: RoleProtectedManagers,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(InviteMemberToWorkspaceInput)
@@ -45,7 +45,7 @@ export const inviteMemberToWorkspace = protectedProcedure
 export const updateMemberRoleOnWorkspace = protectedProcedure
   .input(WorkspaceSlugInput)
   .meta({
-    allowedRoles: TaskProtectedManagers,
+    allowedRoles: RoleProtectedManagers,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(UpdateMemberRoleInWorkspaceInput)
@@ -61,7 +61,7 @@ export const updateMemberRoleOnWorkspace = protectedProcedure
 export const removeMemberOnWorkspaceById = protectedProcedure
   .input(WorkspaceIdInput)
   .meta({
-    allowedRoles: TaskProtectedManagers,
+    allowedRoles: RoleProtectedManagers,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(RemoveWorkspaceMemberInput)
@@ -84,7 +84,7 @@ const count = protectedProcedure.query(({ ctx }) => {
 const getBySlug = protectedProcedure
   .input(WorkspaceSlugInput)
   .meta({
-    allowedRoles: TaskProtectedReaders,
+    allowedRoles: RoleProtectedReaders,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(WorkspaceSlugInput)
@@ -105,7 +105,7 @@ const belongToWorkspaces = protectedProcedure.query(({ ctx }) => {
 const getMembersOnWorkspace = protectedProcedure
   .input(WorkspaceIdInput)
   .meta({
-    allowedRoles: TaskProtectedReaders,
+    allowedRoles: RoleProtectedReaders,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(WorkspaceIdInput)

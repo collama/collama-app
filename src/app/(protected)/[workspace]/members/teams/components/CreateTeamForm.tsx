@@ -65,7 +65,7 @@ export const CreateTeamForm = (props: Props) => {
           onSubmit={form.handleSubmit((data) => {
             createTeam({
               ...data,
-              workspaceSlug: props.workspace.slug,
+              slug: props.workspace.slug,
             })
           })}
         >

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import useAsyncEffect from "use-async-effect"
 import { type Updater, useImmer } from "use-immer"
 
@@ -7,42 +7,22 @@ interface AwaitedResult<T> {
   error: Error | null
   loading: boolean
   setData: Updater<T | null>
-}
-
-export default function useAwaited<T>(fn: Promise<T>): AwaitedResult<T> {
-  const [data, setData] = useImmer<T | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-
-  useAsyncEffect(async () => {
-    try {
-      setLoading(true)
-      const data = await fn
-      setData(data)
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  return { data, error, loading, setData }
+  refresh: () => void
 }
 
 export function useAwaitedFn<T>(
   fn: () => Promise<T>,
-  deps: unknown[]
+  deps: unknown[] = []
 ): AwaitedResult<T> {
   const [data, setData] = useImmer<T | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  useAsyncEffect(async () => {
+  const fetch = useCallback(async () => {
     try {
       setLoading(true)
       const data = await fn()
+      console.log("data", data)
       setData(data)
     } catch (e) {
       if (e instanceof Error) {
@@ -51,7 +31,11 @@ export function useAwaitedFn<T>(
     } finally {
       setLoading(false)
     }
+  }, [fn, setData])
+
+  useAsyncEffect(async () => {
+    await fetch()
   }, deps)
 
-  return { data, error, loading, setData }
+  return { data, error, loading, setData, refresh: fetch }
 }

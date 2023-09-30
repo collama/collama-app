@@ -121,10 +121,18 @@ export const inviteMember = async ({
 }
 
 export const deleteById = async ({ task, prisma }: TaskProcedureInput) => {
-  return prisma.task.delete({
-    where: {
-      id: task.id,
-    },
+  return prisma.$transaction(async (tx) => {
+    await tx.membersOnTasks.deleteMany({
+      where: {
+        taskId: task.id,
+      },
+    })
+
+    return tx.task.delete({
+      where: {
+        id: task.id,
+      },
+    })
   })
 }
 

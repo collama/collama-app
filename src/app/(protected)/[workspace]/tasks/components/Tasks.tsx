@@ -3,7 +3,7 @@
 import type { Task, User } from "@prisma/client"
 import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type {
   PageNumberCounters,
   PageNumberPagination,
@@ -12,7 +12,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import urlJoin from "url-join"
 import useAsyncEffect from "use-async-effect"
 import {
-  deleteTaskBySlugAction,
+  deleteTaskByIdAction,
   upsertFilterAction,
 } from "~/app/(protected)/[workspace]/tasks/actions"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
@@ -24,6 +24,7 @@ import {
 import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
 import { NoSsrWarp } from "~/components/NoSsr"
+import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
 import { Button } from "~/ui/Button"
 import { Filter } from "~/ui/Filter"
@@ -88,6 +89,7 @@ const checkLoadings = (
 
 export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
   const router = useRouter()
+  const pathname = usePathname()
   const {
     mutate: upsertSetting,
     status: upsertSettingStatus,
@@ -97,17 +99,13 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     mutate: deleteTask,
     status: deleteTaskStatus,
     error: deleteTaskError,
-  } = useAction(deleteTaskBySlugAction)
+  } = useAction(deleteTaskByIdAction)
   const [notice, holder] = useNotification()
 
   const [filterSetting, setFilterSetting] = useState<FilterSettingState>(
     DEFAULT_FILTER_SETTING_STATE
   )
   const [pages, setPages] = useState(DEFAULT_PAGES)
-
-  const [data, setData] = useState<
-    [Task[], PageNumberPagination & PageNumberCounters] | null
-  >(null)
 
   const onFilter = useCallback(
     (filter: FilterValue) =>
@@ -149,17 +147,17 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     }))
   }, [workspaceSlug])
 
-  useAsyncEffect(async () => {
-    const resp = await api.task.filterAndSort.query({
-      filter: filterSetting.filter,
-      sort: filterSetting.sort,
-      workspaceSlug: workspaceSlug,
-      page: pages.page,
-      limit: pages.limit,
-    })
-
-    setData(resp)
-  }, [filterSetting.count, pages.page, pages.limit])
+  const { data, refresh } = useAwaitedFn(
+    async () =>
+      api.task.filterAndSort.query({
+        filter: filterSetting.filter,
+        sort: filterSetting.sort,
+        workspaceSlug: workspaceSlug,
+        page: pages.page,
+        limit: pages.limit,
+      }),
+    [filterSetting.count, pages.page, pages.limit, pathname]
+  )
 
   useEffect(() => {
     const setting = JSON.stringify({
@@ -187,13 +185,7 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     {
       title: "Action",
       id: "id",
-      render: (id: string, record) => (
-        <RemoveIcon
-          onClick={() =>
-            deleteTask({ slug: record.slug as string, workspaceSlug })
-          }
-        />
-      ),
+      render: (id: string) => <RemoveIcon onClick={() => deleteTask({ id })} />,
     },
   ]
 
@@ -209,7 +201,7 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     }
   }, [deleteTaskError, deleteTaskStatus])
 
-  useAsyncEffect(async () => {
+  useAsyncEffect(() => {
     if (deleteTaskStatus === "success") {
       notice.open({
         content: {
@@ -218,8 +210,9 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
         status: "success",
       })
 
-      await sleep(500)
-      window.location.reload()
+      refresh()
+      // await sleep(500)
+      // window.location.reload()
     }
   }, [deleteTaskStatus])
 
@@ -242,6 +235,9 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
         <div className="flex space-x-4 py-6">
           <Button type="primary" onClick={() => router.push("tasks/new")}>
             Create new task
+          </Button>
+          <Button type="primary" onClick={() => refresh()}>
+            Refresh
           </Button>
           <NoSsrWarp>
             <Filter

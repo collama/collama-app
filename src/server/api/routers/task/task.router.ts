@@ -49,7 +49,7 @@ export const execute = protectedProcedure
     })
   })
 
-export const deleteBySlug = protectedProcedure
+export const deleteTaskById = protectedProcedure
   .input(TaskIdInput)
   .meta({
     allowedRoles: RoleProtectedWriters,

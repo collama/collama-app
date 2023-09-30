@@ -7,7 +7,7 @@ import { RemoveIcon } from "~/app/components/RemoveIcon"
 import { type ApiKeyIncludeUser } from "~/common/types/prisma"
 import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
-import useAwaited from "~/hooks/useAwaited"
+import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
 import { useNotification } from "~/ui/Notification"
 import { type ColumnType, Table } from "~/ui/Table"
@@ -44,7 +44,7 @@ const columns: ColumnType<ApiKeyIncludeUser>[] = [
 ]
 
 export function Keys() {
-  const { data, loading } = useAwaited(api.apiKey.getAll.query())
+  const { data, loading } = useAwaitedFn(() => api.apiKey.getAll.query())
   const { mutate: deleteKey, status, error } = useAction(deleteApiKeyAction)
   const [notice, holder] = useNotification()
 

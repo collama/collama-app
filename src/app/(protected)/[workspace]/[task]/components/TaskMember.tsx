@@ -9,7 +9,7 @@ import { RemoveIcon } from "~/app/components/RemoveIcon"
 import type { MembersOnTaskIncludeUserTeam } from "~/common/types/prisma"
 import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
-import useAwaited from "~/hooks/useAwaited"
+import { useAwaitedFn } from "~/hooks/useAwaited"
 import { api, useAction } from "~/trpc/client"
 import { useNotification } from "~/ui/Notification"
 import { type ColumnType, Table } from "~/ui/Table"
@@ -40,7 +40,7 @@ const columns: ColumnType<MembersOnTaskIncludeUserTeam>[] = [
 ]
 
 export function TaskMember({ task }: InviteMemberToTaskProps) {
-  const { data, loading } = useAwaited(
+  const { data, loading } = useAwaitedFn(() =>
     api.task.getMembers.query({ id: task.id })
   )
 

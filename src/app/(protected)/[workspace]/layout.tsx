@@ -1,5 +1,5 @@
 import React, { type PropsWithChildren } from "react"
-import { Breadcrumbs } from "~/app/(protected)/[workspace]/components/Breadcrumbs"
+import { Breadcrumb } from "~/app/(protected)/[workspace]/components/Breadcrumb"
 import Sidebar from "~/app/(protected)/[workspace]/components/Sidebar"
 import { type PageProps } from "~/common/types/props"
 import { getAuthSession } from "~/libs/auth"
@@ -19,7 +19,7 @@ export default async function Layout({
     <div className="flex h-screen">
       <Sidebar user={session?.user} workspaceSlug={params.workspace} />
       <main className="w-full">
-        <Breadcrumbs />
+        <Breadcrumb />
         <div className="">{children}</div>
       </main>
     </div>

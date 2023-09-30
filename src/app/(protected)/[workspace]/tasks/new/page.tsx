@@ -52,7 +52,7 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
     }
   }, [error, status])
 
-  useAsyncEffect(async () => {
+  useAsyncEffect(() => {
     if (status === "success") {
       notice.open({
         content: {
@@ -61,8 +61,9 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
         status: "success",
       })
 
-      await sleep(500)
-      window.location.reload()
+      router.push(urlJoin("/", params.workspace, "tasks"))
+      // await sleep(500)
+      // window.location.reload()
     }
   }, [status])
 
@@ -79,9 +80,8 @@ export default function NewTaskPage({ params }: PageProps<NewTaskPageProps>) {
                 name: data.name,
                 description: data.description,
                 prompt: JSON.stringify(prompt),
-                workspaceName: params.workspace,
+                slug: params.workspace,
               })
-              router.push(urlJoin("/", params.workspace, "tasks"))
             })}
           >
             <div className="space-y-4">

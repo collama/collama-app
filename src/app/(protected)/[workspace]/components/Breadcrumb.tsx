@@ -32,7 +32,7 @@ const transformToCrumbItem = (paths: string[]) => {
   })
 }
 
-export const Breadcrumbs = () => {
+export const Breadcrumb = () => {
   const pathname = usePathname()
 
   const paths = parsePathname(pathname)

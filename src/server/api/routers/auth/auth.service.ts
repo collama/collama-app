@@ -1,5 +1,7 @@
 import crypto from "crypto"
+import dayjs from "dayjs"
 import type { z } from "zod"
+import { adapter } from "~/libs/auth"
 import { type SignUpInput } from "~/server/api/routers/auth/dto/signUpInput"
 import { createWorkspace } from "~/server/api/routers/workspace/workspace.service"
 import { type ExtendedPrismaClient } from "~/server/db"
@@ -37,6 +39,22 @@ export const signUp = async ({
       salt,
     },
   })
+
+  const account = await adapter.linkAccount({
+    userId: createdUser.id,
+    providerAccountId: createdUser.id,
+    type: "email",
+    provider: "credentials",
+    access_token: "",
+    refresh_token: "",
+    scope: "",
+    expires_at: 60,
+    token_type: "Bearer",
+    id_token: "",
+    session_state: "",
+  })
+
+  console.log("account", account)
 
   await createWorkspace({
     input: {

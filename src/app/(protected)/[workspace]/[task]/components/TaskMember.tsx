@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import useAsyncEffect from "use-async-effect"
-import { removeMemberOnTaskAction } from "~/actions/task.action"
+import { removeMemberOnTaskAction } from "~/app/(protected)/[workspace]/[task]/actions"
 import {
   InviteMemberToTask,
   type InviteMemberToTaskProps,

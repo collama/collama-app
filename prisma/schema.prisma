@@ -13,17 +13,17 @@ datasource db {
 model Account {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   user              User     @relation(fields: [userId], references: [id])
-  userId            String   @db.ObjectId
+  userId            String   @map("user_id") @db.ObjectId
   type              String
   provider          String
   providerAccountId String
-  refreshToken      String?  @db.String
-  accessToken       String?  @db.String
-  expeiresAt        Int?
-  tokenType         String?
+  refresh_token     String?  @map("refreshToken") @db.String
+  access_token      String?  @map("accessToken") @db.String
+  expires_at        Int?     @map("expiresAt")
+  token_type        String?  @map("tokenType")
   scope             String?
-  idToken           String?  @db.String
-  sessionState      String?
+  id_token          String?  @map("idToken") @db.String
+  session_state     String?  @map("sessionState")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

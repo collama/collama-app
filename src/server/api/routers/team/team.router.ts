@@ -8,8 +8,8 @@ import {
   WorkspaceSlugInput,
 } from "~/server/api/middlewares/permission/workspace-permission"
 import {
-  TaskProtectedReaders,
-  TaskProtectedWriters,
+  RoleProtectedManagers,
+  RoleProtectedReaders,
 } from "~/server/api/providers/permission/role"
 import {
   TeamProtectedManagers,
@@ -24,9 +24,17 @@ import * as teamService from "~/server/api/routers/team/team.service"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 
 export const createTeam = protectedProcedure
+  .input(WorkspaceSlugInput)
+  .meta({
+    allowedRoles: RoleProtectedManagers,
+  })
+  .use(canAccessWorkspaceMiddleware)
   .input(CreateTeamInput)
   .mutation(({ input, ctx }) =>
-    teamService.createTeam(ctx.prisma, input, ctx.session)
+    teamService.createTeam({
+      ...ctx,
+      input,
+    })
   )
 
 export const inviteMemberToTeam = protectedProcedure
@@ -74,7 +82,7 @@ export const removeTeamMemberById = protectedProcedure
 const getTeamsByWorkspaceSlug = protectedProcedure
   .input(WorkspaceSlugInput)
   .meta({
-    allowedRoles: TaskProtectedReaders,
+    allowedRoles: RoleProtectedReaders,
   })
   .use(canAccessWorkspaceMiddleware)
   .input(WorkspaceSlugInput)

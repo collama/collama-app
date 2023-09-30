@@ -22,7 +22,7 @@ const schema = z.object({
 
 type SubmitData = z.infer<typeof schema>
 
-export default function SignUp() {
+export default function Page() {
   const { control, handleSubmit } = useZodForm({
     schema: schema,
   })

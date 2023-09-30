@@ -1,29 +1,26 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { type PrismaClient } from "@prisma/client"
-import { randomUUID } from "crypto"
-import crypto from "crypto"
+import crypto, { randomUUID } from "crypto"
 import dayjs from "dayjs"
-import ms from "ms"
 import { type NextApiRequest, type NextApiResponse } from "next"
-import { type AuthOptions } from "next-auth"
-import { type Session } from "next-auth"
+import { type AuthOptions, type Session } from "next-auth"
 import { type Adapter, type User } from "next-auth/adapters"
 import { getServerSession } from "next-auth/next"
 import Credentials from "next-auth/providers/credentials"
 import { env } from "~/env.mjs"
+import { seconds } from "~/libs/seconds"
 import { prisma } from "~/server/db"
 
-const adapter = PrismaAdapter(
+export const adapter = PrismaAdapter(
   prisma as unknown as PrismaClient
 ) as Required<Adapter>
-const maxAge = env.NODE_ENV === "production" ? ms("30 days") : ms("30 days")
+const maxAge = seconds("1 day")
 
 export const nextAuthOptions: AuthOptions = {
   adapter,
   session: {
     strategy: "jwt",
     maxAge,
-    updateAge: ms("24 hours"),
   },
   pages: {
     signIn: "/auth/sign-in",
@@ -41,7 +38,6 @@ export const nextAuthOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        console.log("credentials", credentials)
         if (!credentials?.email || !credentials.password) {
           return null
         }
@@ -68,7 +64,7 @@ export const nextAuthOptions: AuthOptions = {
         const token = randomUUID()
         await adapter.createSession({
           userId: user.id,
-          expires: dayjs().add(maxAge, "ms").toDate(),
+          expires: dayjs().add(maxAge, "seconds").toDate(),
           sessionToken: token,
         })
 

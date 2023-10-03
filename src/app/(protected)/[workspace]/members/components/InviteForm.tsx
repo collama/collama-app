@@ -69,7 +69,7 @@ export const InviteForm = ({ workspace }: Props) => {
   }
 
   return (
-    <div>
+    <>
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
@@ -113,6 +113,6 @@ export const InviteForm = ({ workspace }: Props) => {
         </form>
       </FormProvider>
       {holder}
-    </div>
+    </>
   )
 }

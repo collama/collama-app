@@ -87,9 +87,8 @@ export default function Page() {
                 <Controller
                   name="password"
                   render={({ field }) => (
-                    <Input
+                    <Input.Password
                       {...field}
-                      type="password"
                       placeholder="Password"
                       disabled={loading}
                     />

@@ -28,7 +28,6 @@ import {
 } from "react"
 import { type ControllerRenderProps } from "react-hook-form"
 import { noop } from "~/common/utils"
-import { Input } from "~/ui/Input"
 
 export interface SelectOption {
   value: string
@@ -136,23 +135,28 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
       [activeIndex, selectedIndex, getItemProps, handleSelect]
     )
 
-    const selectLabel = options.reduce<Record<string, string>>((prev, cur) => {
-      prev[cur.value] = cur.label ?? cur.value
-      return prev
-    }, {})
+    const selectLabel = useMemo(
+      () =>
+        options.reduce<Record<string, string>>((prev, cur) => {
+          prev[cur.value] = cur.label ?? cur.value
+          return prev
+        }, {}),
+      []
+    )
 
     return (
       <div>
-        <Input
+        <input
           {...props}
           tabIndex={0}
           {...getReferenceProps()}
           value={selectLabel[selectedLabel ?? ""]}
           placeholder="Select ..."
           style={{ width, maxHeight: popupHeight }}
-          className="cursor-pointer px-2"
+          className="cursor-pointer outline-0 border border-gray-300 focus:border-violet-500 px-3 py-1 w-full rounded-lg caret-transparent"
           ref={useMergeRefs([refs.setReference, ref])}
           onChange={noop}
+          readOnly={true}
         />
         <SelectContext.Provider value={selectContext}>
           {isOpen && (

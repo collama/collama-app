@@ -60,18 +60,16 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
       { "w-full block": block },
       BASE_SIZE[size],
       { "opacity-70 hover:!opacity-70": loading },
-      "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none px-2 py-1 text-center font-normal leading-5 outline-0  transition-all"
+      "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none px-2 py-1 text-center font-normal leading-5 outline-0  transition-all inline-flex items-center gap-x-3 justify-center"
     )
 
     const renderChild = () => {
-      if (loading) return null
-
       return <span>{children}</span>
     }
 
     const renderLoading = () => {
       if (loading)
-        return <Spin className={cx({ "text-white": type === "primary" })} />
+        return <Spin className={cx({ "text-white": type === "primary" } )} />
 
       return null
     }

@@ -34,7 +34,7 @@ export const CreateTeamForm = (props: Props) => {
     if (status === "success") {
       notice.open({
         content: {
-          message: "Invite user is successfully",
+          message: "Create team is successfully",
         },
         status: "success",
       })
@@ -47,7 +47,7 @@ export const CreateTeamForm = (props: Props) => {
     if (status === "error" && error) {
       notice.open({
         content: {
-          message: "Failed to invite user",
+          message: "Failed to create team",
         },
         status: "error",
       })

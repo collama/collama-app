@@ -29,6 +29,7 @@ import {
   MemberNotFound,
   TaskNotFound,
 } from "~/server/errors/task.error"
+import { WorkspaceNotFound } from "~/server/errors/workspace.error"
 import { transformFilter, transformSort } from "~/services/prisma"
 
 interface TaskProcedureInput<T = unknown> {
@@ -199,9 +200,20 @@ export const filterAndSort = async ({
   session,
   prisma,
 }: Omit<TaskProcedureInput<z.infer<typeof FilterAndSortInput>>, "task">) => {
+  const workspace = await prisma.workspace.findUnique({
+    where: {
+      slug: input.workspaceSlug,
+    },
+  })
+
+  if (!workspace) {
+    throw new WorkspaceNotFound()
+  }
+
   const teams = await prisma.membersOnTeams.findMany({
     where: {
       userId: session.user.id,
+      workspaceId: workspace.id,
     },
     take: 10,
     select: {
@@ -221,11 +233,13 @@ export const filterAndSort = async ({
             OR: [
               {
                 userId: session.user.id,
+                workspaceId: workspace.id,
               },
               {
                 teamId: {
                   in: teams.map((team) => team.id),
                 },
+                workspaceId: workspace.id,
               },
             ],
           },

@@ -27,11 +27,21 @@ import {
   useState,
 } from "react"
 import { type ControllerRenderProps } from "react-hook-form"
+import { twMerge } from "tailwind-merge"
 import { noop } from "~/common/utils"
 
 export interface SelectOption {
   value: string
   label?: string
+}
+
+type SelectSize = "sm" | "base" | "lg" | "xl"
+
+const BASE_SIZE: Record<SelectSize, string> = {
+  sm: "text-sm py-0 px-2",
+  base: "text-base px-2 py-1",
+  lg: "text-lg py-3",
+  xl: "text-xl py-5",
 }
 
 type SelectProps = {
@@ -41,6 +51,8 @@ type SelectProps = {
   defaultValue?: string | SelectOption
   defaultOpen?: boolean
   disabled?: boolean
+  size?: SelectSize
+  className?: string
 } & Partial<ControllerRenderProps>
 
 interface SelectContextValue {
@@ -48,6 +60,7 @@ interface SelectContextValue {
   selectedIndex: number | null
   getItemProps: ReturnType<typeof useInteractions>["getItemProps"]
   handleSelect: (index: number | null) => void
+  size: SelectSize
 }
 
 const SelectContext = createContext<SelectContextValue>(
@@ -63,6 +76,8 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
       defaultValue,
       onChange,
       defaultOpen = false,
+      size = "base",
+      className,
       ...props
     },
     ref
@@ -131,8 +146,9 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
         selectedIndex,
         getItemProps,
         handleSelect,
+        size,
       }),
-      [activeIndex, selectedIndex, getItemProps, handleSelect]
+      [activeIndex, selectedIndex, getItemProps, handleSelect, size]
     )
 
     const selectLabel = useMemo(
@@ -152,8 +168,14 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
           {...getReferenceProps()}
           value={selectLabel[selectedLabel ?? ""]}
           placeholder="Select ..."
-          style={{ width, maxHeight: popupHeight }}
-          className="cursor-pointer outline-0 border border-gray-300 focus:border-violet-500 px-3 py-1 w-full rounded-lg caret-transparent"
+          // style={{ width, maxHeight: popupHeight }}
+          className={twMerge(
+            cx(
+              "cursor-pointer outline-0 border border-gray-300 focus:border-violet-500 w-full rounded-lg caret-transparent",
+              BASE_SIZE[size],
+              className
+            )
+          )}
           ref={useMergeRefs([refs.setReference, ref])}
           onChange={noop}
           readOnly={true}
@@ -186,7 +208,7 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
 )
 
 function Option({ label, value }: SelectOption) {
-  const { activeIndex, selectedIndex, getItemProps, handleSelect } =
+  const { activeIndex, selectedIndex, getItemProps, handleSelect, size } =
     useContext(SelectContext)
 
   const { ref, index } = useListItem({ label: value })
@@ -194,10 +216,13 @@ function Option({ label, value }: SelectOption) {
   const isActive = activeIndex === index
   const isSelected = selectedIndex === index
 
-  const classes = cx(
-    "block rounded-lg w-full truncate bg-white text-start px-2 py-1 border-0 outline-0",
-    { "!bg-violet-100": isSelected },
-    { "!bg-neutral-100": isActive && !isSelected }
+  const classes = twMerge(
+    cx(
+      "block rounded-lg w-full truncate bg-white text-start border-0 outline-0",
+      { "!bg-violet-100": isSelected },
+      { "!bg-neutral-100": isActive && !isSelected },
+      BASE_SIZE[size]
+    )
   )
 
   return (

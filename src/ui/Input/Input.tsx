@@ -4,11 +4,12 @@ import type { InputRef } from "~/ui/Col-ui/Input"
 import { Input as CInput } from "~/ui/Col-ui/Input"
 import { IconCircleXFilled } from "@tabler/icons-react"
 
-type InputSize = "base" | "md"
+type InputSize = "base" | "md" | 'sm'
 
 const INPUT_SIZE: Record<InputSize, string> = {
   base: "text-base",
   md: "text-md",
+  sm: "text-sm",
 }
 
 export interface InputProps

@@ -3,7 +3,7 @@ import type { EditorProps } from "@tiptap/pm/view"
 
 export const TipTapProps: EditorProps = {
   attributes: {
-    class: `focus:outline-none max-w-full`,
+    class: `focus:outline-none whitespace-normal`,
   },
   handleDOMEvents: {
     keydown: (_view, event): boolean => {

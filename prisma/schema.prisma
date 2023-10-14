@@ -65,9 +65,9 @@ model User {
   avatar             String?
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
-  tasks              Task[]
+  taskRevisions      TaskRevision[]
+  publishedTasks     PublishedTask[]
   workspaces         Workspace[]
-  templates          Template[]
   memberOfWorkspaces MembersOnWorkspaces[]
   membersOfTasks     MembersOnTasks[]
   membersOnTeams     MembersOnTeams[]
@@ -77,6 +77,7 @@ model User {
   accounts           Account[]
   sessions           Session[]
   tags               Tag[]
+  executionHistories ExecutionHistory[]
 
   @@map("users")
 }
@@ -93,7 +94,8 @@ model Workspace {
   membersOnWorkspaces MembersOnWorkspaces[]
   membersOnTasks      MembersOnTasks[]
   membersOnTeams      MembersOnTeams[]
-  tasks               Task[]
+  taskRevisions       TaskRevision[]
+  publishedTasks      PublishedTask[]
   teams               Team[]
   filterSettings      FilterSetting[]
 
@@ -137,12 +139,52 @@ enum ChatRole {
   Assistant
 }
 
-model Parameter {
+model Provider {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  task      Task     @relation(fields: [taskId], references: [id])
-  taskId    String   @db.ObjectId
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Model     Model[]
+  ApiKey    ApiKey[]
+
+  @@map("providers")
+}
+
+type ModelPricing {
+  price  Float
+  unit   String
+  tokens Int
+}
+
+type ModelUptime {
+  uptime Float
+  unit   String
+}
+
+model Model {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  provider   Provider @relation(fields: [providerId], references: [id])
+  providerId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  name          String       @unique
+  description   String
+  context       Int
+  pricing       String
+  inputPricing  ModelPricing
+  outputPricing ModelPricing
+  uptime        ModelUptime
+
+  @@map("models")
+}
+
+model Parameter {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId String       @db.ObjectId
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   name             String
   model            String
@@ -157,36 +199,98 @@ model Parameter {
   @@map("parameters")
 }
 
-model Task {
+model PublishedTask {
   id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  slug           String           @unique
-  description    String?
-  document       String?
-  prompt         String?
-  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
-  workspaceId    String           @db.ObjectId
-  owner          User             @relation(fields: [ownerId], references: [id])
-  ownerId        String           @db.ObjectId
-  template       Template?        @relation(fields: [templateId], references: [id])
-  templateId     String?          @db.ObjectId
-  private        Boolean          @default(false)
+  taskRevision   TaskRevision     @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId String           @db.ObjectId
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  private        Boolean          @default(false)
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String           @db.ObjectId
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
+  workspaceId    String           @db.ObjectId
   membersOnTasks MembersOnTasks[]
-  parameters     Parameter[]
-  tags           Tag[]
+
+  @@map("published_tasks")
+}
+
+type Message {
+  role    ChatRole
+  content String
+}
+
+model TaskRevision {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  slug               String             @unique
+  revision           Int                @default(1)
+  description        String             @default("")
+  document           String?
+  messages           Message[]
+  functions          String[] // TODO: improve later
+  draft              Boolean            @default(true)
+  workspace          Workspace          @relation(fields: [workspaceId], references: [id])
+  workspaceId        String             @db.ObjectId
+  owner              User               @relation(fields: [ownerId], references: [id])
+  ownerId            String             @db.ObjectId
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  membersOnTasks     MembersOnTasks[]
+  parameters         Parameter[]
+  tags               Tag[]
+  publishedTask      PublishedTask[]
+  executionHistories ExecutionHistory[]
 
   @@unique([name, workspaceId])
-  @@map("tasks")
+  @@map("task_revisions")
+}
+
+enum ExecutionStatus {
+  Pending
+  Running
+  Completed
+  Failed
+}
+
+enum Endpoint {
+  Playground
+  Production
+  API
+}
+
+type Usage {
+  promptTokens     Int
+  completionTokens Int
+}
+
+// TODO: this table should only available for PRO users. For normal users, it is only available in 3 days
+model ExecutionHistory {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId String       @db.ObjectId
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  executedBy     User         @relation(fields: [executedById], references: [id])
+  executedById   String       @db.ObjectId
+  endpoint       Endpoint
+
+  elapsedMs Int
+  status    ExecutionStatus
+  messages  Message[]
+  paramter  Json
+  output    String
+  usage     Usage
+
+  @@map("execution_histories")
 }
 
 model Tag {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  task      Task     @relation(fields: [taskId], references: [id])
-  taskId    String   @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId String       @db.ObjectId
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   name        String @unique
   createdBy   User   @relation(fields: [createdById], references: [id])
@@ -196,54 +300,36 @@ model Tag {
 }
 
 model MembersOnTasks {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  role        Role
-  user        User?        @relation(fields: [userId], references: [id])
-  userId      String?      @db.ObjectId
-  team        Team?        @relation(fields: [teamId], references: [id])
-  teamId      String?      @db.ObjectId
-  task        Task         @relation(fields: [taskId], references: [id])
-  taskId      String       @db.ObjectId
-  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
-  workspaceId String       @db.ObjectId
-  status      InviteStatus @default(Pending)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  role            Role
+  user            User?         @relation(fields: [userId], references: [id])
+  userId          String?       @db.ObjectId
+  team            Team?         @relation(fields: [teamId], references: [id])
+  teamId          String?       @db.ObjectId
+  publishedTask   PublishedTask @relation(fields: [publishedTaskId], references: [id])
+  publishedTaskId String        @db.ObjectId
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id])
+  workspaceId     String        @db.ObjectId
+  status          InviteStatus  @default(Pending)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  TaskRevision    TaskRevision? @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId  String?       @db.ObjectId
 
   @@map("members_on_tasks")
 }
 
-model Template {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
-  description String?
-  document    String?
-  prompt      String?
-  owner       User     @relation(fields: [ownerId], references: [id])
-  ownerId     String   @db.ObjectId
-  private     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tasks       Task[]
-
-  @@map("templates")
-}
-
-enum Provider {
-  OpenAI
-  Cohere
-}
-
 model ApiKey {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  provider  Provider
-  title     String
-  value     String
-  hint      String
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   String   @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  provider   Provider @relation(fields: [providerId], references: [id])
+  providerId String   @db.ObjectId
+  title      String
+  value      String
+  hint       String
+  owner      User     @relation(fields: [ownerId], references: [id])
+  ownerId    String   @db.ObjectId
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("api_keys")
 }

@@ -1,20 +1,21 @@
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react"
 import { type JSONContent } from "@tiptap/react"
-import { type FC, MouseEvent } from "react"
+import { type FC, type MouseEvent } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 import { debounce } from "~/common/utils"
 import {
   DEFAULT_TEMPLATE,
   PROMPT_FORM_NAME,
-  type PromptTemplate,
+  type Template,
 } from "~/components/PromptTemplates/contants"
+import { useTaskStoreAction } from "~/store/task"
 import { RichText } from "~/ui/RichText"
 import { Select } from "~/ui/Select"
 
 interface PromptFieldProps {
   index: number
   remove: (index: number) => void
-  insert: (index: number, value: PromptTemplate) => void
+  insert: (index: number, value: Template) => void
 }
 
 export const PromptField: FC<PromptFieldProps> = ({
@@ -23,6 +24,7 @@ export const PromptField: FC<PromptFieldProps> = ({
   insert,
 }) => {
   const { control } = useFormContext()
+  const { updateTemplatePromptByIndex } = useTaskStoreAction()
 
   const onRemove = () => remove(index)
 
@@ -56,7 +58,11 @@ export const PromptField: FC<PromptFieldProps> = ({
         render={({ field }) => {
           return (
             <RichText
-              onChange={debounce((data: JSONContent) => field.onChange(data))}
+              onChange={debounce((data: JSONContent) => {
+                const value = JSON.stringify(data)
+                field.onChange(value)
+                updateTemplatePromptByIndex(value, index)
+              })}
               value={field.value as string}
               placeholder="something ..."
             />

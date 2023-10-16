@@ -53,6 +53,7 @@ type SelectProps = {
   disabled?: boolean
   size?: SelectSize
   className?: string
+  onSelect?: (value: string) => void
 } & Partial<ControllerRenderProps>
 
 interface SelectContextValue {
@@ -78,6 +79,7 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
       defaultOpen = false,
       size = "base",
       className,
+      onSelect,
       ...props
     },
     ref
@@ -107,6 +109,10 @@ export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
         if (index !== null) {
           setSelectedLabel(labelsRef.current[index])
           onChange?.(labelsRef.current[index])
+        }
+
+        if (index !== null && labelsRef.current[index]) {
+          onSelect?.(labelsRef.current[index]!)
         }
       },
       [onChange]

@@ -2,38 +2,41 @@
 
 import { useEffect } from "react"
 import { Controller, useFieldArray } from "react-hook-form"
-import { useSnapshot } from "valtio/react"
 import useZodForm from "~/common/form"
-import { Paragraph } from "~/common/types/prompt"
-import { Template } from "~/components/PromptTemplates/contants"
+import { type Prompt, type VariableContent } from "~/common/types/prompt"
 import {
   VARIABLE_FORM_NAME,
   variablesSchema,
 } from "~/components/VariablesSection/contants"
-import { Snapshot, taskStore, useTaskStorePrompts } from "~/store/task"
+import { getVariableContents } from "~/server/api/services/prompt"
+import {
+  type Snapshot,
+  type TaskTemplate,
+  useTaskStoreAction,
+  useTaskStorePrompts,
+} from "~/store/task"
 import { Input } from "~/ui/Input"
 
-// export const transformPrompts2Variable = (
-//   prompts: readonly Snapshot<Template>[]
-// ): Array<Paragraph[] | null> => {
-//   // const json = JSON.stringify(prompts)
-//   // const clone = JSON.parse(json) as Template[]
-//
-//
-//   const clone = [...prompts] as Template[]
-//   console.log(clone)
-//
-//   return clone.map((prompt) => (prompt.prompt ? prompt.prompt?.content : null))
-// }
 
-// const tranformVariables = (arr: Variable[]): Variable[] => {
-//   return arr.map(item => {
-//     const variableContents = getVariableContents(item.value)
-//   })
-// }
+export const transformPrompts2Variable = (
+  prompts: readonly Snapshot<TaskTemplate>[]
+): string[] => {
+  const clone = [...prompts] as TaskTemplate[]
+
+  return clone.map((prompt) => prompt.prompt)
+}
+
+const transformVariables = (arr: string[]): VariableContent[] => {
+  const contents = arr
+    .filter((item) => !!item)
+    .map((item) => JSON.parse(item) as Prompt)
+
+  return contents.flatMap((item) => getVariableContents(item.content))
+}
 
 export const VariablesSection = () => {
   const prompt = useTaskStorePrompts()
+  const { insertVariables, updateVariableValue } = useTaskStoreAction()
   const { control, register } = useZodForm({
     schema: variablesSchema,
   })
@@ -43,22 +46,20 @@ export const VariablesSection = () => {
     control,
   })
 
-  // useEffect(() => {
-  //   const value = transformPrompts2Variable(prompt)
-  //   //
-  //   // const variable =
-  //   //
-  //   // replace(value)
-  //   console.log(value)
-  //   // console.log(transformPrompts2Variable(prompt))
-  // }, [prompt])
+  useEffect(() => {
+    const values = transformPrompts2Variable(prompt)
+    const res = transformVariables(values)
+    const transformField = res.map((field) => ({
+      name: field.attrs.text,
+      value: "",
+    }))
 
-
-
+    replace(transformField)
+    insertVariables(transformField)
+  }, [prompt])
 
   return (
     <div>
-      <div>{prompt.map((item, index) => <span key={index}>{JSON.stringify(item)}</span>)}</div>
       <form>
         {fields.map((field, index) => {
           return (
@@ -72,9 +73,10 @@ export const VariablesSection = () => {
               <Controller
                 control={control}
                 name={`${VARIABLE_FORM_NAME}.${index}.value`}
-                render={({ field }) => (
-                  <Input.TextArea {...field} className="h-5" />
-                )}
+                render={({ field }) => {
+                  updateVariableValue(field.value, index)
+                  return <Input.TextArea {...field} className="h-5" />
+                }}
               />
             </div>
           )

@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const PROMPT_FORM_NAME = "prompts"
 
-const template = z.object({ role: z.string(), prompt: z.string() })
+const template = z.object({ role: z.string().nonempty(), prompt: z.string().nonempty() })
 
 export type Template = z.infer<typeof template>
 

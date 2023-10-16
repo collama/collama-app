@@ -24,9 +24,16 @@ export const PromptField: FC<PromptFieldProps> = ({
   insert,
 }) => {
   const { control } = useFormContext()
-  const { updateTemplatePromptByIndex } = useTaskStoreAction()
+  const {
+    updateTemplatePromptByIndex,
+    updateTemplateRoleByIndex,
+    removeTemplateByIndex,
+  } = useTaskStoreAction()
 
-  const onRemove = () => remove(index)
+  const onRemove = () => {
+    remove(index)
+    removeTemplateByIndex(index)
+  }
 
   const onInsert = (event: MouseEvent) => {
     event.preventDefault()
@@ -49,6 +56,7 @@ export const PromptField: FC<PromptFieldProps> = ({
               { value: "assistant" },
             ]}
             className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
+            onSelect={(v) => updateTemplateRoleByIndex(v, index)}
           />
         )}
       />

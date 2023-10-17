@@ -158,7 +158,7 @@ export const TipTapExtensions = [
   StarterKit.configure({
     paragraph: {
       HTMLAttributes: {
-        class: "leading-5",
+        class: "text-sm",
       },
     },
   }),

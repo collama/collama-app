@@ -12,3 +12,14 @@ export const isEmail = (text: string): boolean => {
 
 export const capitalizeFirstLetter = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1)
+
+export function debounce<T extends (...args: Parameters<T>) => void>(func: T, timeout = 300): (...args: Parameters<T>) => void {
+  let timer: NodeJS.Timeout;
+
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}

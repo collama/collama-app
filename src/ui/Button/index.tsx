@@ -1,6 +1,7 @@
 import cx from "classnames"
 import type { PropsWithChildren, ReactNode } from "react"
 import { forwardRef } from "react"
+import { twMerge } from "tailwind-merge"
 import { Spin } from "~/ui/Spinner"
 
 type ButtonType = "primary" | "default" | "text"
@@ -20,8 +21,8 @@ interface ButtonProps extends PropsWithChildren {
 }
 
 const BASE_SIZE: Record<ButtonSize, string> = {
-  sm: "text-sm",
-  base: "text-base",
+  sm: "text-sm py-0 px-2",
+  base: "text-base px-2 py-1",
   lg: "text-lg py-3",
   xl: "text-xl py-5",
 }
@@ -50,17 +51,19 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
     },
     ref
   ) {
-    const classes = cx(
-      {
-        "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:!border-stone-300 hover:!bg-gray-200 hover:!text-gray-400":
-          disable,
-      },
-      className,
-      BUTTON_TYPE[type],
-      { "w-full block": block },
-      BASE_SIZE[size],
-      { "opacity-70 hover:!opacity-70": loading },
-      "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none px-2 py-1 text-center font-normal leading-5 outline-0  transition-all inline-flex items-center gap-x-3 justify-center"
+    const classes = twMerge(
+      cx(
+        "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none text-center font-normal leading-5 outline-0  transition-all inline-flex items-center gap-x-3 justify-center",
+        BUTTON_TYPE[type],
+        BASE_SIZE[size],
+        { "w-full block": block },
+        { "opacity-70 hover:!opacity-70": loading },
+        {
+          "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:!border-stone-300 hover:!bg-gray-200 hover:!text-gray-400":
+            disable,
+        },
+        className
+      )
     )
 
     const renderChild = () => {
@@ -69,7 +72,7 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
 
     const renderLoading = () => {
       if (loading)
-        return <Spin className={cx({ "text-white": type === "primary" } )} />
+        return <Spin className={cx({ "text-white": type === "primary" })} />
 
       return null
     }

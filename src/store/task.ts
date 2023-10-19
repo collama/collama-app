@@ -1,11 +1,9 @@
-import { v4 } from "uuid"
+import { ChatRole } from "@prisma/client"
 import { type INTERNAL_Snapshot, proxy } from "valtio"
 import { useSnapshot } from "valtio/react"
-import {
-  DEFAULT_TEMPLATE,
-  type Template,
-} from "~/components/PromptTemplates/contants"
+import { type Template } from "~/components/PromptTemplates/contants"
 import { type Variable } from "~/components/VariablesSection/contants"
+
 
 export type Snapshot<T> = INTERNAL_Snapshot<T>
 
@@ -19,7 +17,7 @@ interface TaskStore {
 }
 
 const init: TaskStore = {
-  promptsTemplate: [{ ...DEFAULT_TEMPLATE, role: "system", id: v4() }],
+  promptsTemplate: [],
   variables: [],
 }
 
@@ -29,12 +27,12 @@ export const useTaskStoreAction = () => ({
   insertTemplate: (template: TaskTemplate) => {
     taskStore.promptsTemplate.push(template)
   },
-  updateTemplatePromptByIndex: (prompt: string, index: number) => {
+  updateTemplatePromptByIndex: (content: string, index: number) => {
     if (taskStore.promptsTemplate[index] !== undefined) {
-      taskStore.promptsTemplate[index]!.prompt = prompt
+      taskStore.promptsTemplate[index]!.content = content
     }
   },
-  updateTemplateRoleByIndex: (role: string, index: number) => {
+  updateTemplateRoleByIndex: (role: ChatRole, index: number) => {
     if (taskStore.promptsTemplate[index] !== undefined) {
       taskStore.promptsTemplate[index]!.role = role
     }
@@ -55,4 +53,5 @@ export const useTaskStoreAction = () => ({
 })
 
 export const useTaskStorePrompts = () => useSnapshot(taskStore.promptsTemplate)
+export const useTaskStoreTemplateByIndex = (index:number) => useSnapshot(taskStore.promptsTemplate)[index]
 export const useTaskStoreVariables = () => useSnapshot(taskStore.variables)

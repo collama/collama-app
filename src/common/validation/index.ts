@@ -18,4 +18,6 @@ export const zSlug = z
     "Slug should contain only alphabets and -"
   )
 
+export const zVersion = z.string()
+
 export const zPassword = z.string()

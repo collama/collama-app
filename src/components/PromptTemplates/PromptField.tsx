@@ -1,3 +1,4 @@
+import { ChatRole, TaskRevision } from "@prisma/client"
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react"
 import { type JSONContent } from "@tiptap/react"
 import { type FC, type MouseEvent } from "react"
@@ -51,9 +52,9 @@ export const PromptField: FC<PromptFieldProps> = ({
             size="sm"
             defaultValue={field.value as string}
             options={[
-              { value: "user" },
-              { value: "system" },
-              { value: "assistant" },
+              { value: ChatRole.User },
+              { value: ChatRole.System },
+              { value: ChatRole.Assistant },
             ]}
             className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
             onSelect={(v) => updateTemplateRoleByIndex(v, index)}
@@ -62,7 +63,7 @@ export const PromptField: FC<PromptFieldProps> = ({
       />
       <Controller
         control={control}
-        name={`${PROMPT_FORM_NAME}.${index}.prompt`}
+        name={`${PROMPT_FORM_NAME}.${index}.content`}
         render={({ field }) => {
           return (
             <RichText

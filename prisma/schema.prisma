@@ -205,6 +205,7 @@ model Parameter {
 type Message {
   role    ChatRole
   content String
+  id      String
 }
 
 enum TaskStatus {
@@ -214,18 +215,18 @@ enum TaskStatus {
 }
 
 model Task {
-  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
-  taskRevision       TaskRevision @relation(fields: [tasktaskRevisionId], references: [id])
-  tasktaskRevisionId String       @db.ObjectId
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  private     Boolean   @default(false)
-  tags        Tag[]
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  workspaceId String    @db.ObjectId
-  owner       User      @relation(fields: [ownerId], references: [id])
-  ownerId     String    @db.ObjectId
+  private        Boolean          @default(false)
+  tags           Tag[]
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
+  workspaceId    String           @db.ObjectId
+  owner          User             @relation(fields: [ownerId], references: [id])
+  ownerId        String           @db.ObjectId
+  TaskRevision   TaskRevision[]
+  MembersOnTasks MembersOnTasks[]
 
   @@map("current_tasks")
 }
@@ -254,8 +255,11 @@ model TaskRevision {
   membersOnTasks     MembersOnTasks[]
   parameters         Parameter[]
   executionHistories ExecutionHistory[]
-  currentTask        Task[]
 
+  currentTask   Task   @relation(fields: [currentTaskId], references: [id])
+  currentTaskId String @db.ObjectId
+
+  @@unique([currentTaskId, version])
   @@unique([workspaceId, slug, version])
   @@unique([name, workspaceId])
   @@map("task")
@@ -314,19 +318,21 @@ model Tag {
 }
 
 model MembersOnTasks {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   role           Role
-  user           User?        @relation(fields: [userId], references: [id])
-  userId         String?      @db.ObjectId
-  team           Team?        @relation(fields: [teamId], references: [id])
-  teamId         String?      @db.ObjectId
-  workspace      Workspace    @relation(fields: [workspaceId], references: [id])
-  workspaceId    String       @db.ObjectId
-  status         InviteStatus @default(Pending)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
-  taskRevisionId String       @db.ObjectId
+  user           User?         @relation(fields: [userId], references: [id])
+  userId         String?       @db.ObjectId
+  team           Team?         @relation(fields: [teamId], references: [id])
+  teamId         String?       @db.ObjectId
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id])
+  workspaceId    String        @db.ObjectId
+  status         InviteStatus  @default(Pending)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  task           Task          @relation(fields: [taskId], references: [id])
+  taskId         String        @db.ObjectId
+  TaskRevision   TaskRevision? @relation(fields: [taskRevisionId], references: [id])
+  taskRevisionId String?       @db.ObjectId
 
   @@map("members_on_tasks")
 }

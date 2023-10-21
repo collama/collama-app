@@ -1,27 +1,42 @@
+import type { TaskRevision } from "@prisma/client"
 import { Suspense } from "react"
-import { ClientTask } from "~/app/(protected)/[workspace]/[task]/components/ClientTask"
+import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templates"
+import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
 import Loading from "~/ui/loading"
+
 
 interface TaskProps {
   task: string
   workspace: string
 }
+interface TaskSearchProps {
+  version: string
+}
 
-export default async function TaskPage({ params }: PageProps<TaskProps>) {
-  const task = await api.task.getBySlug.query({
-    slug: params.task,
+export interface TaskRevisionProps {
+  taskRevision: TaskRevision
+}
+
+export default async function TaskPage({
+  params,
+  searchParams,
+}: PageProps<TaskProps, TaskSearchProps>) {
+  const taskRevision = await api.taskRevision.getByIdAndVersion.query({
     workspaceSlug: params.workspace,
+    taskSlug: params.task,
+    version: searchParams.version,
   })
 
-  if (!task) {
+  if (!taskRevision) {
     return <div>Invalid task</div>
   }
 
   return (
     <Suspense fallback={<Loading />}>
-      <ClientTask task={task} />
+      <Templates taskRevision={taskRevision} />
+      <Variables />
     </Suspense>
   )
 }

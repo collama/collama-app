@@ -11,6 +11,11 @@ export default async function NewTaskPage({ params }: PageProps<NewTaskProps>) {
   const task = await api.task.create.mutate({ slug: params.workspace })
 
   redirect(
-    urlJoin("/", params.workspace, task.slug, `?&version=${task.version}`)
+    urlJoin(
+      "/",
+      params.workspace,
+      task.slug,
+      `?&version=${task.taskRevision.version}`
+    )
   )
 }

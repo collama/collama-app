@@ -4,12 +4,6 @@ export class TaskNotFound extends Error {
   }
 }
 
-export class NoPermission extends Error {
-  constructor() {
-    super("You do not have permission to do this action")
-  }
-}
-
 export class MemberNotFound extends Error {
   constructor() {
     super("Member not found")

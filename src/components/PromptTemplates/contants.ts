@@ -1,14 +1,15 @@
-import { ChatRole } from "@prisma/client"
+import { ChatRole, type Message } from "@prisma/client"
+import { v4 } from "uuid"
 import { z } from "zod"
+
 
 export const PROMPT_FORM_NAME = "prompts"
 
-const template = z.object({
+export const template = z.object({
   role: z.nativeEnum(ChatRole),
   content: z.string(),
+  id: z.string(),
 })
-
-export type Template = z.infer<typeof template>
 
 export const promptSchema = z.object({
   [PROMPT_FORM_NAME]: z.array(template),
@@ -16,4 +17,13 @@ export const promptSchema = z.object({
 
 export type PromptsTemplate = z.infer<typeof promptSchema>
 
-export const DEFAULT_TEMPLATE: Template = { role: ChatRole.User, content: "" }
+const content = JSON.stringify({
+  type: "doc",
+  content: [{ type: "paragraph" }],
+})
+
+export const DEFAULT_TEMPLATE: Message = {
+  role: ChatRole.User,
+  content,
+  id: v4(),
+}

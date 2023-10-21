@@ -1,4 +1,5 @@
 import type { PrismaClient, Task } from "@prisma/client"
+import { WorkspaceNotFound } from "~/common/errors"
 import { Role } from "~/server/api/providers/permission/role"
 import { WorkspacePermission } from "~/server/api/providers/permission/workspace-permisison"
 import { TaskNotFound } from "~/server/errors/task.error"
@@ -50,11 +51,20 @@ export class TaskPermission {
     workspaceSlug: string,
     userId: string
   ): Promise<TaskPermissionResult> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { slug: workspaceSlug },
+      select: {
+        id: true,
+      },
+    })
+
+    if (!workspace) throw WorkspaceNotFound
+
     const task = await this.prisma.task.findUnique({
       where: {
-        slug: taskSlug,
-        workspace: {
-          slug: workspaceSlug,
+        workspaceId_slug: {
+          slug: taskSlug,
+          workspaceId: workspace.id,
         },
       },
     })

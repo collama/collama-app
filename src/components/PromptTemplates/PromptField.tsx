@@ -1,44 +1,45 @@
-import { ChatRole, TaskRevision } from "@prisma/client"
+import { ChatRole } from "@prisma/client"
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react"
 import { type JSONContent } from "@tiptap/react"
 import { type FC, type MouseEvent } from "react"
 import { Controller, useFormContext } from "react-hook-form"
+import type { Prompt } from "~/common/types/prompt"
 import { debounce } from "~/common/utils"
+import type { RootTemplatesProps } from "~/components/PromptTemplates"
 import {
   DEFAULT_TEMPLATE,
   PROMPT_FORM_NAME,
-  type Template,
+  type PromptsTemplate,
 } from "~/components/PromptTemplates/contants"
-import { useTaskStoreAction } from "~/store/task"
+import { serializePrompt } from "~/server/api/services/task"
 import { RichText } from "~/ui/RichText"
 import { Select } from "~/ui/Select"
 
-interface PromptFieldProps {
+interface PromptFieldProps extends RootTemplatesProps {
   index: number
-  remove: (index: number) => void
-  insert: (index: number, value: Template) => void
+}
+
+const transformValue = (value: string | Prompt) => {
+  return typeof value === "string" ? serializePrompt(value) : value
 }
 
 export const PromptField: FC<PromptFieldProps> = ({
   index,
   remove,
   insert,
+  updateRole,
+  updateContent,
 }) => {
-  const { control } = useFormContext()
-  const {
-    updateTemplatePromptByIndex,
-    updateTemplateRoleByIndex,
-    removeTemplateByIndex,
-  } = useTaskStoreAction()
+  const { control, watch } = useFormContext<PromptsTemplate>()
+  const mess = watch(PROMPT_FORM_NAME)[index]
 
   const onRemove = () => {
     remove(index)
-    removeTemplateByIndex(index)
   }
 
   const onInsert = (event: MouseEvent) => {
     event.preventDefault()
-    insert(index + 1, DEFAULT_TEMPLATE)
+    insert(index, DEFAULT_TEMPLATE)
   }
 
   return (
@@ -57,7 +58,9 @@ export const PromptField: FC<PromptFieldProps> = ({
               { value: ChatRole.Assistant },
             ]}
             className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
-            onSelect={(v) => updateTemplateRoleByIndex(v, index)}
+            onSelect={(v) => {
+              if (mess) updateRole(index, v as ChatRole, mess)
+            }}
           />
         )}
       />
@@ -68,11 +71,11 @@ export const PromptField: FC<PromptFieldProps> = ({
           return (
             <RichText
               onChange={debounce((data: JSONContent) => {
+                field.onChange(data)
                 const value = JSON.stringify(data)
-                field.onChange(value)
-                updateTemplatePromptByIndex(value, index)
+                if (mess) updateContent(index, value, mess)
               })}
-              value={field.value as string}
+              value={transformValue(field.value)}
               placeholder="something ..."
             />
           )

@@ -76,10 +76,10 @@ model User {
   sessions           Session[]
   tags               Tag[]
   executionHistories ExecutionHistory[]
-  currentTasks       Task[]
   createdTasks       TaskRevision[]        @relation("createdBy")
   updatedTasks       TaskRevision[]        @relation("updatedBy")
   approvedTasks      TaskRevision[]        @relation("approvedBy")
+  Task               Task[]
 
   @@map("users")
 }
@@ -99,7 +99,7 @@ model Workspace {
   taskRevisions       TaskRevision[]
   teams               Team[]
   filterSettings      FilterSetting[]
-  CurrentTask         Task[]
+  tasks               Task[]
 
   @@map("workspaces")
 }
@@ -216,53 +216,54 @@ enum TaskStatus {
 
 model Task {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  private        Boolean          @default(false)
-  tags           Tag[]
-  workspace      Workspace        @relation(fields: [workspaceId], references: [id])
-  workspaceId    String           @db.ObjectId
-  owner          User             @relation(fields: [ownerId], references: [id])
-  ownerId        String           @db.ObjectId
-  TaskRevision   TaskRevision[]
-  MembersOnTasks MembersOnTasks[]
+  private            Boolean            @default(false)
+  tags               Tag[]
+  workspace          Workspace          @relation(fields: [workspaceId], references: [id])
+  workspaceId        String             @db.ObjectId
+  owner              User               @relation(fields: [ownerId], references: [id])
+  ownerId            String             @db.ObjectId
+  TaskRevision       TaskRevision[]
+  MembersOnTasks     MembersOnTasks[]
+  executionHistories ExecutionHistory[]
 
-  @@map("current_tasks")
+  @@unique([workspaceId, slug])
+  @@map("tasks")
 }
 
 model TaskRevision {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    User     @relation(fields: [createdById], references: [id], name: "createdBy")
-  createdById  String   @db.ObjectId
-  updatedBy    User     @relation(fields: [updatedById], references: [id], name: "updatedBy")
-  updatedById  String   @db.ObjectId
-  approvedBy   User?    @relation(fields: [approvedById], references: [id], name: "approvedBy")
-  approvedById String?  @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  name               String
-  slug               String
+  createdBy    User    @relation(fields: [createdById], references: [id], name: "createdBy")
+  createdById  String  @db.ObjectId
+  updatedBy    User    @relation(fields: [updatedById], references: [id], name: "updatedBy")
+  updatedById  String  @db.ObjectId
+  approvedBy   User?   @relation(fields: [approvedById], references: [id], name: "approvedBy")
+  approvedById String? @db.ObjectId
+
   version            String
   versionDescription String?
   description        String?
   document           String?
   messages           Message[]
-  status             TaskStatus         @default(Draft)
-  workspace          Workspace          @relation(fields: [workspaceId], references: [id])
-  workspaceId        String             @db.ObjectId
+  status             TaskStatus       @default(Draft)
+  workspace          Workspace        @relation(fields: [workspaceId], references: [id])
+  workspaceId        String           @db.ObjectId
   membersOnTasks     MembersOnTasks[]
   parameters         Parameter[]
-  executionHistories ExecutionHistory[]
 
-  currentTask   Task   @relation(fields: [currentTaskId], references: [id])
-  currentTaskId String @db.ObjectId
+  task             Task               @relation(fields: [taskId], references: [id])
+  taskId           String             @db.ObjectId
+  ExecutionHistory ExecutionHistory[]
 
-  @@unique([currentTaskId, version])
-  @@unique([workspaceId, slug, version])
-  @@unique([name, workspaceId])
-  @@map("task")
+  @@unique([taskId, version])
+  @@map("tasks_revision")
 }
 
 enum ExecutionStatus {
@@ -299,6 +300,8 @@ model ExecutionHistory {
   paramter  Json
   output    String
   usage     Usage
+  Task      Task?           @relation(fields: [taskId], references: [id])
+  taskId    String?         @db.ObjectId
 
   @@map("execution_histories")
 }

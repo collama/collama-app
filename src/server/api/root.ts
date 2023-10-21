@@ -1,6 +1,7 @@
 import { apiKeyTRPCRouter } from "~/server/api/routers/api-key/api-key.router"
 import { filterSettingTRPCRouter } from "~/server/api/routers/filter-setting/filter-setting.router"
 import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
+import { taskRevisionTRPCRouter } from "~/server/api/routers/taskRevision/taskRevision.router"
 import { teamTRPCRouter } from "~/server/api/routers/team/team.router"
 import { workspaceTRPCRouter } from "~/server/api/routers/workspace/workspace.router"
 import { createTRPCRouter } from "~/server/api/trpc"
@@ -12,6 +13,7 @@ import { createTRPCRouter } from "~/server/api/trpc"
  */
 export const appRouter = createTRPCRouter({
   task: taskTRPCRouter,
+  taskRevision: taskRevisionTRPCRouter,
   workspace: workspaceTRPCRouter,
   team: teamTRPCRouter,
   apiKey: apiKeyTRPCRouter,

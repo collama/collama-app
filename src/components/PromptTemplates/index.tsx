@@ -1,28 +1,74 @@
-"use client";
+import type { Message, ChatRole as ChatRoleType } from "@prisma/client"
+import { ChatRole } from "@prisma/client"
+import { type FC, useEffect } from "react"
+import { FormProvider, useFieldArray } from "react-hook-form"
+import useZodForm from "~/common/form"
+import { PromptField } from "~/components/PromptTemplates/PromptField"
+import {
+  DEFAULT_TEMPLATE,
+  PROMPT_FORM_NAME,
+  promptSchema,
+} from "~/components/PromptTemplates/contants"
+import { Button } from "~/ui/Button"
 
-import { FormProvider, useFieldArray } from "react-hook-form";
-import { v4 } from "uuid";
-import useZodForm from "~/common/form";
-import { PromptField } from "~/components/PromptTemplates/PromptField";
-import { DEFAULT_TEMPLATE, PROMPT_FORM_NAME, promptSchema } from "~/components/PromptTemplates/contants";
-import { useTaskStoreAction } from "~/store/task";
-import { Button } from "~/ui/Button";
+export interface RootTemplatesProps {
+  remove: (index: number) => void
+  insert: (index: number, value: Message) => void
+  updateRole: (index: number, value: ChatRoleType, message: Message) => void
+  updateContent: (index: number, value: string, message: Message) => void
+}
 
+interface PromptTemplatesProps extends RootTemplatesProps {
+  append: (value: Message) => void
+  data: Message[]
+}
 
-export const PromptTemplates = () => {
+export const PromptTemplates: FC<PromptTemplatesProps> = ({
+  data,
+  updateContent,
+  updateRole,
+  remove,
+  insert,
+  append,
+}) => {
   const methods = useZodForm({
     schema: promptSchema,
     defaultValues: {
-      prompts: [{ ...DEFAULT_TEMPLATE, role: "system" }],
+      prompts: data,
     },
   })
 
-  const { fields, insert, append, remove } = useFieldArray({
+  const {
+    fields,
+    insert: fieldInsert,
+    append: fieldAppend,
+    remove: fieldRemove,
+  } = useFieldArray({
     control: methods.control,
     name: PROMPT_FORM_NAME,
   })
 
-  const {insertTemplate} = useTaskStoreAction()
+  useEffect(() => {
+    if (!data || data.length <= 0) {
+      fieldAppend({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
+      append({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
+    }
+  }, [])
+
+  const onAppend = () => {
+    fieldAppend(DEFAULT_TEMPLATE)
+    append(DEFAULT_TEMPLATE)
+  }
+
+  const onInsert = (index: number, value: Message) => {
+    fieldInsert(index + 1, value)
+    insert(index, value)
+  }
+
+  const onRemove = (index: number) => {
+    fieldRemove(index)
+    remove(index)
+  }
 
   return (
     <div>
@@ -33,8 +79,10 @@ export const PromptTemplates = () => {
               <PromptField
                 key={field.id}
                 index={index}
-                remove={remove}
-                insert={insert}
+                remove={onRemove}
+                insert={onInsert}
+                updateRole={updateRole}
+                updateContent={updateContent}
               />
             ))}
           </ul>
@@ -43,12 +91,16 @@ export const PromptTemplates = () => {
             <Button
               size="sm"
               className="text-gray-400 rounded-lg"
-              onClick={() => {
-                append(DEFAULT_TEMPLATE)
-                insertTemplate({ ...DEFAULT_TEMPLATE, id: v4() })
-              }}
+              onClick={onAppend}
             >
               new template
+            </Button>
+            <Button
+              size="sm"
+              className="text-gray-400 rounded-lg"
+              htmlType="submit"
+            >
+              save
             </Button>
           </section>
         </form>

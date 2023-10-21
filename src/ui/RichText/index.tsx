@@ -3,12 +3,13 @@ import type { Editor } from "@tiptap/core"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react"
 import { type FC } from "react"
+import type { Prompt } from "~/common/types/prompt"
 import { TipTapExtensions } from "~/ui/RichText/components/TipTapExtension"
 import { TipTapProps } from "~/ui/RichText/components/TipTapProps"
 
 interface TipTapProps {
   onChange: (editor: JSONContent) => void
-  value: string
+  value: Prompt
   placeholder?: string
 }
 

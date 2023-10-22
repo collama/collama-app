@@ -18,43 +18,45 @@ const init: TaskStore = {
 export const taskStore = proxy<TaskStore>(init)
 
 export const useTaskStoreTemplatesActions = () => ({
-  append: (template: Message) => {
-    taskStore.templates.push(template)
+  append: (template: Message[]) => {
+    taskStore.templates = [...taskStore.templates, ...template]
   },
-  insert: (index: number, template: Message) => {
-    if (taskStore.templates[index] !== undefined) {
-      taskStore.templates.splice(index, 0, template)
-    }
+  insert: (index: number, value: Message) => {
+    taskStore.templates.splice(index, 0, value)
   },
   updateContent: (index: number, content: string) => {
-    if (taskStore.templates[index] !== undefined) {
-      taskStore.templates[index]!.content = content
+    const template = taskStore.templates[index]
+
+    if (template) {
+      template.content = content
     }
   },
   updateRole: (index: number, role: ChatRole) => {
-    if (taskStore.templates[index] !== undefined) {
-      taskStore.templates[index]!.role = role
+    const template = taskStore.templates[index]
+
+    if (template) {
+      template.role = role
     }
   },
   remove: (index: number) => {
-    if (taskStore.templates[index] !== undefined) {
-      taskStore.templates.splice(index, 1)
-    }
+    taskStore.templates.splice(index, 1)
   },
 })
 
 export const useTaskVariablesActions = () => ({
-  insertVariables: (vars: Variable[]) => {
-    taskStore.variables = vars
+  append: (value: Variable[]) => {
+    taskStore.variables = [...taskStore.variables, ...value]
   },
-  updateVariableValue: (index: number, value: string) => {
-    if (taskStore.templates[index] !== undefined) {
-      taskStore.variables[index]!.value = value
+  updateVariableContent: (index: number, value: string) => {
+    const variable = taskStore.variables[index]
+
+    if (variable) {
+      variable.value = value
     }
   },
 })
 
-export const useTaskStoreTemplates = () => useSnapshot(taskStore.templates)
+export const useTaskStoreTemplates = () => useSnapshot(taskStore).templates
 export const useTaskStoreTemplateByIndex = (index: number) =>
   useSnapshot(taskStore.templates)[index]
-export const useTaskStoreVariables = () => useSnapshot(taskStore.variables)
+export const useTaskStoreVariables = () => useSnapshot(taskStore).variables

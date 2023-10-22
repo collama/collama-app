@@ -1,11 +1,11 @@
 import type { TaskRevision } from "@prisma/client"
 import { Suspense } from "react"
+import { Executes } from "~/app/(protected)/[workspace]/[task]/components/Executes"
 import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templates"
 import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
 import Loading from "~/ui/loading"
-
 
 interface TaskProps {
   task: string
@@ -37,6 +37,7 @@ export default async function TaskPage({
     <Suspense fallback={<Loading />}>
       <Templates taskRevision={taskRevision} />
       <Variables />
+      <Executes />
     </Suspense>
   )
 }

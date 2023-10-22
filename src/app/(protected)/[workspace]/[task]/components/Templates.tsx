@@ -1,12 +1,12 @@
 "use client"
 
 import { type ChatRole, type Message } from "@prisma/client"
-import { type FC } from "react"
+import { type FC, useCallback, useEffect } from "react"
 import {
-  updateMessageOnTaskRevision,
-  removeMessageOnTaskRevision,
-  insertMessageOnTaskRevision,
   appendMessageOnTaskRevision,
+  insertMessageOnTaskRevision,
+  removeMessageOnTaskRevision,
+  updateMessageOnTaskRevision,
 } from "~/app/(protected)/[workspace]/[task]/actions"
 import { type TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { PromptTemplates } from "~/components/PromptTemplates"
@@ -21,16 +21,21 @@ export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
   const { mutate: insertMessage } = useAction(insertMessageOnTaskRevision)
   const { mutate: appendMessage } = useAction(appendMessageOnTaskRevision)
   const { mutate: removeMessage } = useAction(removeMessageOnTaskRevision)
-  const onAppend = (value: Message) => {
-    append(value)
+
+  useEffect(() => {
+    append(taskRevision.messages)
+  }, [])
+
+  const onAppend = useCallback((value: Message) => {
+    append([value])
     appendMessage({
       message: value,
       id: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }
+  }, [])
 
-  const onInsert = (index: number, value: Message) => {
+  const onInsert = useCallback((index: number, value: Message) => {
     insert(index, value)
     insertMessage({
       message: value,
@@ -38,38 +43,44 @@ export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
       id: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }
+  }, [])
 
-  const onRemove = (index: number) => {
+  const onRemove = useCallback((index: number) => {
     remove(index)
     removeMessage({
       index,
       id: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }
-  const onUpdateContent = (index: number, value: string, record: Message) => {
-    const message = { ...record, content: value }
+  }, [])
+  const onUpdateContent = useCallback(
+    (index: number, value: string, record: Message) => {
+      const message = { ...record, content: value }
 
-    updateContent(index, value)
-    updateMessage({
-      message,
-      index,
-      id: taskRevision.taskId,
-      version: taskRevision.version,
-    })
-  }
+      updateContent(index, value)
+      updateMessage({
+        message,
+        index,
+        id: taskRevision.taskId,
+        version: taskRevision.version,
+      })
+    },
+    []
+  )
 
-  const onUpdateRole = (index: number, value: ChatRole, record: Message) => {
-    const message = { ...record, role: value }
-    updateRole(index, value)
-    updateMessage({
-      message,
-      index,
-      id: taskRevision.taskId,
-      version: taskRevision.version,
-    })
-  }
+  const onUpdateRole = useCallback(
+    (index: number, value: ChatRole, record: Message) => {
+      const message = { ...record, role: value }
+      updateRole(index, value)
+      updateMessage({
+        message,
+        index,
+        id: taskRevision.taskId,
+        version: taskRevision.version,
+      })
+    },
+    []
+  )
 
   return (
     <PromptTemplates

@@ -10,7 +10,7 @@ import {
 } from "~/app/(protected)/[workspace]/[task]/actions"
 import { type TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { PromptTemplates } from "~/components/PromptTemplates"
-import { useTaskStoreTemplatesActions } from "~/store/task"
+import { useTaskStoreTemplatesActions } from "~/store/taskStore"
 import { useAction } from "~/trpc/client"
 
 export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
@@ -30,29 +30,30 @@ export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
     append([value])
     appendMessage({
       message: value,
-      id: taskRevision.taskId,
+      taskId: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }, [])
+  }, [taskRevision.taskId, taskRevision.version])
 
   const onInsert = useCallback((index: number, value: Message) => {
     insert(index, value)
     insertMessage({
       message: value,
       index,
-      id: taskRevision.taskId,
+      taskId: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }, [])
+  }, [taskRevision.taskId, taskRevision.version])
 
   const onRemove = useCallback((index: number) => {
     remove(index)
     removeMessage({
       index,
-      id: taskRevision.taskId,
+      taskId: taskRevision.taskId,
       version: taskRevision.version,
     })
-  }, [])
+  }, [taskRevision.taskId, taskRevision.version])
+
   const onUpdateContent = useCallback(
     (index: number, value: string, record: Message) => {
       const message = { ...record, content: value }
@@ -61,25 +62,26 @@ export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
       updateMessage({
         message,
         index,
-        id: taskRevision.taskId,
+        taskId: taskRevision.taskId,
         version: taskRevision.version,
       })
     },
-    []
+    [taskRevision.taskId, taskRevision.version]
   )
 
   const onUpdateRole = useCallback(
     (index: number, value: ChatRole, record: Message) => {
+      debugger
       const message = { ...record, role: value }
       updateRole(index, value)
       updateMessage({
         message,
         index,
-        id: taskRevision.taskId,
+        taskId: taskRevision.taskId,
         version: taskRevision.version,
       })
     },
-    []
+    [taskRevision.taskId, taskRevision.version]
   )
 
   return (

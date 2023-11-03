@@ -3,7 +3,10 @@
 import { type FC, useEffect } from "react"
 import { VariablesSection } from "~/components/VariablesSection"
 import { transformTemplates2Variables } from "~/services/richtext"
-import { useTaskStoreTemplates, useTaskVariablesActions } from "~/store/task"
+import {
+  useTaskStoreTemplates,
+  useTaskVariablesActions,
+} from "~/store/taskStore"
 
 export const Variables: FC = () => {
   const templates = useTaskStoreTemplates()

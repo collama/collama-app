@@ -3,7 +3,7 @@ import type { VariableContent } from "~/common/types/prompt"
 import { type Variable } from "~/components/VariablesSection/contants"
 import { getVariableContents } from "~/server/api/services/prompt"
 import { serializePrompt } from "~/server/api/services/task"
-import { type Snapshot } from "~/store/task"
+import { type Snapshot } from "~/store/taskStore"
 
 const getContents = (messages: readonly Snapshot<Message>[]): string[] => {
   return messages.map((message) => message.content)

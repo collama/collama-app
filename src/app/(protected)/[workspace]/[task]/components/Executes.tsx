@@ -1,10 +1,17 @@
 "use client"
 
-import { useTaskStoreVariables } from "~/store/task"
+import { type FC } from "react"
+import { ChatExecute } from "~/app/(protected)/[workspace]/[task]/components/ChatExecute"
+import { type TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
+import { useTaskStoreVariables } from "~/store/taskStore"
 
-export const Executes = () => {
+export const Executes: FC<TaskRevisionProps> = ({ taskRevision }) => {
   const variables = useTaskStoreVariables()
-  console.log(variables)
 
-  return <div>exe</div>
+  return (
+    <div>
+      <div>ChatExecute</div>
+      <ChatExecute variables={variables} taskRevision={taskRevision} />
+    </div>
+  )
 }

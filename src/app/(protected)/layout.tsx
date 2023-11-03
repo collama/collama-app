@@ -6,6 +6,6 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 }
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default function Layout({ children }: PropsWithChildren) {
   return <div>{children}</div>
 }

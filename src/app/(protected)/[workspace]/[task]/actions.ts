@@ -8,7 +8,18 @@ export const removeMemberOnTaskAction = createAction(taskRouter.removeMember)
 
 export const inviteMemberOnTaskAction = createAction(taskRouter.inviteMember)
 
-export const appendMessageOnTaskRevision = createAction(taskRevision.appendMessage)
-export const insertMessageOnTaskRevision = createAction(taskRevision.insertMessage)
-export const updateMessageOnTaskRevision = createAction(taskRevision.updateMessage)
-export const removeMessageOnTaskRevision = createAction(taskRevision.removeMessage)
+export const appendMessageOnTaskRevision = createAction(
+  taskRevision.appendMessage
+)
+export const insertMessageOnTaskRevision = createAction(
+  taskRevision.insertMessage
+)
+export const updateMessageOnTaskRevision = createAction(
+  taskRevision.updateMessage
+)
+export const removeMessageOnTaskRevision = createAction(
+  taskRevision.removeMessage
+)
+export const executeTaskRevision = createAction(
+  taskRevision.executeTaskRevision
+)

@@ -118,7 +118,7 @@ export const execute = async ({
   task,
   prisma,
 }: TaskProcedureInput<z.infer<typeof ExecuteTaskInput>>) => {
-  // const prompt = serializePrompt(task.prompt)
+  // const prompt = serializePrompt(taskRevision.prompt)
   // const contents = getContent(prompt.content)
   // const textContent = fillVariables(contents, input.variables)
   // const text = getTextFromTextContent(textContent)
@@ -208,7 +208,7 @@ export const getBySlug = async ({
 }
 
 export const getPromptVariables = ({ task }: TaskProcedureInput) => {
-  // const prompt = serializePrompt(task.prompt)
+  // const prompt = serializePrompt(taskRevision.prompt)
   // return getVariableContents(prompt.content)
 }
 
@@ -253,7 +253,7 @@ export const filterAndSort = async ({
   const filters = transformFilter(input.filter as FilterValue)
   const sorts = transformSort(input.sort as SortValue)
 
-  // return prisma.task
+  // return prisma.taskRevision
   //   .paginate({
   //     where: {
   //       ...filters,

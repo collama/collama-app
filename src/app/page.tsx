@@ -16,7 +16,9 @@ export default async function Page() {
 
   return (
     <div className="bg-white">
-      <Heading />
+      <div className="flex">
+        <Heading />
+      </div>
       <hr />
       <div className="ml-2 mt-2">
         <Logout />

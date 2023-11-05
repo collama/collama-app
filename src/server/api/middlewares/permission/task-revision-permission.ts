@@ -1,16 +1,16 @@
 import { experimental_standaloneMiddleware, TRPCError } from "@trpc/server"
 import { z } from "zod"
-import {zId, zSlug, zVersion} from "~/common/validation"
+import { zId, zSlug, zVersion } from "~/common/validation"
 import type { Context, Meta } from "~/server/api/trpc"
 import { NoPermission } from "~/server/errors/general.error"
 import { TaskRevisionNotFound } from "~/server/errors/task-revision.error"
 
-
 export const TaskRevisionSlugAndVersionInput = z.object({
-  id: zId.optional(),
+  taskRevisionId: zId.optional(),
+  taskId: zId.optional(),
   workspaceSlug: zSlug.optional(),
   taskSlug: zSlug.optional(),
-  version: zVersion,
+  version: zVersion.optional(),
 })
 
 export type TypeofTaskRevisionSlugAndVersionInput = z.infer<
@@ -32,7 +32,7 @@ export const canAccessTaskRevisionMiddleware =
     }
 
     const permission = await ctx.prisma.task.canUserAccess({
-      id: input.id,
+      id: input.taskId,
       workspaceSlug: input.workspaceSlug,
       slug: input.taskSlug,
       userId: ctx.session.user.id,
@@ -45,8 +45,10 @@ export const canAccessTaskRevisionMiddleware =
 
     const taskRevision = await ctx.prisma.taskRevision.findFirst({
       where: {
-        taskId: permission.task.id,
-        version: input.version,
+        OR: [
+          { id: input.taskRevisionId },
+          { version: input.version, taskId: permission.task.id },
+        ],
       },
     })
 

@@ -37,7 +37,7 @@ export default async function TaskPage({
     <Suspense fallback={<Loading />}>
       <Templates taskRevision={taskRevision} />
       <Variables />
-      <Executes />
+      <Executes taskRevision={taskRevision} />
     </Suspense>
   )
 }

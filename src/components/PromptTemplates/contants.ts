@@ -2,7 +2,6 @@ import { ChatRole, type Message } from "@prisma/client"
 import { v4 } from "uuid"
 import { z } from "zod"
 
-
 export const PROMPT_FORM_NAME = "prompts"
 
 export const template = z.object({

@@ -3,21 +3,27 @@ import { IconCircleMinus, IconPlus } from "@tabler/icons-react"
 import { type JSONContent } from "@tiptap/react"
 import { type FC, type MouseEvent } from "react"
 import { Controller, useFormContext } from "react-hook-form"
+import type { FieldArrayWithId } from "react-hook-form/dist/types/fieldArray"
 import type { Prompt } from "~/common/types/prompt"
 import { debounce } from "~/common/utils"
 import type { RootTemplatesProps } from "~/components/PromptTemplates"
+import { type UpdateTemplateMessage } from "~/components/PromptTemplates"
 import {
   DEFAULT_TEMPLATE,
   PROMPT_FORM_NAME,
   type PromptsTemplate,
 } from "~/components/PromptTemplates/contants"
 import { serializePrompt } from "~/server/api/services/task"
+import { Input } from "~/ui/Input"
 import { RichText } from "~/ui/RichText"
 import { Select } from "~/ui/Select"
 
-interface PromptFieldProps extends RootTemplatesProps {
+type PromptFieldProps = {
   index: number
-}
+  isTemplate: boolean
+  currentField: FieldArrayWithId<PromptsTemplate>
+} & Omit<RootTemplatesProps, keyof UpdateTemplateMessage> &
+  Partial<UpdateTemplateMessage>
 
 const transformValue = (value: string | Prompt) => {
   return typeof value === "string" ? serializePrompt(value) : value
@@ -29,10 +35,10 @@ export const PromptField: FC<PromptFieldProps> = ({
   insert,
   updateRole,
   updateContent,
+  currentField,
+  isTemplate,
 }) => {
-  const { control, watch } = useFormContext<PromptsTemplate>()
-  const mess = watch(PROMPT_FORM_NAME)[index]
-
+  const { control } = useFormContext<PromptsTemplate>()
   const onRemove = () => {
     remove(index)
   }
@@ -43,7 +49,7 @@ export const PromptField: FC<PromptFieldProps> = ({
   }
 
   return (
-    <div className="relative flex space-x-8 items-start p-4 border-b group/item odd:bg-white even:bg-gray-50">
+    <div className="relative flex items-center space-x-8 p-4 border-b group/item odd:bg-white even:bg-gray-50">
       <Controller
         control={control}
         name={`${PROMPT_FORM_NAME}.${index}.role`}
@@ -59,28 +65,41 @@ export const PromptField: FC<PromptFieldProps> = ({
             ]}
             className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
             onSelect={(v) => {
-              if (mess) updateRole(index, v as ChatRole, mess)
+              updateRole?.(index, v as ChatRole, currentField)
             }}
           />
         )}
       />
-      <Controller
-        control={control}
-        name={`${PROMPT_FORM_NAME}.${index}.content`}
-        render={({ field }) => {
-          return (
-            <RichText
-              onChange={debounce((data: JSONContent) => {
-                field.onChange(data)
-                const value = JSON.stringify(data)
-                if (mess) updateContent(index, value, mess)
-              })}
-              value={transformValue(field.value)}
-              placeholder="something ..."
-            />
-          )
-        }}
-      />
+      {isTemplate ? (
+        <Controller
+          control={control}
+          name={`${PROMPT_FORM_NAME}.${index}.content`}
+          render={({ field }) => {
+            return (
+              <RichText
+                onChange={debounce((data: JSONContent) => {
+                  const value = JSON.stringify(data)
+
+                  field.onChange(value)
+                  updateContent?.(index, value, currentField)
+                }, 1000)}
+                value={transformValue(field.value)}
+                placeholder="something ..."
+              />
+            )
+          }}
+        />
+      ) : (
+        <Controller
+          control={control}
+          name={`${PROMPT_FORM_NAME}.${index}.content`}
+          render={({ field }) => {
+            return (
+              <Input.TextArea {...field} placeholder="something ..." autoSize />
+            )
+          }}
+        />
+      )}
       <span className="group-hover/item:visible invisible" onClick={onRemove}>
         <IconCircleMinus />
       </span>

@@ -1,6 +1,6 @@
 import type { ChatRole as ChatRoleType, Message } from "@prisma/client"
 import { ChatRole } from "@prisma/client"
-import { type FC, useEffect, useRef } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import { FormProvider, useFieldArray } from "react-hook-form"
 import useZodForm from "~/common/form"
 import { PromptField } from "~/components/PromptTemplates/PromptField"
@@ -11,6 +11,7 @@ import {
   type PromptsTemplate,
 } from "~/components/PromptTemplates/contants"
 import { Button } from "~/ui/Button"
+
 
 export type UpdateTemplateMessage = {
   updateRole: (index: number, value: ChatRoleType, message: Message) => void
@@ -29,115 +30,155 @@ type Control = {
 type Submit = {
   data: undefined
   submit: (data: Message[]) => void
+  stop: () => void
 }
 
-type PromptTemplatesProps = Control | Submit
+type PromptTemplatesProps = {
+  isLoading?: boolean
+} & (Control | Submit)
 
-export const PromptTemplates: FC<PromptTemplatesProps> = (props) => {
-  const controlProps = useRef<Control | null>(null)
-  const submitProps = useRef<Submit | null>(null)
+export type TemplateRef = {
+  appendField: (message: Message) => void
+  updateField: (index: number, message: Message) => void
+} | null
 
-  useEffect(() => {
-    !props.data ? (submitProps.current = props) : (controlProps.current = props)
-  }, [props.data])
+export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
+  function PromptTemplates({ isLoading = false, ...props }, ref) {
+    const [submitProps, setSubmitProps] = useState<Submit | null>(null)
+    const [controlProps, setControlProps] = useState<Control | null>(null)
 
-  const methods = useZodForm({
-    schema: promptSchema,
-    defaultValues: {
-      prompts: props.data,
-    },
-  })
+    useEffect(() => {
+      props.data ? setControlProps(props) : setSubmitProps(props)
+    }, [props.data])
 
-  const {
-    fields,
-    insert: fieldInsert,
-    append: fieldAppend,
-    remove: fieldRemove,
-  } = useFieldArray({
-    control: methods.control,
-    name: PROMPT_FORM_NAME,
-  })
+    const methods = useZodForm({
+      schema: promptSchema,
+      defaultValues: {
+        prompts: props.data,
+      },
+    })
 
-  useEffect(() => {
-    if (
-      controlProps.current &&
-      (!props.data || (props.data && props.data.length <= 0))
-    ) {
-      fieldAppend({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
-      controlProps.current?.append({
-        ...DEFAULT_TEMPLATE,
-        role: ChatRole.System,
-      })
+    const {
+      fields,
+      insert: fieldInsert,
+      append: fieldAppend,
+      remove: fieldRemove,
+      update: fieldUpdate,
+    } = useFieldArray({
+      control: methods.control,
+      name: PROMPT_FORM_NAME,
+    })
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        appendField: (message: Message) => {
+          fieldAppend(message)
+        },
+        updateField: (index: number, value: Message) => {
+          fieldUpdate(index, value)
+        },
+      }),
+      []
+    )
+
+    useEffect(() => {
+      if (
+        controlProps &&
+        (!props.data || (props.data && props.data.length <= 0))
+      ) {
+        fieldAppend({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
+        controlProps?.append({
+          ...DEFAULT_TEMPLATE,
+          role: ChatRole.System,
+        })
+      }
+
+      if (submitProps) {
+        fieldAppend({ ...DEFAULT_TEMPLATE, content: "" })
+      }
+    }, [submitProps, controlProps])
+
+    const onAppend = () => {
+      submitProps
+        ? fieldAppend({ ...DEFAULT_TEMPLATE, content: "" })
+        : fieldAppend(DEFAULT_TEMPLATE)
+
+      controlProps?.append(DEFAULT_TEMPLATE)
     }
 
-    if (submitProps.current) {
-      fieldAppend({ ...DEFAULT_TEMPLATE, content: "" })
+    const onInsert = (index: number, value: Message) => {
+      fieldInsert(index + 1, value)
+
+      controlProps?.insert(index, value)
     }
-  }, [])
 
-  const onAppend = () => {
-    submitProps.current
-      ? fieldAppend({ ...DEFAULT_TEMPLATE, content: "" })
-      : fieldAppend(DEFAULT_TEMPLATE)
+    const onRemove = (index: number) => {
+      fieldRemove(index)
 
-    controlProps.current?.append(DEFAULT_TEMPLATE)
-  }
+      controlProps?.remove(index)
+    }
 
-  const onInsert = (index: number, value: Message) => {
-    fieldInsert(index + 1, value)
+    const onSubmit = (data: PromptsTemplate) => {
+      submitProps?.submit(data.prompts)
+    }
 
-    controlProps.current?.insert(index, value)
-  }
+    // console.log("error =+===>", methods.formState.errors)
 
-  const onRemove = (index: number) => {
-    fieldRemove(index)
+    return (
+      <div>
+        <FormProvider {...methods}>
+          <form onSubmit={methods.handleSubmit(onSubmit)}>
+            <ul>
+              {fields.map((field, index) => (
+                <PromptField
+                  key={field.id}
+                  currentField={field}
+                  index={index}
+                  remove={onRemove}
+                  insert={onInsert}
+                  updateRole={controlProps?.updateRole}
+                  updateContent={controlProps?.updateContent}
+                  isTemplate={!submitProps}
+                />
+              ))}
+            </ul>
 
-    controlProps.current?.remove(index)
-  }
-
-  const onSubmit = (data: PromptsTemplate) => {
-    submitProps.current?.submit(data.prompts)
-  }
-
-  return (
-    <div>
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <ul>
-            {fields.map((field, index) => (
-              <PromptField
-                key={field.id}
-                field={field}
-                index={index}
-                remove={onRemove}
-                insert={onInsert}
-                updateRole={controlProps.current?.updateRole}
-                updateContent={controlProps.current?.updateContent}
-                isTemplate={!submitProps.current}
-              />
-            ))}
-          </ul>
-
-          <section className="py-2">
-            <Button
-              size="sm"
-              className="text-gray-400 rounded-lg"
-              onClick={onAppend}
-            >
-              new template
-            </Button>
-            {submitProps.current && (
+            <section className="py-2">
               <Button
                 size="sm"
                 className="text-gray-400 rounded-lg"
-                htmlType="submit"
+                onClick={onAppend}
               >
-                run
+                new template
               </Button>
-            )}
-          </section>
-        </form>
-      </FormProvider>
-    </div>
-  )
-}
+              {submitProps && (
+                <>
+                  {isLoading && (
+                    <Button
+                      size="sm"
+                      className="text-gray-400 rounded-lg"
+                      htmlType="button"
+                      onClick={submitProps.stop}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                  {!isLoading && (
+                    <Button
+                      size="sm"
+                      className="text-gray-400 rounded-lg"
+                      htmlType="submit"
+                    >
+                      Run
+                    </Button>
+                  )}
+                </>
+              )}
+            </section>
+          </form>
+        </FormProvider>
+      </div>
+    )
+  }
+)

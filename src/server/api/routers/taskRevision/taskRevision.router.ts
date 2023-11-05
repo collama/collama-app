@@ -6,6 +6,7 @@ import {
 import { RoleProtectedReaders } from "~/server/api/providers/permission/role"
 import {
   AppendMessageInput,
+  ExecuteInput,
   InsertMessageInput,
   RemoveMessageInput,
   UpdateMessageInput,
@@ -43,6 +44,7 @@ export const updateMessage = protectedProcedure
       input,
     })
   })
+
 export const appendMessage = protectedProcedure
   .input(TaskRevisionSlugAndVersionInput)
   .meta({
@@ -56,6 +58,7 @@ export const appendMessage = protectedProcedure
       input,
     })
   })
+
 export const insertMessage = protectedProcedure
   .input(TaskRevisionSlugAndVersionInput)
   .meta({
@@ -69,6 +72,7 @@ export const insertMessage = protectedProcedure
       input,
     })
   })
+
 export const removeMessage = protectedProcedure
   .input(TaskRevisionSlugAndVersionInput)
   .meta({
@@ -78,6 +82,20 @@ export const removeMessage = protectedProcedure
   .input(RemoveMessageInput)
   .mutation(({ input, ctx }) => {
     return taskRevisionService.removeMessage({
+      ...ctx,
+      input,
+    })
+  })
+
+export const executeTaskRevision = protectedProcedure
+  .input(TaskRevisionSlugAndVersionInput)
+  .meta({
+    allowedRoles: RoleProtectedReaders,
+  })
+  .use(canAccessTaskRevisionMiddleware)
+  .input(ExecuteInput)
+  .mutation(({ input, ctx }) => {
+    return taskRevisionService.executeMessage({
       ...ctx,
       input,
     })

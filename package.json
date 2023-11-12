@@ -20,6 +20,7 @@
     "@aws-sdk/s3-presigned-post": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.375.0",
     "@floating-ui/react": "^0.24.8",
+    "@headlessui/react": "^1.7.17",
     "@hookform/resolvers": "^3.1.1",
     "@prisma/client": "^5.2.0",
     "@t3-oss/env-nextjs": "^0.3.1",

@@ -1,14 +1,15 @@
 "use client"
 
-import { Provider } from "@prisma/client"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { Controller, FormProvider } from "react-hook-form"
 import useAsyncEffect from "use-async-effect"
 import { z } from "zod"
 import { createApiKeyAction } from "~/app/(protected)/[workspace]/settings/keys/new/actions"
 import useZodForm from "~/common/form"
 import { sleep } from "~/common/utils"
-import { useAction } from "~/trpc/client"
+import { zId } from "~/common/validation"
+import { useAwaitedFn } from "~/hooks/useAwaited"
+import { api, useAction } from "~/trpc/client"
 import { Button } from "~/ui/Button"
 import { Input } from "~/ui/Input"
 import { useNotification } from "~/ui/Notification"
@@ -17,16 +18,15 @@ import { Select } from "~/ui/Select"
 const schema = z.object({
   title: z.string(),
   value: z.string(),
-  provider: z.enum([Provider.OpenAI, Provider.Cohere]),
+  providerId: zId,
 })
 
 export const InsertApiKey = () => {
   const { mutate: insertAiKey, status, error } = useAction(createApiKeyAction)
+  const { data: providers } = useAwaitedFn(api.provider.getAll.query)
+
   const form = useZodForm({
     schema,
-    defaultValues: {
-      provider: Provider.OpenAI,
-    },
   })
   const [notice, holder] = useNotification()
 
@@ -55,6 +55,15 @@ export const InsertApiKey = () => {
     }
   }, [status])
 
+  const providerOptions = useMemo(() => {
+    return providers && providers.length > 0
+      ? providers.map((provider) => ({
+          label: provider.name,
+          value: provider.id,
+        }))
+      : []
+  }, [providers?.length])
+
   const loading = status === "loading"
 
   return (
@@ -79,16 +88,16 @@ export const InsertApiKey = () => {
                   )}
                 />
                 <Controller
-                  name="provider"
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      options={[{ value: Provider.OpenAI, label: "Open Ai" }]}
-                      defaultValue={Provider.OpenAI}
-                      width={100}
-                      disabled={loading}
-                    />
-                  )}
+                  name="providerId"
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        {...field}
+                        options={providerOptions}
+                        disabled={loading}
+                      />
+                    )
+                  }}
                 />
               </div>
               <Controller

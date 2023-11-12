@@ -5,6 +5,7 @@ import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templ
 import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
+import { Resize } from "~/ui/Resize"
 import Loading from "~/ui/loading"
 
 interface TaskProps {
@@ -35,9 +36,16 @@ export default async function TaskPage({
 
   return (
     <Suspense fallback={<Loading />}>
-      <Templates taskRevision={taskRevision} />
-      <Variables />
-      <Executes taskRevision={taskRevision} />
+      <Resize
+        firstElement={
+          <>
+            <Templates taskRevision={taskRevision} />
+            <Variables />
+          </>
+        }
+        secondElement={<Executes taskRevision={taskRevision} />}
+        showTitle='show'
+      />
     </Suspense>
   )
 }

@@ -62,6 +62,7 @@ export async function POST(req: Request) {
     ...inputMessages,
   ]
 
+// TODO:refactor later, by pass permission
   const apiKey = await prisma.apiKey.findFirst()
 
   if (!apiKey) {

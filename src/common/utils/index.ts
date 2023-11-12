@@ -1,3 +1,5 @@
+import cx from "classnames"
+import { twMerge } from "tailwind-merge"
 import { z } from "zod"
 
 export const sleep = (ms: number) =>
@@ -26,3 +28,5 @@ export function debounce<T extends (...args: Parameters<T>) => void>(
     }, timeout)
   }
 }
+
+export const cl = (...className: cx.ArgumentArray): string => twMerge(cx(className))

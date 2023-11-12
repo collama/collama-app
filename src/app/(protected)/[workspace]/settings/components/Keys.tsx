@@ -39,12 +39,14 @@ const columns: ColumnType<ApiKeyIncludeUser>[] = [
   {
     id: "provider",
     title: "Provider",
-    render: (provider: ApiKeyIncludeUser["provider"]) => <Tag>{provider}</Tag>,
+    render: (provider: ApiKeyIncludeUser["provider"]) => (
+      <Tag>{provider.name}</Tag>
+    ),
   },
 ]
 
 export function Keys() {
-  const { data, loading } = useAwaitedFn(() => api.apiKey.getAll.query())
+  const { data, loading } = useAwaitedFn(api.apiKey.getAll.query)
   const { mutate: deleteKey, status, error } = useAction(deleteApiKeyAction)
   const [notice, holder] = useNotification()
 

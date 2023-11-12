@@ -11,7 +11,7 @@ export function Logout() {
     <Button
       onClick={async () => {
         await signOut({ redirect: false })
-        router.push("/auth/sign-in")
+        router.replace("/auth/sign-in")
       }}
     >
       Logout

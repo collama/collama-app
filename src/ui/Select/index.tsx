@@ -1,39 +1,15 @@
 "use client"
 
-import {
-  autoUpdate,
-  flip,
-  FloatingFocusManager,
-  FloatingList,
-  offset,
-  useClick,
-  useDismiss,
-  useFloating,
-  useInteractions,
-  useListItem,
-  useListNavigation,
-  useMergeRefs,
-  useRole,
-  useTypeahead,
-} from "@floating-ui/react"
-import cx from "classnames"
-import {
-  createContext,
-  forwardRef,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
-import { type ControllerRenderProps } from "react-hook-form"
-import { twMerge } from "tailwind-merge"
-import { noop } from "~/common/utils"
+import { Listbox } from "@headlessui/react"
+import { forwardRef, useState } from "react"
+import { cl } from "~/common/utils"
 
 export interface SelectOption {
   value: string
   label?: string
 }
+
+type SelectValue = SelectOption | SelectOption["value"]
 
 type SelectSize = "sm" | "base" | "lg" | "xl"
 
@@ -46,203 +22,124 @@ const BASE_SIZE: Record<SelectSize, string> = {
 
 type SelectProps = {
   options: SelectOption[]
-  width?: number
-  popupHeight?: number
-  defaultValue?: string | SelectOption
-  defaultOpen?: boolean
-  disabled?: boolean
+  defaultValue?: SelectValue
   size?: SelectSize
+  value?: SelectValue
+  onChange?: (value: string, selected: SelectOption) => void
   className?: string
-  onSelect?: (value: string) => void
-} & Partial<ControllerRenderProps>
-
-interface SelectContextValue {
-  activeIndex: number | null
-  selectedIndex: number | null
-  getItemProps: ReturnType<typeof useInteractions>["getItemProps"]
-  handleSelect: (index: number | null) => void
-  size: SelectSize
+  warrperClassname?: string
+  popupClassname?: string
+  optionClassname?: string
+  placeholder?: string
+  disabled?: boolean
 }
 
-const SelectContext = createContext<SelectContextValue>(
-  {} as SelectContextValue
-)
+const getInitValue = (
+  options: SelectOption[],
+  placeholder: string,
+  value?: SelectValue,
+  defaultValue?: SelectValue
+): SelectOption => {
+  let select: SelectOption = { label: placeholder, value: "" }
 
-export const Select = forwardRef<HTMLInputElement | null, SelectProps>(
+  if (value || defaultValue) {
+    const res = value ? value : defaultValue
+
+    if (res instanceof Object) {
+      return res
+    }
+
+    const optionValue = options.find((option) => option.value === res)
+
+    if (optionValue) select = optionValue
+  }
+
+  return select
+}
+
+export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
   function Select(
     {
       options,
-      width = 200,
-      popupHeight = 250,
-      defaultValue,
       onChange,
-      defaultOpen = false,
+      value,
+      defaultValue,
       size = "base",
       className,
-      onSelect,
-      ...props
+      warrperClassname,
+      popupClassname,
+      optionClassname,
+      placeholder = "Select ...",
+      disabled = false,
     },
     ref
   ) {
-    const [isOpen, setIsOpen] = useState(defaultOpen)
-    const [activeIndex, setActiveIndex] = useState<number | null>(null)
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-    const [selectedLabel, setSelectedLabel] = useState<
-      string | null | undefined
-    >(typeof defaultValue === "string" ? defaultValue : defaultValue?.value)
-
-    const { refs, floatingStyles, context } = useFloating({
-      placement: "bottom-start",
-      open: isOpen,
-      onOpenChange: setIsOpen,
-      whileElementsMounted: autoUpdate,
-      middleware: [flip(), offset(5)],
-    })
-
-    const elementsRef = useRef<Array<HTMLElement | null>>([])
-    const labelsRef = useRef<Array<string | null>>([])
-
-    const handleSelect = useCallback(
-      (index: number | null) => {
-        setSelectedIndex(index)
-        setIsOpen(false)
-        if (index !== null) {
-          setSelectedLabel(labelsRef.current[index])
-          onChange?.(labelsRef.current[index])
-        }
-
-        if (index !== null && labelsRef.current[index]) {
-          onSelect?.(labelsRef.current[index]!)
-        }
-      },
-      [onChange]
+    const [selected, setSelected] = useState<SelectOption>(
+      getInitValue(options, placeholder, value, defaultValue)
     )
 
-    function handleTypeaheadMatch(index: number | null) {
-      if (isOpen) {
-        setActiveIndex(index)
-      } else {
-        handleSelect(index)
-      }
+    if (!options || options.length < 1) return
+
+    const handleChange = (selected: SelectOption) => {
+      setSelected(selected)
+      onChange?.(selected.value, selected)
     }
 
-    const listNav = useListNavigation(context, {
-      listRef: elementsRef,
-      activeIndex,
-      selectedIndex,
-      onNavigate: setActiveIndex,
-    })
-    const typeahead = useTypeahead(context, {
-      listRef: labelsRef,
-      activeIndex,
-      selectedIndex,
-      onMatch: handleTypeaheadMatch,
-    })
-
-    const click = useClick(context)
-    const dismiss = useDismiss(context)
-    const role = useRole(context, { role: "listbox" })
-
-    const { getReferenceProps, getFloatingProps, getItemProps } =
-      useInteractions([listNav, typeahead, click, dismiss, role])
-
-    const selectContext = useMemo(
-      () => ({
-        activeIndex,
-        selectedIndex,
-        getItemProps,
-        handleSelect,
-        size,
-      }),
-      [activeIndex, selectedIndex, getItemProps, handleSelect, size]
-    )
-
-    const selectLabel = useMemo(
-      () =>
-        options.reduce<Record<string, string>>((prev, cur) => {
-          prev[cur.value] = cur.label ?? cur.value
-          return prev
-        }, {}),
-      []
-    )
-
     return (
-      <div>
-        <input
-          {...props}
-          tabIndex={0}
-          {...getReferenceProps()}
-          value={selectLabel[selectedLabel ?? ""]}
-          placeholder="Select ..."
-          // style={{ width, maxHeight: popupHeight }}
-          className={twMerge(
-            cx(
-              "cursor-pointer outline-0 border border-gray-300 focus:border-violet-500 w-full rounded-lg caret-transparent",
+      <Listbox value={selected} onChange={handleChange} disabled={disabled}>
+        <div className={cl("relative", warrperClassname)}>
+          <Listbox.Button
+            className={cl(
+              "relative w-full min-w-[80px] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 disabled:bg-gray-100",
               BASE_SIZE[size],
+              { "cursor-not-allowed bg-gray-100 text-gray-300": disabled },
               className
-            )
-          )}
-          ref={useMergeRefs([refs.setReference, ref])}
-          onChange={noop}
-          readOnly={true}
-        />
-        <SelectContext.Provider value={selectContext}>
-          {isOpen && (
-            <FloatingFocusManager context={context} modal={false}>
-              <div
-                ref={refs.setFloating}
-                style={{ ...floatingStyles, width }}
-                {...getFloatingProps()}
-                className="relative z-[1000] rounded-lg max-h-[200px] overflow-y-auto bg-white p-1 shadow-card outline-0 border-0"
+            )}
+          >
+            <span
+              className={cl("truncate", {
+                "text-neutral-400": selected.label === placeholder,
+              })}
+            >
+              {selected.label}
+            </span>
+          </Listbox.Button>
+          <Listbox.Options
+            className={cl(
+              "z-10 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+              popupClassname
+            )}
+          >
+            {options.map((option, index) => (
+              <Listbox.Option
+                key={index}
+                className={({ active }) =>
+                  cl(
+                    "relative cursor-default select-none pl-3 text-gray-900",
+                    {
+                      "text-primary-1": active,
+                    },
+                    optionClassname
+                  )
+                }
+                value={option}
               >
-                <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
-                  {options.map((option, index) => (
-                    <Option
-                      label={option.label}
-                      value={option.value}
-                      key={index}
-                    />
-                  ))}
-                </FloatingList>
-              </div>
-            </FloatingFocusManager>
-          )}
-        </SelectContext.Provider>
-      </div>
+                {({ selected }) => (
+                  <>
+                    <span
+                      className={`block truncate ${
+                        selected ? "font-bold" : "font-normal"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                  </>
+                )}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </div>
+      </Listbox>
     )
   }
 )
-
-function Option({ label, value }: SelectOption) {
-  const { activeIndex, selectedIndex, getItemProps, handleSelect, size } =
-    useContext(SelectContext)
-
-  const { ref, index } = useListItem({ label: value })
-
-  const isActive = activeIndex === index
-  const isSelected = selectedIndex === index
-
-  const classes = twMerge(
-    cx(
-      "block rounded-lg w-full truncate bg-white text-start border-0 outline-0",
-      { "!bg-violet-100": isSelected },
-      { "!bg-neutral-100": isActive && !isSelected },
-      BASE_SIZE[size]
-    )
-  )
-
-  return (
-    <button
-      ref={ref}
-      role="option"
-      aria-selected={isActive && isSelected}
-      tabIndex={isActive ? 0 : -1}
-      {...getItemProps({
-        onClick: () => handleSelect(index),
-      })}
-      className={classes}
-    >
-      {label ?? value}
-    </button>
-  )
-}

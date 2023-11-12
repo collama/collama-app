@@ -147,8 +147,9 @@ model Provider {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Model     Model[]
-  ApiKey    ApiKey[]
+
+  model     Model[]
+  apiKey    ApiKey[]
 
   @@map("providers")
 }
@@ -174,10 +175,9 @@ model Model {
   name          String       @unique
   description   String
   context       Int
-  pricing       String
   inputPricing  ModelPricing
   outputPricing ModelPricing
-  uptime        ModelUptime
+  uptime        ModelUptime?
 
   @@map("models")
 }

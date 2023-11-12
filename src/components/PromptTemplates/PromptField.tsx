@@ -49,60 +49,98 @@ export const PromptField: FC<PromptFieldProps> = ({
   }
 
   return (
-    <div className="relative flex items-center space-x-8 p-4 border-b group/item odd:bg-white even:bg-gray-50">
-      <Controller
-        control={control}
-        name={`${PROMPT_FORM_NAME}.${index}.role`}
-        render={({ field }) => (
-          <Select
-            {...field}
-            size="sm"
-            defaultValue={field.value as string}
-            options={[
-              { value: ChatRole.User },
-              { value: ChatRole.System },
-              { value: ChatRole.Assistant },
-            ]}
-            className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
-            onSelect={(v) => {
-              updateRole?.(index, v as ChatRole, currentField)
+    <div className="relative group/item odd:bg-white even:bg-gray-50">
+
+      <div className='flex justify-between items-center px-4 lg:hidden'>
+        <Controller
+          control={control}
+          name={`${PROMPT_FORM_NAME}.${index}.role`}
+          render={({ field }) => (
+            <Select
+              {...field}
+              size="sm"
+              defaultValue={field.value as string}
+              options={[
+                { value: ChatRole.User },
+                { value: ChatRole.System },
+                { value: ChatRole.Assistant },
+              ]}
+              className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
+              onChange={(v) => {
+                updateRole?.(index, v as ChatRole, currentField)
+                field.onChange(v)
+              }}
+            />
+          )}
+        />
+
+        <span className="group-hover/item:visible invisible" onClick={onRemove}>
+          <IconCircleMinus />
+        </span>
+      </div>
+
+      <div className="flex items-center lg:space-x-8 p-4 border-b ">
+        <span className='hidden lg:inline-block'>
+          <Controller
+            control={control}
+            name={`${PROMPT_FORM_NAME}.${index}.role`}
+            render={({ field }) => (
+              <Select
+                {...field}
+                size="sm"
+                defaultValue={field.value as string}
+                options={[
+                  { value: ChatRole.User },
+                  { value: ChatRole.System },
+                  { value: ChatRole.Assistant },
+                ]}
+                className="bg-neutral-100 group-focus:bg-indigo-300 uppercase font-medium"
+                onChange={(v) => {
+                  updateRole?.(index, v as ChatRole, currentField)
+                  field.onChange(v)
+                }}
+              />
+            )}
+          />
+        </span>
+        {isTemplate ? (
+          <Controller
+            control={control}
+            name={`${PROMPT_FORM_NAME}.${index}.content`}
+            render={({ field }) => {
+              return (
+                <RichText
+                  onChange={debounce((data: JSONContent) => {
+                    const value = JSON.stringify(data)
+
+                    field.onChange(value)
+                    updateContent?.(index, value, currentField)
+                  }, 1000)}
+                  value={transformValue(field.value)}
+                  placeholder="something ..."
+                />
+              )
+            }}
+          />
+        ) : (
+          <Controller
+            control={control}
+            name={`${PROMPT_FORM_NAME}.${index}.content`}
+            render={({ field }) => {
+              return (
+                <Input.TextArea
+                  {...field}
+                  placeholder="something ..."
+                  autoSize
+                />
+              )
             }}
           />
         )}
-      />
-      {isTemplate ? (
-        <Controller
-          control={control}
-          name={`${PROMPT_FORM_NAME}.${index}.content`}
-          render={({ field }) => {
-            return (
-              <RichText
-                onChange={debounce((data: JSONContent) => {
-                  const value = JSON.stringify(data)
-
-                  field.onChange(value)
-                  updateContent?.(index, value, currentField)
-                }, 1000)}
-                value={transformValue(field.value)}
-                placeholder="something ..."
-              />
-            )
-          }}
-        />
-      ) : (
-        <Controller
-          control={control}
-          name={`${PROMPT_FORM_NAME}.${index}.content`}
-          render={({ field }) => {
-            return (
-              <Input.TextArea {...field} placeholder="something ..." autoSize />
-            )
-          }}
-        />
-      )}
-      <span className="group-hover/item:visible invisible" onClick={onRemove}>
-        <IconCircleMinus />
-      </span>
+        <span className="hidden lg:inline-block group-hover/item:visible invisible" onClick={onRemove}>
+          <IconCircleMinus />
+        </span>
+      </div>
 
       <div className="group/insert absolute -bottom-3 z-[1] h-6 w-full text-center">
         <button

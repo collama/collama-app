@@ -16,7 +16,7 @@ export const createApiKey = (
 ) =>
   prisma.apiKey.create({
     data: {
-      provider: input.provider,
+      providerId: input.providerId,
       title: input.title,
       value: cryptoTr.encrypt(input.value),
       hint: createHint(input.value),
@@ -40,5 +40,6 @@ export const getAll = (session: Session) =>
     },
     include: {
       owner: true,
+      provider: true,
     },
   })

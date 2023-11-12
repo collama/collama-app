@@ -37,5 +37,6 @@ export type MembersOnTaskIncludeUserTeam = Prisma.MembersOnTasksGetPayload<{
 export type ApiKeyIncludeUser = Prisma.ApiKeyGetPayload<{
   include: {
     owner: true
+    provider: true
   }
 }>

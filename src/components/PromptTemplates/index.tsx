@@ -1,6 +1,13 @@
 import type { ChatRole as ChatRoleType, Message } from "@prisma/client"
 import { ChatRole } from "@prisma/client"
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
+import { IconPlayerPlay, IconPlus } from "@tabler/icons-react"
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react"
 import { FormProvider, useFieldArray } from "react-hook-form"
 import useZodForm from "~/common/form"
 import { PromptField } from "~/components/PromptTemplates/PromptField"
@@ -11,7 +18,6 @@ import {
   type PromptsTemplate,
 } from "~/components/PromptTemplates/contants"
 import { Button } from "~/ui/Button"
-
 
 export type UpdateTemplateMessage = {
   updateRole: (index: number, value: ChatRoleType, message: Message) => void
@@ -46,6 +52,7 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
   function PromptTemplates({ isLoading = false, ...props }, ref) {
     const [submitProps, setSubmitProps] = useState<Submit | null>(null)
     const [controlProps, setControlProps] = useState<Control | null>(null)
+    const wrapperRef = useRef<HTMLUListElement | null>(null)
 
     useEffect(() => {
       props.data ? setControlProps(props) : setSubmitProps(props)
@@ -102,7 +109,7 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
     const onAppend = () => {
       submitProps
         ? fieldAppend({ ...DEFAULT_TEMPLATE, content: "" })
-        : fieldAppend(DEFAULT_TEMPLATE)
+        : fieldAppend({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
 
       controlProps?.append(DEFAULT_TEMPLATE)
     }
@@ -123,13 +130,11 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
       submitProps?.submit(data.prompts)
     }
 
-    // console.log("error =+===>", methods.formState.errors)
-
     return (
       <div>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <ul>
+            <ul ref={wrapperRef}>
               {fields.map((field, index) => (
                 <PromptField
                   key={field.id}
@@ -140,24 +145,24 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
                   updateRole={controlProps?.updateRole}
                   updateContent={controlProps?.updateContent}
                   isTemplate={!submitProps}
+                  listWidth={wrapperRef.current?.offsetWidth ?? 0}
                 />
               ))}
             </ul>
 
-            <section className="py-2">
+            <section className="py-2 px-4 mt-6 pb-6 space-x-4">
               <Button
                 size="sm"
-                className="text-gray-400 rounded-lg"
                 onClick={onAppend}
+                prefix={<IconPlus className="h-4 w-4" />}
               >
-                new template
+                {!submitProps ? "New template" : "Message"}
               </Button>
               {submitProps && (
                 <>
                   {isLoading && (
                     <Button
                       size="sm"
-                      className="text-gray-400 rounded-lg"
                       htmlType="button"
                       onClick={submitProps.stop}
                     >
@@ -167,8 +172,10 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
                   {!isLoading && (
                     <Button
                       size="sm"
-                      className="text-gray-400 rounded-lg"
+                      type="primary"
                       htmlType="submit"
+                      ghost
+                      prefix={<IconPlayerPlay className="h-4 w-4" />}
                     >
                       Run
                     </Button>

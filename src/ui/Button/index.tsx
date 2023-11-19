@@ -1,7 +1,6 @@
-import cx from "classnames"
 import type { PropsWithChildren, ReactNode } from "react"
 import { forwardRef } from "react"
-import { twMerge } from "tailwind-merge"
+import { cl } from "~/common/utils"
 import { Spin } from "~/ui/Spinner"
 
 type ButtonType = "primary" | "default" | "text"
@@ -13,11 +12,11 @@ interface ButtonProps extends PropsWithChildren {
   type?: ButtonType
   ghost?: boolean
   disable?: boolean
-  icon?: ReactNode
   loading?: boolean
   onClick?: () => void
   htmlType?: HTMLButtonElement["type"]
   size?: ButtonSize
+  prefix?: ReactNode
 }
 
 const BASE_SIZE: Record<ButtonSize, string> = {
@@ -28,9 +27,9 @@ const BASE_SIZE: Record<ButtonSize, string> = {
 }
 
 const BUTTON_TYPE: Record<ButtonType, string> = {
-  default:
-    "bg-white border-stone-300 shadow-sm hover:text-violet-500 hover:border-violet-500",
-  primary: "bg-violet-500 text-white shadow-sm hover:opacity-90",
+  default: "border-stone-300 hover:text-neutral-500 hover:border-stone-400",
+  primary:
+    "bg-violet-500 border-violet-500 text-white shadow-sm hover:opacity-90",
   text: "border-0 hover:underline hover:text-opacity-90 hover:underline-offset-4 ",
 }
 
@@ -42,28 +41,31 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
       type = "default",
       ghost,
       disable,
-      icon,
       loading,
       onClick,
       children,
       htmlType = "button",
       size = "base",
+      prefix,
     },
     ref
   ) {
-    const classes = twMerge(
-      cx(
-        "relative inline-block touch-none select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none text-center font-normal leading-5 outline-0  transition-all inline-flex items-center gap-x-3 justify-center",
-        BUTTON_TYPE[type],
-        BASE_SIZE[size],
-        { "w-full block": block },
-        { "opacity-70 hover:!opacity-70": loading },
-        {
-          "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:!border-stone-300 hover:!bg-gray-200 hover:!text-gray-400":
-            disable,
-        },
-        className
-      )
+    const classes = cl(
+      "relative inline-block text-neutral-400 touch-none text-neutral-500 select-none whitespace-nowrap rounded-lg border border-solid bg-transparent bg-none text-center font-normal leading-5 outline-0 transition-all",
+      BUTTON_TYPE[type],
+      BASE_SIZE[size],
+      { "w-full block": block },
+      { "bg-transparent": ghost },
+      {
+        "text-violet-700 hover:text-violet-800 font-medium ":
+          ghost && type === "primary",
+      },
+      { "opacity-70 hover:!opacity-70": loading },
+      {
+        "cursor-not-allowed border-stone-300 bg-gray-200 text-gray-400 hover:!border-stone-300 hover:!bg-gray-200 hover:!text-gray-400":
+          disable,
+      },
+      className
     )
 
     const renderChild = () => {
@@ -72,7 +74,24 @@ export const Button = forwardRef<HTMLButtonElement | null, ButtonProps>(
 
     const renderLoading = () => {
       if (loading)
-        return <Spin className={cx({ "text-white": type === "primary" })} />
+        return <Spin className={cl({ "text-white": type === "primary" })} />
+
+      if (prefix)
+        return (
+          <span
+            className={cl(
+              "inline-block mr-1 align-middle",
+              BUTTON_TYPE[type],
+              { "bg-transparent": ghost },
+              {
+                "text-violet-700 hover:text-violet-800 font-medium ":
+                  ghost && type === "primary",
+              }
+            )}
+          >
+            {prefix}
+          </span>
+        )
 
       return null
     }

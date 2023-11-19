@@ -18,9 +18,8 @@ export const Variables: FC = () => {
   }, [data.length])
 
   return (
-    <>
-      <div>Input</div>
+    <div className="mt-1.5 mb-6">
       <VariablesSection data={data} updateContent={updateVariableContent} />
-    </>
+    </div>
   )
 }

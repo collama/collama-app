@@ -1,5 +1,6 @@
 "use client"
 
+import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import {
   type FC,
   type ReactElement,
@@ -60,9 +61,12 @@ export const Resize: FC<ResizeProps> = ({
     <div className="flex flex-grow h-full">
       <div
         ref={sidebarRef}
-        className={cl("relative group shrink-0 border-r w-full h-[calc(100vh-40px)]", {
-          hidden: isCollapseSidebar,
-        })}
+        className={cl(
+          "relative group shrink-0 border-r shadow-[inset_-88px_0px_13px_-88px_rgba(0,0,0,0.1)]",
+          {
+            hidden: isCollapseSidebar,
+          }
+        )}
         style={{ width: sidebarWidth }}
       >
         {firstElement}
@@ -71,22 +75,29 @@ export const Resize: FC<ResizeProps> = ({
           onMouseDown={startResizing}
         />
         <Button
-          className="absolute right-5 bottom-5 px-1 py-1 invisible group-hover:visible"
+          className="absolute border-0 bg-neutral-100 inline-flex justify-center items-center right-5 bottom-5 px-1 py-1 invisible group-hover:visible"
           size="sm"
           onClick={() => setIsCollapseSidebar(true)}
-        >
-          {"<<"}
-        </Button>
+          prefix={<IconChevronsLeft className="h-4 w-4 pl-1 bg-transparent" />}
+        ></Button>
       </div>
-      <div className="w-full relative h-[calc(100vh-40px)]">
+
+      <div
+        className="w-full relative h-[calc(100vh-40px)]"
+        onMouseMove={(e) => {
+          isResizing && e.preventDefault()
+        }}
+      >
         {secondElement}
         <Button
-          className={cl("absolute bottom-0 left-0 hidden px-1 py-1", {
+          size="sm"
+          className={cl("absolute bottom-5 left-1 hidden", {
             "inline-block": isCollapseSidebar,
           })}
           onClick={() => setIsCollapseSidebar(false)}
+          prefix={<IconChevronsRight className="h-4 w-4" />}
         >
-          {">>"} {showTitle}
+          {showTitle}
         </Button>
       </div>
     </div>

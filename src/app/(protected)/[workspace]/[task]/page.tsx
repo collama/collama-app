@@ -5,6 +5,7 @@ import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templ
 import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
 import { api } from "~/trpc/server-http"
+import { Disclosure } from "~/ui/Disclosure"
 import { Resize } from "~/ui/Resize"
 import Loading from "~/ui/loading"
 
@@ -37,15 +38,38 @@ export default async function TaskPage({
   return (
     <Suspense fallback={<Loading />}>
       <Resize
-        firstElement={
-          <>
-            <Templates taskRevision={taskRevision} />
-            <Variables />
-          </>
-        }
+        firstElement={<TemplateAndVariable taskRevision={taskRevision} />}
         secondElement={<Executes taskRevision={taskRevision} />}
-        showTitle='show'
+        showTitle="Config"
       />
     </Suspense>
+  )
+}
+
+const TemplateAndVariable = ({
+  taskRevision,
+}: {
+  taskRevision: TaskRevision
+}) => {
+  return (
+    <div>
+      <Disclosure
+        items={[
+          {
+            label: "Chat templates",
+            children: <Templates taskRevision={taskRevision} />,
+          },
+        ]}
+      />
+      <div className="border-b" />
+      <Disclosure
+        items={[
+          {
+            label: "Variable inputs",
+            children: <Variables />,
+          },
+        ]}
+      />
+    </div>
   )
 }

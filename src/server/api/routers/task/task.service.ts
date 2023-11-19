@@ -3,7 +3,6 @@ import type { Session } from "next-auth"
 import { type z } from "zod"
 import type { FilterValue, SortValue } from "~/common/types/props"
 import { type TaskSlugInput } from "~/server/api/middlewares/permission/task-permission"
-import { cryptoTr } from "~/server/api/providers/crypto-provider"
 import { type FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import type {
   CreateTaskInput,
@@ -12,17 +11,8 @@ import type {
 } from "~/server/api/routers/task/dto/task.input"
 import { type RemoveTaskMemberInput } from "~/server/api/routers/task/dto/task.input"
 import { type WorkspaceProcedureInput } from "~/server/api/routers/workspace/workspace.service"
-import { createProvider } from "~/server/api/services/llm/llm"
-import {
-  fillVariables,
-  getContent,
-  getTextFromTextContent,
-  getVariableContents,
-} from "~/server/api/services/prompt"
-import { serializePrompt } from "~/server/api/services/task"
 import { generateSlug } from "~/server/api/utils/slug"
 import { type ExtendedPrismaClient } from "~/server/db"
-import { ApiKeyNotFound } from "~/server/errors/api-key.error"
 import {
   CannotRemoveOwner,
   MemberNotFound,
@@ -30,6 +20,7 @@ import {
 } from "~/server/errors/task.error"
 import { WorkspaceNotFound } from "~/server/errors/workspace.error"
 import { transformFilter, transformSort } from "~/services/prisma"
+
 
 interface TaskProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
@@ -253,33 +244,17 @@ export const filterAndSort = async ({
   const filters = transformFilter(input.filter as FilterValue)
   const sorts = transformSort(input.sort as SortValue)
 
-  // return prisma.taskRevision
-  //   .paginate({
-  //     where: {
-  //       ...filters,
-  //       membersOnTasks: {
-  //         some: {
-  //           OR: [
-  //             {
-  //               userId: session.user.id,
-  //               workspaceId: workspace.id,
-  //             },
-  //             {
-  //               teamId: {
-  //                 in: teams.map((team) => team.id),
-  //               },
-  //               workspaceId: workspace.id,
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     },
-  //     orderBy: sorts,
-  //     include: { owner: true },
-  //   })
-  //   .withPages({
-  //     limit: input.limit,
-  //     page: input.page,
-  //     includePageCount: true,
-  //   })
+  return prisma.task
+    .paginate({
+      where: {
+        ...filters,
+      },
+      orderBy: sorts,
+      include: { owner: true, taskRevision: true },
+    })
+    .withPages({
+      limit: input.limit,
+      page: input.page,
+      includePageCount: true,
+    })
 }

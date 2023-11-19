@@ -227,8 +227,8 @@ model Task {
   workspaceId        String             @db.ObjectId
   owner              User               @relation(fields: [ownerId], references: [id])
   ownerId            String             @db.ObjectId
-  TaskRevision       TaskRevision[]
-  MembersOnTasks     MembersOnTasks[]
+  taskRevision       TaskRevision[]
+  membersOnTasks     MembersOnTasks[]
   executionHistories ExecutionHistory[]
 
   @@unique([workspaceId, slug])
@@ -260,7 +260,7 @@ model TaskRevision {
 
   task             Task               @relation(fields: [taskId], references: [id])
   taskId           String             @db.ObjectId
-  ExecutionHistory ExecutionHistory[]
+  executionHistory ExecutionHistory[]
 
   @@unique([taskId, version])
   @@map("tasks_revision")
@@ -300,7 +300,7 @@ model ExecutionHistory {
   paramter  Json
   output    String
   usage     Usage
-  Task      Task?           @relation(fields: [taskId], references: [id])
+  task      Task?           @relation(fields: [taskId], references: [id])
   taskId    String?         @db.ObjectId
 
   @@map("execution_histories")
@@ -334,7 +334,7 @@ model MembersOnTasks {
   updatedAt      DateTime      @updatedAt
   task           Task          @relation(fields: [taskId], references: [id])
   taskId         String        @db.ObjectId
-  TaskRevision   TaskRevision? @relation(fields: [taskRevisionId], references: [id])
+  taskRevision   TaskRevision? @relation(fields: [taskRevisionId], references: [id])
   taskRevisionId String?       @db.ObjectId
 
   @@map("members_on_tasks")

@@ -1,7 +1,8 @@
 "use client"
 
 import { Listbox } from "@headlessui/react"
-import { forwardRef, useState } from "react"
+import { IconSelector } from "@tabler/icons-react"
+import { forwardRef, useEffect, useMemo, useState } from "react"
 import { cl } from "~/common/utils"
 
 export interface SelectOption {
@@ -29,6 +30,7 @@ type SelectProps = {
   className?: string
   warrperClassname?: string
   popupClassname?: string
+  iconClassname?: string
   optionClassname?: string
   placeholder?: string
   disabled?: boolean
@@ -37,13 +39,12 @@ type SelectProps = {
 const getInitValue = (
   options: SelectOption[],
   placeholder: string,
-  value?: SelectValue,
   defaultValue?: SelectValue
 ): SelectOption => {
   let select: SelectOption = { label: placeholder, value: "" }
 
-  if (value || defaultValue) {
-    const res = value ? value : defaultValue
+  if (defaultValue) {
+    const res = defaultValue
 
     if (res instanceof Object) {
       return res
@@ -68,17 +69,39 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
       className,
       warrperClassname,
       popupClassname,
+      iconClassname,
       optionClassname,
       placeholder = "Select ...",
       disabled = false,
     },
     ref
   ) {
+    const transformOptions = useMemo(() => {
+      return options.map((option) => {
+        if (option?.label) {
+          return option
+        }
+
+        return { ...option, label: option.value }
+      })
+    }, [])
+
     const [selected, setSelected] = useState<SelectOption>(
-      getInitValue(options, placeholder, value, defaultValue)
+      getInitValue(transformOptions, placeholder, defaultValue)
     )
 
-    if (!options || options.length < 1) return
+    useEffect(() => {
+      if (value && value !== selected.value) {
+        const valueInOpt = transformOptions.find(
+          (option) => option.value === value
+        )
+        if (!valueInOpt) return
+
+        setSelected(valueInOpt)
+      }
+    }, [value])
+
+    if (!transformOptions || transformOptions.length < 1) return
 
     const handleChange = (selected: SelectOption) => {
       setSelected(selected)
@@ -90,7 +113,7 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
         <div className={cl("relative", warrperClassname)}>
           <Listbox.Button
             className={cl(
-              "relative w-full min-w-[80px] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 disabled:bg-gray-100",
+              "relative flex w-full justify-between items-center min-w-[80px] cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left border disabled:bg-gray-100",
               BASE_SIZE[size],
               { "cursor-not-allowed bg-gray-100 text-gray-300": disabled },
               className
@@ -103,6 +126,7 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
             >
               {selected.label}
             </span>
+            <IconSelector className={cl("h-4 w-4", iconClassname)} />
           </Listbox.Button>
           <Listbox.Options
             className={cl(
@@ -110,14 +134,14 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
               popupClassname
             )}
           >
-            {options.map((option, index) => (
+            {transformOptions.map((option, index) => (
               <Listbox.Option
                 key={index}
                 className={({ active }) =>
                   cl(
-                    "relative cursor-default select-none pl-3 text-gray-900",
+                    "relative cursor-default select-none px-3 py-1.5 text-gray-900",
                     {
-                      "text-primary-1": active,
+                      "bg-neutral-100": active,
                     },
                     optionClassname
                   )

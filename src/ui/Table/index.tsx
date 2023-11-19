@@ -10,7 +10,7 @@ import { type ReactElement } from "react"
 import { Empty } from "~/ui/Empty"
 import { Spin } from "~/ui/Spinner"
 
-export type ColumnType<T = { [key: string]: any }> = {
+export type ColumnType<T extends Record<string, any> = any> = {
   id: keyof T
   title: string
   render: (value: any, record: T) => ReactElement
@@ -18,13 +18,15 @@ export type ColumnType<T = { [key: string]: any }> = {
   type?: string
 }
 
-type TableProps<T> = {
+type TableProps<T extends Record<string, any>> = {
   data?: T[] | null
   columns: ColumnType<T>[]
   loading?: boolean
 }
 
-const transformToColumnDef = <T,>(columns: ColumnType<T>[]): ColumnDef<T>[] => {
+const transformToColumnDef = <T extends Record<string, any>>(
+  columns: ColumnType<T>[]
+): ColumnDef<T>[] => {
   return columns.map<ColumnDef<T>>((col) => ({
     header: col.title,
     accessorKey: col.id,
@@ -35,7 +37,11 @@ const transformToColumnDef = <T,>(columns: ColumnType<T>[]): ColumnDef<T>[] => {
   }))
 }
 
-export function Table<T>({ data, columns, loading = false }: TableProps<T>) {
+export function Table<T extends Record<string, any>>({
+  data,
+  columns,
+  loading = false,
+}: TableProps<T>) {
   const table = useReactTable({
     data: data ?? [],
     columns: transformToColumnDef<T>(columns),

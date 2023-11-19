@@ -45,7 +45,7 @@ export default function Sidebar({ workspaceSlug, user }: Props) {
               </div>
             ) : (
               <Button>
-                <Link href="auth/sign-in">Sign In</Link>
+                <Link href="/auth/sign-in">Sign In</Link>
               </Button>
             )}
           </div>

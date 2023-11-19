@@ -1,16 +1,20 @@
+import { IconCircleXFilled } from "@tabler/icons-react"
 import { forwardRef } from "react"
+import { cl } from "~/common/utils"
 import {
   TextArea as ColTextArea,
   type TextAreaProps as ColTextAreaProps,
 } from "~/ui/Col-ui/Input/Textarea"
 import type { TextAreaRef } from "~/ui/Col-ui/Input/Textarea/interface"
-import cx from "classnames"
-import { IconCircleXFilled } from "@tabler/icons-react"
 
-export type TextAreaProps = {} & ColTextAreaProps
+type Size = "sm" | "base"
+
+export type TextAreaProps = {
+  size?: Size
+} & ColTextAreaProps
 
 export const TextArea = forwardRef<TextAreaRef, TextAreaProps>(
-  function TextArea({ allowClear, ...props }, ref) {
+  function TextArea({ allowClear, size = "base", className, ...props }, ref) {
     const renderClearIcon = () => {
       if (allowClear) {
         return {
@@ -27,9 +31,12 @@ export const TextArea = forwardRef<TextAreaRef, TextAreaProps>(
         ref={ref}
         {...props}
         classNames={{
-          textarea: cx(
+          textarea: cl(
+            "w-full max-w-full resize-y rounded-lg border border-gray-300 px-3 py-1 align-text-bottom leading-6 outline-0 focus-within:border-violet-500",
             { "pe-2": !!allowClear },
-            "min-h-[32px] w-full max-w-full resize-y rounded-lg border border-gray-300 px-3 py-1 align-text-bottom leading-6 outline-0 transition-all focus-within:border-violet-500"
+            { "min-h-[32px]": !props.autoSize },
+            SIZE[size],
+            className
           ),
           affixWrapper:
             "relative inline-flex w-full min-w-0 border rounded-lg transition-all outline-0 focus-within:border-violet-500 border-gray-300 ",
@@ -40,3 +47,8 @@ export const TextArea = forwardRef<TextAreaRef, TextAreaProps>(
     )
   }
 )
+
+const SIZE: Record<Size, string> = {
+  sm: "text-sm",
+  base: "text-base",
+}

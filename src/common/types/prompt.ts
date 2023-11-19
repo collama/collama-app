@@ -24,4 +24,3 @@ export type VariableContent = {
 }
 
 export type Content = TextContent | VariableContent
-

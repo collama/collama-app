@@ -1,6 +1,12 @@
 import OpenAI from "openai"
-import { type ChatCompletionCreateParamsBase } from "openai/resources/chat/completions"
+import type {
+  ChatCompletionChunk,
+  ChatCompletionMessageParam,
+} from "openai/src/resources/chat/completions"
+import { type ChatCompletionCreateParamsBase } from "openai/src/resources/chat/completions"
+import type { Stream } from "openai/src/streaming"
 import { type LLM } from "~/server/api/services/llm/llm"
+
 
 export interface OpenAIProviderOptions
   extends Omit<ChatCompletionCreateParamsBase, "messages"> {
@@ -22,5 +28,15 @@ export class OpenAIProvider implements LLM {
     })
 
     return completion.choices[0]?.message.content ?? null
+  }
+
+  async chatCompletion(
+    messages: ChatCompletionMessageParam[]
+  ): Promise<Stream<ChatCompletionChunk>> {
+    return this.provider.chat.completions.create({
+      messages,
+      model: this.options.model,
+      stream: true,
+    })
   }
 }

@@ -1,10 +1,10 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react"
+import { IconCircleXFilled } from "@tabler/icons-react"
 import cx from "classnames"
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react"
 import type { InputRef } from "~/ui/Col-ui/Input"
 import { Input as CInput } from "~/ui/Col-ui/Input"
-import { IconCircleXFilled } from "@tabler/icons-react"
 
-type InputSize = "base" | "md" | 'sm'
+type InputSize = "base" | "md" | "sm"
 
 const INPUT_SIZE: Record<InputSize, string> = {
   base: "text-base",
@@ -55,7 +55,6 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
           "w-full rounded-lg outline-0 focus-within:border-violet-500 relative inline-flex min-w-0 py-1 px-3 border border-gray-300 transition-all",
         suffix: "flex items-center ps-1",
         prefix: "flex items-center ps-1",
-        // disabled: "cursor-not-allowed bg-gray-100 text-gray-300",
       }}
       {...restProps}
       ref={ref}

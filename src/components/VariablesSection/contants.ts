@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const VARIABLE_FORM_NAME = "variables"
 
-const variable = z.object({ name: z.string(), value: z.string() })
+export const variable = z.object({ name: z.string(), value: z.string() })
 
 export type Variable = z.infer<typeof variable>
 

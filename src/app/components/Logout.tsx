@@ -14,7 +14,7 @@ export function Logout() {
             redirect: false,
           })
 
-          router.push("/auth/sign-in")
+          router.replace("/auth/sign-in")
         }}
       >
         Logout

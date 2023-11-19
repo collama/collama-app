@@ -1,13 +1,9 @@
 "use client"
 
-import type { Task, User } from "@prisma/client"
+import type { User } from "@prisma/client"
 import { type UseTRPCActionResult } from "@trpc/next/src/app-dir/create-action-hook"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import type {
-  PageNumberCounters,
-  PageNumberPagination,
-} from "prisma-extension-pagination/dist/types"
 import React, { useCallback, useEffect, useState } from "react"
 import urlJoin from "url-join"
 import useAsyncEffect from "use-async-effect"
@@ -16,12 +12,12 @@ import {
   upsertFilterAction,
 } from "~/app/(protected)/[workspace]/tasks/actions"
 import { RemoveIcon } from "~/app/components/RemoveIcon"
+import { type TaskIncludeOwner } from "~/common/types/prisma"
 import {
   FilterOperator,
   type FilterValue,
   type SortValue,
 } from "~/common/types/props"
-import { sleep } from "~/common/utils"
 import { toFullDate } from "~/common/utils/datetime"
 import { NoSsrWarp } from "~/components/NoSsr"
 import { useAwaitedFn } from "~/hooks/useAwaited"
@@ -34,7 +30,7 @@ import { Sort } from "~/ui/Sort"
 import { type ColumnType, Table } from "~/ui/Table"
 import { Tag } from "~/ui/Tag"
 
-const columns: ColumnType[] = [
+const columns: ColumnType<TaskIncludeOwner>[] = [
   {
     id: "owner",
     title: "Owner",
@@ -168,20 +164,30 @@ export function Tasks({ workspaceSlug }: { workspaceSlug: string }) {
     upsertSetting({ workspaceSlug, setting })
   }, [filterSetting.count, workspaceSlug])
 
-  const nameColumn: ColumnType[] = [
+  const nameColumn: ColumnType<TaskIncludeOwner>[] = [
     {
       id: "name",
       title: "Task",
       type: "string",
-      render: (name: string, record) => (
-        <Link href={urlJoin("/", workspaceSlug, record.slug as string)}>
-          {name}
-        </Link>
-      ),
+      render: (name: string, record) => {
+        return (
+          <Link
+            href={urlJoin(
+              "/",
+              workspaceSlug,
+              `${record.slug}?&version=${
+                record?.taskRevision?.[0]?.version ?? ""
+              }`
+            )}
+          >
+            {name}
+          </Link>
+        )
+      },
     },
   ]
 
-  const actionColumn: ColumnType[] = [
+  const actionColumn: ColumnType<TaskIncludeOwner>[] = [
     {
       title: "Action",
       id: "id",

@@ -3,13 +3,7 @@ import { z } from "zod"
 import { TaskIdInput } from "~/server/api/middlewares/permission/task-permission"
 import { WorkspaceSlugInput } from "~/server/api/middlewares/permission/workspace-permission"
 
-export const CreateTaskInput = z
-  .object({
-    name: z.string().nonempty(),
-    prompt: z.string().optional(),
-    description: z.string().nullable(),
-  })
-  .merge(WorkspaceSlugInput)
+export const CreateTaskInput = WorkspaceSlugInput
 
 export const ExecuteTaskInput = z
   .object({

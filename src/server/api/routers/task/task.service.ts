@@ -1,10 +1,8 @@
 import { InviteStatus, Role, type Task } from "@prisma/client"
 import type { Session } from "next-auth"
-import slugify from "slugify"
 import { type z } from "zod"
 import type { FilterValue, SortValue } from "~/common/types/props"
 import { type TaskSlugInput } from "~/server/api/middlewares/permission/task-permission"
-import { cryptoTr } from "~/server/api/providers/crypto-provider"
 import { type FilterAndSortInput } from "~/server/api/routers/task/dto/task-filter.input"
 import type {
   CreateTaskInput,
@@ -13,17 +11,8 @@ import type {
 } from "~/server/api/routers/task/dto/task.input"
 import { type RemoveTaskMemberInput } from "~/server/api/routers/task/dto/task.input"
 import { type WorkspaceProcedureInput } from "~/server/api/routers/workspace/workspace.service"
-import { createProvider } from "~/server/api/services/llm/llm"
-import {
-  fillVariables,
-  getContent,
-  getTextFromTextContent,
-  getVariableContents,
-} from "~/server/api/services/prompt"
-import { serializePrompt } from "~/server/api/services/task"
-import { createSlug } from "~/server/api/utils/slug"
+import { generateSlug } from "~/server/api/utils/slug"
 import { type ExtendedPrismaClient } from "~/server/db"
-import { ApiKeyNotFound } from "~/server/errors/api-key.error"
 import {
   CannotRemoveOwner,
   MemberNotFound,
@@ -31,6 +20,7 @@ import {
 } from "~/server/errors/task.error"
 import { WorkspaceNotFound } from "~/server/errors/workspace.error"
 import { transformFilter, transformSort } from "~/services/prisma"
+
 
 interface TaskProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
@@ -54,15 +44,15 @@ export const create = async ({
     throw new TaskNotFound()
   }
 
+  const user = session.user
+
   return prisma.$transaction(async (tx) => {
     const task = await tx.task.create({
       data: {
-        name: input.name,
-        description: input.description,
-        slug: createSlug(input.name),
-        prompt: input.prompt,
-        ownerId: session.user.id,
+        ownerId: user.id,
         workspaceId: workspace.id,
+        name: "untitled",
+        slug: generateSlug("untitled"),
       },
     })
 
@@ -70,17 +60,47 @@ export const create = async ({
       throw new TaskNotFound()
     }
 
-    await tx.membersOnTasks.create({
-      data: {
-        userId: session.user.id,
-        workspaceId: workspace.id,
-        taskId: task.id,
-        role: Role.Owner,
-        status: InviteStatus.Accepted,
-      },
-    })
+    const [taskRevision] = await Promise.all([
+      tx.taskRevision.create({
+        data: {
+          version: "0.0.1",
+          task: {
+            connect: {
+              id: task.id,
+            },
+          },
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: user.id,
+            },
+          },
+          updatedBy: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+        select: {
+          version: true,
+        },
+      }),
+      tx.membersOnTasks.create({
+        data: {
+          userId: user.id,
+          workspaceId: workspace.id,
+          taskId: task.id,
+          role: Role.Owner,
+          status: InviteStatus.Accepted,
+        },
+      }),
+    ])
 
-    return task
+    return { ...task, taskRevision }
   })
 }
 
@@ -89,23 +109,23 @@ export const execute = async ({
   task,
   prisma,
 }: TaskProcedureInput<z.infer<typeof ExecuteTaskInput>>) => {
-  const prompt = serializePrompt(task.prompt)
-  const contents = getContent(prompt.content)
-  const textContent = fillVariables(contents, input.variables)
-  const text = getTextFromTextContent(textContent)
-
-  // TODO: get api key
-  const apiKey = await prisma.apiKey.findFirst()
-  if (!apiKey) {
-    throw new ApiKeyNotFound()
-  }
-
-  const provider = createProvider("openai", {
-    apiKey: cryptoTr.decrypt(apiKey.value),
-    model: "gpt-3.5-turbo",
-  })
-
-  return provider.completion(text)
+  // const prompt = serializePrompt(taskRevision.prompt)
+  // const contents = getContent(prompt.content)
+  // const textContent = fillVariables(contents, input.variables)
+  // const text = getTextFromTextContent(textContent)
+  //
+  // // TODO: get api key
+  // const apiKey = await prisma.apiKey.findFirst()
+  // if (!apiKey) {
+  //   throw new ApiKeyNotFound()
+  // }
+  //
+  // const provider = createProvider("openai", {
+  //   apiKey: cryptoTr.decrypt(apiKey.value),
+  //   model: "gpt-3.5-turbo",
+  // })
+  //
+  // return provider.completion(text)
 }
 
 export const inviteMember = async ({
@@ -179,8 +199,8 @@ export const getBySlug = async ({
 }
 
 export const getPromptVariables = ({ task }: TaskProcedureInput) => {
-  const prompt = serializePrompt(task.prompt)
-  return getVariableContents(prompt.content)
+  // const prompt = serializePrompt(taskRevision.prompt)
+  // return getVariableContents(prompt.content)
 }
 
 export const getMembers = async ({ task, prisma }: TaskProcedureInput) => {
@@ -228,25 +248,9 @@ export const filterAndSort = async ({
     .paginate({
       where: {
         ...filters,
-        membersOnTasks: {
-          some: {
-            OR: [
-              {
-                userId: session.user.id,
-                workspaceId: workspace.id,
-              },
-              {
-                teamId: {
-                  in: teams.map((team) => team.id),
-                },
-                workspaceId: workspace.id,
-              },
-            ],
-          },
-        },
       },
       orderBy: sorts,
-      include: { owner: true },
+      include: { owner: true, taskRevision: true },
     })
     .withPages({
       limit: input.limit,

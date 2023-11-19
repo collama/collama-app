@@ -1,7 +1,7 @@
 import { type Prisma } from "@prisma/client"
 
 export type TaskIncludeOwner = Prisma.TaskGetPayload<{
-  include: { owner: true }
+  include: { owner: true, taskRevision: true }
 }>
 
 export type MemberOnWorkspaceIncludeUserMail =
@@ -37,5 +37,6 @@ export type MembersOnTaskIncludeUserTeam = Prisma.MembersOnTasksGetPayload<{
 export type ApiKeyIncludeUser = Prisma.ApiKeyGetPayload<{
   include: {
     owner: true
+    provider: true
   }
 }>

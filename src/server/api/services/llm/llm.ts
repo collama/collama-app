@@ -1,3 +1,6 @@
+import type { ChatCompletionMessageParam } from "openai/src/resources/chat/completions"
+import type { ChatCompletionChunk } from "openai/src/resources/chat/completions"
+import type { Stream } from "openai/src/streaming"
 import {
   OpenAIProvider,
   type OpenAIProviderOptions,
@@ -5,6 +8,9 @@ import {
 
 export interface LLM {
   completion(content: string): Promise<string | null>
+  chatCompletion(
+    messages: ChatCompletionMessageParam[]
+  ): Promise<Stream<ChatCompletionChunk>>
 }
 
 export type ProviderType = "openai"

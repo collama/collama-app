@@ -1,13 +1,16 @@
+import Image from "next/image"
 import Link from "next/link"
 
 export const Heading = () => {
   return (
-    <div className="px-4 py-6">
-      <Link href="/">
-        <div>
-          <h1>Collama</h1>
-        </div>
-      </Link>
-    </div>
+    <Link className=" flex items-center justify-center px-2" href="/">
+      <Image
+        width={120}
+        height={100}
+        alt="collama-icon"
+        src="/collama-icon.png"
+        className="aspect-video"
+      />
+    </Link>
   )
 }

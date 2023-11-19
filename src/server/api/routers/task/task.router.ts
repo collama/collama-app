@@ -145,4 +145,5 @@ export const taskTRPCRouter = createTRPCRouter({
   getMembers,
   getPromptVariables,
   filterAndSort,
+  create,
 })

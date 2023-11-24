@@ -7,11 +7,11 @@ import { v4 } from "uuid"
 import type { TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { PromptTemplates, type TemplateRef } from "~/components/PromptTemplates"
 import { toChatCompletionMessage } from "~/server/api/services/prompt"
-import { useTaskStoreVariables } from "~/store/taskStore"
+import { useVariables } from "~/store/taskStore"
 
 export const ChatExecute: FC<TaskRevisionProps> = ({ taskRevision }) => {
   const appendRef = useRef<TemplateRef>(null)
-  const variables = useTaskStoreVariables()
+  const variables = useVariables()
   const { messages, isLoading, append, stop } = useChat({
     api: "/api/chat",
     body: {

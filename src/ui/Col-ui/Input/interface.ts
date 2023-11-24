@@ -1,13 +1,14 @@
+import { type InputFocusOptions } from "./ults/common"
+import { type LiteralUnion } from "./ults/types"
 import type {
   CSSProperties,
   InputHTMLAttributes,
   KeyboardEventHandler,
+  MouseEvent,
   MouseEventHandler,
   ReactElement,
   ReactNode,
 } from "react"
-import { type InputFocusOptions } from "./ults/common"
-import { type LiteralUnion } from "./ults/types"
 
 export interface CommonInputProps {
   prefix?: ReactNode
@@ -92,6 +93,7 @@ export interface InputRef {
     end: number,
     direction?: "forward" | "backward" | "none"
   ) => void
+  clear: (e: MouseEvent<HTMLElement, MouseEvent>) => void
   select: () => void
   input: HTMLInputElement | null
 }

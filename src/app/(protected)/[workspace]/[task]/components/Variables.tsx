@@ -3,14 +3,11 @@
 import { type FC, useEffect } from "react"
 import { VariablesSection } from "~/components/VariablesSection"
 import { transformTemplates2Variables } from "~/services/richtext"
-import {
-  useTaskStoreTemplates,
-  useTaskVariablesActions,
-} from "~/store/taskStore"
+import { useTemplates, useVariablesActions } from "~/store/taskStore"
 
 export const Variables: FC = () => {
-  const templates = useTaskStoreTemplates()
-  const { updateVariableContent, append } = useTaskVariablesActions()
+  const templates = useTemplates()
+  const { updateContent, append } = useVariablesActions()
   const data = transformTemplates2Variables(templates)
 
   useEffect(() => {
@@ -19,7 +16,7 @@ export const Variables: FC = () => {
 
   return (
     <div className="mt-1.5 mb-6">
-      <VariablesSection data={data} updateContent={updateVariableContent} />
+      <VariablesSection data={data} updateContent={updateContent} />
     </div>
   )
 }

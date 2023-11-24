@@ -22,4 +22,4 @@ if (process.env.NODE_ENV !== "production") {
 
 Input.Password = Password
 Input.TextArea = TextArea
-export { Input }
+export { Input, InputRef }

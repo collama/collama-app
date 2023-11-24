@@ -75,10 +75,10 @@ export const Resize: FC<ResizeProps> = ({
           onMouseDown={startResizing}
         />
         <Button
-          className="absolute border-0 bg-neutral-100 inline-flex justify-center items-center right-5 bottom-5 px-1 py-1 invisible group-hover:visible"
+          className="absolute border-0 hover:bg-neutral-100 inline-flex justify-center items-center right-5 bottom-7 px-1 py-1 invisible group-hover:visible"
           size="sm"
           onClick={() => setIsCollapseSidebar(true)}
-          prefix={<IconChevronsLeft className="h-4 w-4 pl-1 bg-transparent" />}
+          prefix={<IconChevronsLeft className="h-5 w-5 pl-1 bg-transparent" />}
         ></Button>
       </div>
 
@@ -91,11 +91,11 @@ export const Resize: FC<ResizeProps> = ({
         {secondElement}
         <Button
           size="sm"
-          className={cl("absolute bottom-5 left-1 hidden", {
+          className={cl("absolute bottom-7 left-3 hidden", {
             "inline-block": isCollapseSidebar,
           })}
           onClick={() => setIsCollapseSidebar(false)}
-          prefix={<IconChevronsRight className="h-4 w-4" />}
+          prefix={<IconChevronsRight className="h-5 w-5" />}
         >
           {showTitle}
         </Button>

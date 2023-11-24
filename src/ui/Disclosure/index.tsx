@@ -23,14 +23,12 @@ export const Disclosure: FC<DisclosureProps> = ({ items }) => {
               <HeadlessDisclosure.Button className="flex w-full justify-between px-4 py-2 hover:bg-neutral-100 text-left font-medium ">
                 {item.label}
                 <IconChevronUp
-                  className={`${
-                    open ? "rotate-180 transform" : ""
-                  } h-4 w-4`}
+                  className={`${open ? "rotate-180 transform" : ""} h-4 w-4`}
                 />
               </HeadlessDisclosure.Button>
               <HeadlessDisclosure.Panel
                 unmount={false}
-                className="text-gray-500"
+                className="text-neutral-500"
               >
                 {item.children}
               </HeadlessDisclosure.Panel>

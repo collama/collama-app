@@ -1,10 +1,3 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react"
 import { BaseInput } from "./BaseInput"
 import type { InputProps, InputRef } from "./interface"
 import {
@@ -14,6 +7,14 @@ import {
   triggerFocus,
 } from "./ults/common"
 import omit from "./ults/omit"
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react"
+import useMergedState from "~/ui/Col-ui/utils/hooks/useMergedState"
 
 export const Input = forwardRef<InputRef, InputProps>(function Input(
   props,
@@ -36,8 +37,10 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
     ...rest
   } = props
 
-  const DEFAULT = props.defaultValue ?? props.value
-  const [value, setValue] = useState(DEFAULT)
+  const [value, setValue] = useMergedState(props.defaultValue, {
+    value: props.value,
+  })
+
   const [focused, setFocused] = useState<boolean>(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -63,6 +66,7 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
     select: () => {
       inputRef.current?.select()
     },
+    clear: (e: React.MouseEvent<HTMLElement, MouseEvent>) => handleReset(e),
     input: inputRef.current,
   }))
 
@@ -70,8 +74,9 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
     setFocused((prev) => (prev && disabled ? false : prev))
   }, [disabled])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInternalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value)
+
     if (inputRef.current) {
       resolveOnChange(inputRef.current, e, onChange)
     }
@@ -123,7 +128,7 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
       <input
         autoComplete={autoComplete}
         {...otherProps}
-        onChange={handleChange}
+        onChange={onInternalChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}

@@ -94,11 +94,14 @@ export const PromptTemplates = forwardRef<TemplateRef, PromptTemplatesProps>(
         controlProps &&
         (!props.data || (props.data && props.data.length <= 0))
       ) {
-        fieldAppend({ ...DEFAULT_TEMPLATE, role: ChatRole.System })
-        controlProps?.append({
+        const initData = {
           ...DEFAULT_TEMPLATE,
           role: ChatRole.System,
-        })
+          // content: "You are a helpful assistant",
+        }
+
+        fieldAppend(initData)
+        controlProps?.append(initData)
       }
 
       if (submitProps) {

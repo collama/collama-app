@@ -10,12 +10,12 @@ import {
 } from "~/app/(protected)/[workspace]/[task]/actions"
 import { type TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { PromptTemplates } from "~/components/PromptTemplates"
-import { useTaskStoreTemplatesActions } from "~/store/taskStore"
+import { useTemplatesActions } from "~/store/taskStore"
 import { useAction } from "~/trpc/client"
 
 export const Templates: FC<TaskRevisionProps> = ({ taskRevision }) => {
   const { append, insert, updateContent, updateRole, remove } =
-    useTaskStoreTemplatesActions()
+    useTemplatesActions()
 
   const { mutate: updateMessage } = useAction(updateMessageOnTaskRevision)
   const { mutate: insertMessage } = useAction(insertMessageOnTaskRevision)

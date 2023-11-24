@@ -110,59 +110,61 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
 
     return (
       <Listbox value={selected} onChange={handleChange} disabled={disabled}>
-        <div className={cl("relative", warrperClassname)}>
-          <Listbox.Button
-            className={cl(
-              "relative flex w-full justify-between items-center min-w-[80px] cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left border disabled:bg-gray-100",
-              BASE_SIZE[size],
-              { "cursor-not-allowed bg-gray-100 text-gray-300": disabled },
-              className
-            )}
-          >
-            <span
-              className={cl("truncate", {
-                "text-neutral-400": selected.label === placeholder,
-              })}
+        {({ open }) => (
+          <div className={cl("relative", warrperClassname)}>
+            <Listbox.Button
+              className={cl(
+                "relative flex w-full justify-between items-center min-w-[80px] cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left border disabled:bg-gray-100",
+                BASE_SIZE[size],
+                { "cursor-not-allowed bg-gray-100 text-gray-300": disabled },
+                className
+              )}
             >
-              {selected.label}
-            </span>
-            <IconSelector className={cl("h-4 w-4", iconClassname)} />
-          </Listbox.Button>
-          <Listbox.Options
-            className={cl(
-              "z-10 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
-              popupClassname
-            )}
-          >
-            {transformOptions.map((option, index) => (
-              <Listbox.Option
-                key={index}
-                className={({ active }) =>
-                  cl(
-                    "relative cursor-default select-none px-3 py-1.5 text-gray-900",
-                    {
-                      "bg-neutral-100": active,
-                    },
-                    optionClassname
-                  )
-                }
-                value={option}
+              <span
+                className={cl("truncate", {
+                  "text-neutral-400": selected.label === placeholder,
+                })}
               >
-                {({ selected }) => (
-                  <>
-                    <span
-                      className={`block truncate ${
-                        selected ? "font-bold" : "font-normal"
-                      }`}
-                    >
-                      {option.label}
-                    </span>
-                  </>
-                )}
-              </Listbox.Option>
-            ))}
-          </Listbox.Options>
-        </div>
+                {selected.label}
+              </span>
+              <IconSelector className={cl("h-4 w-4", iconClassname)} />
+            </Listbox.Button>
+            <Listbox.Options
+              className={cl(
+                "z-10 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+                popupClassname
+              )}
+            >
+              {transformOptions.map((option, index) => (
+                <Listbox.Option
+                  key={index}
+                  className={({ active }) =>
+                    cl(
+                      "relative cursor-default select-none px-3 py-1.5 text-gray-900",
+                      {
+                        "bg-neutral-100": active,
+                      },
+                      optionClassname
+                    )
+                  }
+                  value={option}
+                >
+                  {({ selected }) => (
+                    <>
+                      <span
+                        className={`block truncate ${
+                          selected ? "font-bold" : "font-normal"
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </div>
+        )}
       </Listbox>
     )
   }

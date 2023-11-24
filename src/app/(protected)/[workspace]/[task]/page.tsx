@@ -4,6 +4,7 @@ import { Executes } from "~/app/(protected)/[workspace]/[task]/components/Execut
 import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templates"
 import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
+import { Parameters } from "~/components/Parameters"
 import { api } from "~/trpc/server-http"
 import { Disclosure } from "~/ui/Disclosure"
 import { Resize } from "~/ui/Resize"
@@ -46,30 +47,35 @@ export default async function TaskPage({
   )
 }
 
-const TemplateAndVariable = ({
-  taskRevision,
-}: {
-  taskRevision: TaskRevision
-}) => {
+const TemplateAndVariable = ({ taskRevision }: TaskRevisionProps) => {
   return (
     <div>
       <Disclosure
         items={[
           {
-            label: "Chat templates",
-            children: <Templates taskRevision={taskRevision} />,
+            label: "Parameters",
+            children: <Parameters taskRevision={taskRevision} />,
           },
         ]}
       />
-      <div className="border-b" />
-      <Disclosure
-        items={[
-          {
-            label: "Variable inputs",
-            children: <Variables />,
-          },
-        ]}
-      />
+      {/*<div className="border-b" />*/}
+      {/*<Disclosure*/}
+      {/*  items={[*/}
+      {/*    {*/}
+      {/*      label: "Chat templates",*/}
+      {/*      children: <Templates taskRevision={taskRevision} />,*/}
+      {/*    },*/}
+      {/*  ]}*/}
+      {/*/>*/}
+      {/*<div className="border-b" />*/}
+      {/*<Disclosure*/}
+      {/*  items={[*/}
+      {/*    {*/}
+      {/*      label: "Variable inputs",*/}
+      {/*      children: <Variables />,*/}
+      {/*    },*/}
+      {/*  ]}*/}
+      {/*/>*/}
     </div>
   )
 }

@@ -1,6 +1,4 @@
-"use client"
-
-import { type ChangeEvent, type FC, useState } from "react"
+import { type ChangeEvent, type FC, useCallback, useState } from "react"
 import { cl } from "~/common/utils"
 import { Button } from "~/ui/Button"
 import { MultipleTag } from "~/ui/MultipleTag"
@@ -8,13 +6,28 @@ import { Popover } from "~/ui/Popover"
 import { Slider } from "~/ui/Slider"
 import { Tag } from "~/ui/Tag"
 
-export const ParameterItem: FC<ContentProps> = ({ ...contentProps }) => {
+type ParameterItemProps = {
+  id: string
+  onChange?: (value: number, id: string) => void
+} & Omit<ContentProps, "onChange">
+
+export const ParameterItem: FC<ParameterItemProps> = ({
+  id,
+  onChange,
+  ...contentProps
+}) => {
   const [value, setValue] = useState(contentProps.defaultValue)
 
+  const handleChange = useCallback(
+    (value: number) => {
+      setValue(value)
+      onChange?.(value, id)
+    },
+    [id]
+  )
+
   return (
-    <Popover
-      content={<Content {...contentProps} onChange={(v) => setValue(v)} />}
-    >
+    <Popover content={<Content {...contentProps} onChange={handleChange} />}>
       <div className="aria-expanded:ring ring-violet-200 inline-flex select-none items-center overflow-hidden border rounded-lg border-gray-300 hover:border-gray-400">
         <span className="text-sm px-1.5 bg-zinc-100 ">{contentProps.name}</span>
         <span className="text-sm px-1.5 text-neutral-700 font-bold">
@@ -53,7 +66,9 @@ export const Content: FC<ContentProps> = ({
   const handleChange = (value: number[]) => {
     setValue(value)
 
-    if (!isNaN(value[0]!)) return onChange?.(value[0]!)
+    if (!isNaN(value[0]!)) {
+      onChange?.(value[0]!)
+    }
   }
 
   const onReset = () => {
@@ -103,19 +118,23 @@ export const Content: FC<ContentProps> = ({
 }
 
 type StopItemProps = {
-  limit: number
-  onChange: (values: string[]) => void
-} & Pick<ContentProps, "name" | "content" | "description" | "moreDetail">
+  id: string
+  onChange: (values: string[], id: string) => void
+} & Omit<StopContentProps, "onChange">
 
-export const StopItem: FC<StopItemProps> = (props) => {
+export const StopItem: FC<StopItemProps> = ({ id, onChange, ...props }) => {
   const [values, setValues] = useState<string[]>([])
 
+  const handleChange = useCallback(
+    (values: string[]) => {
+      setValues(values)
+      onChange(values, id)
+    },
+    [id]
+  )
+
   return (
-    <Popover
-      content={
-        <StopContent {...props} onChange={(values) => setValues(values)} />
-      }
-    >
+    <Popover content={<StopContent {...props} onChange={handleChange} />}>
       <div
         className={cl(
           "aria-expanded:ring ring-violet-200 inline-flex select-none items-center overflow-hidden border rounded-lg border-gray-300 hover:border-gray-400",
@@ -143,6 +162,11 @@ export const StopItem: FC<StopItemProps> = (props) => {
   )
 }
 
+type StopContentProps = {
+  limit: number
+  onChange: (values: string[]) => void
+} & Pick<ContentProps, "name" | "content" | "description" | "moreDetail">
+
 const StopContent = ({
   name,
   content,
@@ -150,9 +174,9 @@ const StopContent = ({
   description,
   onChange,
   limit,
-}: StopItemProps) => {
+}: StopContentProps) => {
   return (
-    <div className="p-4 w-[350px] space-y-4">
+    <div className="p-4 w-[200px] space-y-4">
       <div className="flex w-full justify-between items-center">
         <MultipleTag limit={limit} onChange={onChange} />
       </div>

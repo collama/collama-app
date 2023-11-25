@@ -101,7 +101,7 @@ export const Select = forwardRef<HTMLButtonElement | null, SelectProps>(
       }
     }, [value])
 
-    if (!transformOptions || transformOptions.length < 1) return
+    if (!transformOptions) return
 
     const handleChange = (selected: SelectOption) => {
       setSelected(selected)

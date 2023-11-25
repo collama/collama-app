@@ -16,12 +16,14 @@ interface ResizeProps {
   firstElement: ReactElement
   secondElement: ReactElement
   showTitle?: string
+  classname?: string
 }
 
 export const Resize: FC<ResizeProps> = ({
   firstElement,
   secondElement,
   showTitle,
+  classname,
 }) => {
   const sidebarRef = useRef<HTMLDivElement | null>(null)
   const [isResizing, setIsResizing] = useState(false)
@@ -58,16 +60,20 @@ export const Resize: FC<ResizeProps> = ({
   }, [resize, stopResizing])
 
   return (
-    <div className="flex flex-grow h-full">
+    <div className={cl("flex flex-1 ", classname)}>
       <div
         ref={sidebarRef}
         className={cl(
           "relative group shrink-0 border-r shadow-[inset_-88px_0px_13px_-88px_rgba(0,0,0,0.1)]",
           {
             hidden: isCollapseSidebar,
-          }
+          },
+          "min-w-[350px]"
         )}
         style={{ width: sidebarWidth }}
+        onMouseMove={(e) => {
+          isResizing && e.preventDefault()
+        }}
       >
         {firstElement}
         <div
@@ -83,7 +89,7 @@ export const Resize: FC<ResizeProps> = ({
       </div>
 
       <div
-        className="w-full relative h-[calc(100vh-40px)]"
+        className={cl("w-full relative min-w-[350px]")}
         onMouseMove={(e) => {
           isResizing && e.preventDefault()
         }}

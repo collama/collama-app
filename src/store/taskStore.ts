@@ -13,6 +13,7 @@ interface TaskStore {
 }
 
 const defaultParameter: Parameter = {
+  model: "",
   temperature: 0,
   frequencyPenalty: 0,
   presencePenalty: 0,
@@ -73,11 +74,14 @@ export const useParameterActions = () => ({
   append: (value: Parameter) => {
     taskStore.parameter = value
   },
-  updateValue: <T extends keyof Parameter>(key: T, value: Parameter[T]) => {
+  updateParameter: <T extends keyof Parameter>(key: T, value: Parameter[T]) => {
     taskStore.parameter[key] = value
   },
+  updateModel: (value: string) => {
+    taskStore.parameter.model = value
+  }
 })
 
 export const useTemplates = () => useSnapshot(taskStore).templates
 export const useVariables = () => useSnapshot(taskStore).variables
-export const useParameters = () => useSnapshot(taskStore).parameter
+export const useParameter = () => useSnapshot(taskStore).parameter

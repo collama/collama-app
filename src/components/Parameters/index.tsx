@@ -1,14 +1,16 @@
 "use client"
 
-import { type FC, useMemo, useState } from "react"
+import { type FC, useCallback, useMemo } from "react"
 import { type TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { ParameterItem, StopItem } from "~/components/Parameters/ParameterItem"
 import { useAwaitedFn } from "~/hooks/useAwaited"
+import { useParameterActions } from "~/store/taskStore"
 import { api } from "~/trpc/client"
 import { Select, type SelectOption } from "~/ui/Select"
 
 const seeds = [
   {
+    id: "temperature",
     name: "Temperature",
     content: "Controls “creativity”.",
     description:
@@ -20,6 +22,7 @@ const seeds = [
     min: 0,
   },
   {
+    id: "maxTokens",
     name: "Max tokens",
     content: "The maximum number of tokens to generate.",
     description:
@@ -30,6 +33,7 @@ const seeds = [
     min: -1,
   },
   {
+    id: "presencePenalty",
     name: "Presence penalty",
     content: "Increase new topics.",
     description:
@@ -41,6 +45,7 @@ const seeds = [
     min: -2,
   },
   {
+    id: "frequencyPenalty",
     name: "Frequency penalty",
     content: "Decrease repetition.",
     description:
@@ -52,6 +57,7 @@ const seeds = [
     min: -2,
   },
   {
+    id: "topP",
     name: "Top P",
     content: "Sampled probability mass.",
     description:
@@ -66,6 +72,7 @@ const seeds = [
 ]
 
 const STOP_VALUE = {
+  id: "stopSequences",
   name: "Stop sequences",
   content: "Sequences to stop further text generation.",
   description:
@@ -74,6 +81,7 @@ const STOP_VALUE = {
 }
 
 export interface Parameter {
+  model: string
   temperature: number
   maxTokens: number
   stopSequences: string[]
@@ -84,19 +92,33 @@ export interface Parameter {
 }
 
 export const Parameters = ({ taskRevision }: TaskRevisionProps) => {
-  // const { append } = useParameterActions()
+  const { append, updateParameter, updateModel } = useParameterActions()
   const { data: models, loading } = useAwaitedFn(api.model.getAll.query)
 
   const modelOpt = useMemo(() => {
     return models
       ? models.map((model) => ({
           label: model.name,
-          value: model.parameterSchema as string,
+          value: model.id,
         }))
       : []
   }, [loading])
 
-  const [parameters, setParameters] = useState(modelOpt[0]?.value ?? "")
+  // useEffect(() => {
+  //   append({...taskRevision.par}})
+  // }, [])
+
+  const onModelChange = useCallback((model: string) => {
+    updateModel(model)
+  }, [])
+
+  const onParameterChange = useCallback((value: number, id: string) => {
+    updateParameter(id as keyof Parameter, value)
+  }, [])
+
+  const onStopChange = useCallback((values: string[], id: string) => {
+    updateParameter(id as keyof Parameter, values)
+  }, [])
 
   if (loading) return <div>Loading...</div>
 
@@ -106,12 +128,16 @@ export const Parameters = ({ taskRevision }: TaskRevisionProps) => {
         <ModelItem
           defaultValue={modelOpt[0]}
           options={modelOpt}
-          onChange={(model) => setParameters(model)}
+          onChange={onModelChange}
         />
         {seeds.map((item) => (
-          <ParameterItem key={item.name} {...item} />
+          <ParameterItem
+            key={item.name}
+            {...item}
+            onChange={onParameterChange}
+          />
         ))}
-        <StopItem onChange={(values) => console.log(values)} {...STOP_VALUE} />
+        <StopItem onChange={onStopChange} {...STOP_VALUE} />
       </div>
     </div>
   )

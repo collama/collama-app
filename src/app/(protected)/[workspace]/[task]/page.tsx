@@ -42,6 +42,7 @@ export default async function TaskPage({
         firstElement={<TemplateAndVariable taskRevision={taskRevision} />}
         secondElement={<Executes taskRevision={taskRevision} />}
         showTitle="Config"
+        classname="h-[calc(100vh-40px)] w-[calc(100vw-200px)]"
       />
     </Suspense>
   )
@@ -58,24 +59,24 @@ const TemplateAndVariable = ({ taskRevision }: TaskRevisionProps) => {
           },
         ]}
       />
-      {/*<div className="border-b" />*/}
-      {/*<Disclosure*/}
-      {/*  items={[*/}
-      {/*    {*/}
-      {/*      label: "Chat templates",*/}
-      {/*      children: <Templates taskRevision={taskRevision} />,*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*/>*/}
-      {/*<div className="border-b" />*/}
-      {/*<Disclosure*/}
-      {/*  items={[*/}
-      {/*    {*/}
-      {/*      label: "Variable inputs",*/}
-      {/*      children: <Variables />,*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*/>*/}
+      <div className="border-b" />
+      <Disclosure
+        items={[
+          {
+            label: "Chat templates",
+            children: <Templates taskRevision={taskRevision} />,
+          },
+        ]}
+      />
+      <div className="border-b" />
+      <Disclosure
+        items={[
+          {
+            label: "Variable inputs",
+            children: <Variables />,
+          },
+        ]}
+      />
     </div>
   )
 }

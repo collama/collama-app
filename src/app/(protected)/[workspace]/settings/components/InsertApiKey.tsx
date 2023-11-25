@@ -14,6 +14,7 @@ import { Button } from "~/ui/Button"
 import { Input } from "~/ui/Input"
 import { useNotification } from "~/ui/Notification"
 import { Select } from "~/ui/Select"
+import { Spin } from "~/ui/Spinner"
 
 const schema = z.object({
   title: z.string(),
@@ -23,7 +24,9 @@ const schema = z.object({
 
 export const InsertApiKey = () => {
   const { mutate: insertAiKey, status, error } = useAction(createApiKeyAction)
-  const { data: providers } = useAwaitedFn(api.provider.getAll.query)
+  const { data: providers, loading: providersLoading } = useAwaitedFn(
+    api.provider.getAll.query
+  )
 
   const form = useZodForm({
     schema,
@@ -62,9 +65,11 @@ export const InsertApiKey = () => {
           value: provider.id,
         }))
       : []
-  }, [providers?.length])
+  }, [providers?.length, providersLoading])
 
   const loading = status === "loading"
+
+  if (providersLoading) return <Spin />
 
   return (
     <>

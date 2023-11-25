@@ -186,8 +186,6 @@ model Model {
 
 model Parameter {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
-  taskRevisionId String       @db.ObjectId
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -259,7 +257,6 @@ model TaskRevision {
   workspace          Workspace        @relation(fields: [workspaceId], references: [id])
   workspaceId        String           @db.ObjectId
   membersOnTasks     MembersOnTasks[]
-  parameters         Parameter[]
 
   task             Task               @relation(fields: [taskId], references: [id])
   taskId           String             @db.ObjectId

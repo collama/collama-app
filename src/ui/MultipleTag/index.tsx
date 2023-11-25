@@ -26,14 +26,12 @@ export const MultipleTag: FC<MultipleTagProps> = ({ onChange, limit = 10 }) => {
 
       if (tags.length >= limit) return
 
-      setTags((prev) => {
-        if (prev.includes(inputValue)) return prev
+      if (tags.includes(inputValue)) return
 
-        const newState = [...prev, inputValue]
+      const newState = [...tags, inputValue]
 
-        onChange?.(newState)
-        return newState
-      })
+      setTags(newState)
+      onChange?.(newState)
       setInputValue("")
     }
   }
@@ -45,12 +43,10 @@ export const MultipleTag: FC<MultipleTagProps> = ({ onChange, limit = 10 }) => {
       return
     }
 
-    setTags((prev) => {
-      const newState = prev.filter((_, i) => i !== index)
+    const newState = tags.filter((_, i) => i !== index)
 
-      onChange?.(newState)
-      return newState
-    })
+    setTags(newState)
+    onChange?.(newState)
   }
 
   return (

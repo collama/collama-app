@@ -1,22 +1,33 @@
 "use client"
 
 import { ChatRole, type Message } from "@prisma/client"
-import { useChat } from "ai/react"
+import { type Message as aiMessage, useChat } from "ai/react"
 import { type FC, useEffect, useRef } from "react"
 import { v4 } from "uuid"
 import type { TaskRevisionProps } from "~/app/(protected)/[workspace]/[task]/page"
 import { PromptTemplates, type TemplateRef } from "~/components/PromptTemplates"
-import { toChatCompletionMessage } from "~/server/api/services/prompt"
-import { useVariables } from "~/store/taskStore"
+import {
+  toChatCompletionMessage,
+  toChatCompletionMessages,
+} from "~/server/api/services/prompt"
+import { useParameter, useVariables } from "~/store/taskStore"
 
 export const ChatExecute: FC<TaskRevisionProps> = ({ taskRevision }) => {
   const appendRef = useRef<TemplateRef>(null)
   const variables = useVariables()
-  const { messages, isLoading, append, stop } = useChat({
+  const parameters = useParameter()
+  const { messages, isLoading, append, stop, setMessages } = useChat({
     api: "/api/chat",
     body: {
       taskRevisionId: taskRevision.id,
       variables,
+    },
+    onFinish: () => {
+      appendRef?.current?.appendField({
+        role: ChatRole.User,
+        id: v4(),
+        content: "",
+      })
     },
   })
 
@@ -30,6 +41,7 @@ export const ChatExecute: FC<TaskRevisionProps> = ({ taskRevision }) => {
       content: "",
     })
 
+    setMessages(toChatCompletionMessages(messages) as aiMessage[])
     await append(toChatCompletionMessage(lastMessage))
   }
 
@@ -43,16 +55,6 @@ export const ChatExecute: FC<TaskRevisionProps> = ({ taskRevision }) => {
         role: ChatRole.Assistant,
         content: messages[lastIndex]!.content,
         id: messages[lastIndex]!.id,
-      })
-    }
-  }, [messages, isLoading])
-
-  useEffect(() => {
-    if (messages.length > 0 && !isLoading) {
-      appendRef?.current?.appendField({
-        role: ChatRole.User,
-        id: v4(),
-        content: "",
       })
     }
   }, [messages, isLoading])

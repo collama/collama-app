@@ -4,6 +4,7 @@ import { Executes } from "~/app/(protected)/[workspace]/[task]/components/Execut
 import { Templates } from "~/app/(protected)/[workspace]/[task]/components/Templates"
 import { Variables } from "~/app/(protected)/[workspace]/[task]/components/Variables"
 import type { PageProps } from "~/common/types/props"
+import { Parameters } from "~/components/Parameters"
 import { api } from "~/trpc/server-http"
 import { Disclosure } from "~/ui/Disclosure"
 import { Resize } from "~/ui/Resize"
@@ -41,18 +42,24 @@ export default async function TaskPage({
         firstElement={<TemplateAndVariable taskRevision={taskRevision} />}
         secondElement={<Executes taskRevision={taskRevision} />}
         showTitle="Config"
+        classname="h-[calc(100vh-40px)] w-[calc(100vw-200px)]"
       />
     </Suspense>
   )
 }
 
-const TemplateAndVariable = ({
-  taskRevision,
-}: {
-  taskRevision: TaskRevision
-}) => {
+const TemplateAndVariable = ({ taskRevision }: TaskRevisionProps) => {
   return (
     <div>
+      <Disclosure
+        items={[
+          {
+            label: "Parameters",
+            children: <Parameters taskRevision={taskRevision} />,
+          },
+        ]}
+      />
+      <div className="border-b" />
       <Disclosure
         items={[
           {

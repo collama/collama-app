@@ -148,8 +148,8 @@ model Provider {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  model     Model[]
-  apiKey    ApiKey[]
+  model  Model[]
+  apiKey ApiKey[]
 
   @@map("providers")
 }
@@ -172,25 +172,24 @@ model Model {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  name          String       @unique
+  name          String         @unique
   description   String
   context       Int
   inputPricing  ModelPricing
   outputPricing ModelPricing
   uptime        ModelUptime?
+  taskRevisions  TaskRevision[]
+  parameterSchema Json
 
   @@map("models")
 }
 
 model Parameter {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  taskRevision   TaskRevision @relation(fields: [taskRevisionId], references: [id])
-  taskRevisionId String       @db.ObjectId
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
   name             String
-  model            String
   temperature      Float
   maxTokens        Int
   stopSequences    String[]
@@ -246,6 +245,8 @@ model TaskRevision {
   updatedById  String  @db.ObjectId
   approvedBy   User?   @relation(fields: [approvedById], references: [id], name: "approvedBy")
   approvedById String? @db.ObjectId
+  model        Model   @relation(fields: [modelId], references: [id])
+  modelId      String  @db.ObjectId
 
   version            String
   versionDescription String?
@@ -256,7 +257,6 @@ model TaskRevision {
   workspace          Workspace        @relation(fields: [workspaceId], references: [id])
   workspaceId        String           @db.ObjectId
   membersOnTasks     MembersOnTasks[]
-  parameters         Parameter[]
 
   task             Task               @relation(fields: [taskId], references: [id])
   taskId           String             @db.ObjectId

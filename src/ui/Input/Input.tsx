@@ -1,7 +1,7 @@
 import { IconCircleXFilled } from "@tabler/icons-react"
-import cx from "classnames"
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react"
-import type { InputRef } from "~/ui/Col-ui/Input"
+import { forwardRef, type ReactNode } from "react"
+import { cl } from "~/common/utils"
+import type { InputProps as CInputProps, InputRef } from "~/ui/Col-ui/Input"
 import { Input as CInput } from "~/ui/Col-ui/Input"
 
 type InputSize = "base" | "md" | "sm"
@@ -12,18 +12,25 @@ const INPUT_SIZE: Record<InputSize, string> = {
   sm: "text-sm",
 }
 
-export interface InputProps
-  extends Omit<HTMLAttributes<HTMLInputElement>, "prefix" | "suffix"> {
+export interface InputProps extends CInputProps {
   prefix?: ReactNode
   suffix?: ReactNode
   allowClear?: boolean
   size?: InputSize
   type?: "text" | "email" | "password"
   disabled?: boolean
+  value?: string | number
 }
 
 export const Input = forwardRef<InputRef, InputProps>(function Input(
-  { allowClear, size = "base", type = "text", disabled, ...restProps },
+  {
+    allowClear,
+    size = "base",
+    type = "text",
+    disabled,
+    className,
+    ...restProps
+  },
   ref
 ) {
   const renderClearIcon = () => {
@@ -44,12 +51,13 @@ export const Input = forwardRef<InputRef, InputProps>(function Input(
   return (
     <CInput
       classNames={{
-        input: cx(
+        input: cl(
           "w-full rounded-lg ",
           { "cursor-not-allowed bg-gray-100 text-gray-300": disabled },
           { "!px-0 py-0 text-black border-0 outline-0": hasPrefixSuffix() },
           INPUT_SIZE[size],
-          "outline-0 border border-gray-300 focus:border-violet-500 px-3 py-1"
+          "outline-0 border border-gray-300 focus:border-violet-500 px-3 py-1",
+          className
         ),
         affixWrapper:
           "w-full rounded-lg outline-0 focus-within:border-violet-500 relative inline-flex min-w-0 py-1 px-3 border border-gray-300 transition-all",

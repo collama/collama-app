@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react"
+import { Key } from "~/ui/common/key"
 
 const updateScrollView = (container: HTMLElement, item: HTMLElement) => {
   const containerHeight = container.offsetHeight
@@ -18,13 +19,6 @@ const updateScrollView = (container: HTMLElement, item: HTMLElement) => {
   } else if (bottom > containerHeight + container.scrollTop) {
     container.scrollTop += bottom - containerHeight - container.scrollTop + 5
   }
-}
-
-export enum Key {
-  ArrowUp = "ArrowUp",
-  ArrowDown = "ArrowDown",
-  Enter = "Enter",
-  Escape = "Escape",
 }
 
 interface CommandItemProps {

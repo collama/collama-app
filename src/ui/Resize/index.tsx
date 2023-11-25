@@ -16,12 +16,14 @@ interface ResizeProps {
   firstElement: ReactElement
   secondElement: ReactElement
   showTitle?: string
+  classname?: string
 }
 
 export const Resize: FC<ResizeProps> = ({
   firstElement,
   secondElement,
   showTitle,
+  classname,
 }) => {
   const sidebarRef = useRef<HTMLDivElement | null>(null)
   const [isResizing, setIsResizing] = useState(false)
@@ -58,16 +60,20 @@ export const Resize: FC<ResizeProps> = ({
   }, [resize, stopResizing])
 
   return (
-    <div className="flex flex-grow h-full">
+    <div className={cl("flex flex-1 ", classname)}>
       <div
         ref={sidebarRef}
         className={cl(
           "relative group shrink-0 border-r shadow-[inset_-88px_0px_13px_-88px_rgba(0,0,0,0.1)]",
           {
             hidden: isCollapseSidebar,
-          }
+          },
+          "min-w-[350px]"
         )}
         style={{ width: sidebarWidth }}
+        onMouseMove={(e) => {
+          isResizing && e.preventDefault()
+        }}
       >
         {firstElement}
         <div
@@ -75,15 +81,15 @@ export const Resize: FC<ResizeProps> = ({
           onMouseDown={startResizing}
         />
         <Button
-          className="absolute border-0 bg-neutral-100 inline-flex justify-center items-center right-5 bottom-5 px-1 py-1 invisible group-hover:visible"
+          className="absolute border-0 hover:bg-neutral-100 inline-flex justify-center items-center right-5 bottom-7 px-1 py-1 invisible group-hover:visible"
           size="sm"
           onClick={() => setIsCollapseSidebar(true)}
-          prefix={<IconChevronsLeft className="h-4 w-4 pl-1 bg-transparent" />}
+          prefix={<IconChevronsLeft className="h-5 w-5 pl-1 bg-transparent" />}
         ></Button>
       </div>
 
       <div
-        className="w-full relative h-[calc(100vh-40px)]"
+        className={cl("w-full relative min-w-[350px]")}
         onMouseMove={(e) => {
           isResizing && e.preventDefault()
         }}
@@ -91,11 +97,11 @@ export const Resize: FC<ResizeProps> = ({
         {secondElement}
         <Button
           size="sm"
-          className={cl("absolute bottom-5 left-1 hidden", {
+          className={cl("absolute bottom-7 left-3 hidden", {
             "inline-block": isCollapseSidebar,
           })}
           onClick={() => setIsCollapseSidebar(false)}
-          prefix={<IconChevronsRight className="h-4 w-4" />}
+          prefix={<IconChevronsRight className="h-5 w-5" />}
         >
           {showTitle}
         </Button>

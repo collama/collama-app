@@ -66,8 +66,8 @@ export const VariablesSection: FC<VariablesSectionProps> = ({
         {!fields ||
           (fields.length <= 0 && (
             <div className="p-4 border border-violet-300 bg-violet-50 rounded-lg">
-              <div className="text-violet-900 font-medium">Tip</div>
-              <div className="text-violet-900">
+              <div className="text-violet-900 text-sm font-medium">Tip</div>
+              <div className="text-violet-900 text-sm">
                 {
                   "Press '/' to use a command in your chat template for creating variables"
                 }

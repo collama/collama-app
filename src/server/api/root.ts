@@ -1,5 +1,6 @@
 import { apiKeyTRPCRouter } from "~/server/api/routers/api-key/api-key.router"
 import { filterSettingTRPCRouter } from "~/server/api/routers/filter-setting/filter-setting.router"
+import { modelTRPCRouter } from "~/server/api/routers/model/model.router"
 import { providerTRPCRouter } from "~/server/api/routers/provider/provider.router"
 import { taskTRPCRouter } from "~/server/api/routers/task/task.router"
 import { taskRevisionTRPCRouter } from "~/server/api/routers/taskRevision/taskRevision.router"
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   apiKey: apiKeyTRPCRouter,
   filterSetting: filterSettingTRPCRouter,
   provider: providerTRPCRouter,
+  model: modelTRPCRouter,
 })
 
 // export type definition of API

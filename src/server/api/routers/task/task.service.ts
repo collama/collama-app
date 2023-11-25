@@ -21,7 +21,6 @@ import {
 import { WorkspaceNotFound } from "~/server/errors/workspace.error"
 import { transformFilter, transformSort } from "~/services/prisma"
 
-
 interface TaskProcedureInput<T = unknown> {
   prisma: ExtendedPrismaClient
   input: T
@@ -39,9 +38,14 @@ export const create = async ({
       slug: input.slug,
     },
   })
+  const model = await prisma.model.findFirst()
 
   if (!workspace) {
     throw new TaskNotFound()
+  }
+
+  if (!model) {
+    throw new Error("Model not found")
   }
 
   const user = session.user
@@ -82,6 +86,11 @@ export const create = async ({
           updatedBy: {
             connect: {
               id: user.id,
+            },
+          },
+          model: {
+            connect: {
+              id: model.id,
             },
           },
         },
@@ -144,6 +153,12 @@ export const inviteMember = async ({
 export const deleteById = async ({ task, prisma }: TaskProcedureInput) => {
   return prisma.$transaction(async (tx) => {
     await tx.membersOnTasks.deleteMany({
+      where: {
+        taskId: task.id,
+      },
+    })
+
+    await tx.taskRevision.deleteMany({
       where: {
         taskId: task.id,
       },
@@ -220,6 +235,34 @@ export const filterAndSort = async ({
   session,
   prisma,
 }: Omit<TaskProcedureInput<z.infer<typeof FilterAndSortInput>>, "task">) => {
+  // await prisma.model.create({
+  //   data: {
+  //     name: "gpt-3.5-turbo-1106",
+  //     providerId: "655c28d204eb87710c814e88",
+  //     description:
+  //       "The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more.",
+  //     context: 16385,
+  //     inputPricing: {
+  //       price: 0.001,
+  //       tokens: 1000,
+  //       unit: "$",
+  //     },
+  //     outputPricing: {
+  //       price: 0.002,
+  //       tokens: 1000,
+  //       unit: "$",
+  //     },
+  //     parameter: {
+  //       temperature: 0,
+  //       frequencyPenalty: 0,
+  //       presencePenalty: 0,
+  //       maxTokens: 0,
+  //       topP: 0,
+  //       stopSequences: [],
+  //       extra: {},
+  //     },
+  //   },
+  // })
   const workspace = await prisma.workspace.findUnique({
     where: {
       slug: input.workspaceSlug,

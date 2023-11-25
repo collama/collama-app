@@ -1,6 +1,7 @@
 import type { ChatRole, Message } from "@prisma/client"
 import { type INTERNAL_Snapshot, proxy } from "valtio"
 import { useSnapshot } from "valtio/react"
+import { type Parameter } from "~/components/Parameters"
 import { type Variable } from "~/components/VariablesSection/contants"
 
 export type Snapshot<T> = INTERNAL_Snapshot<T>
@@ -8,16 +9,29 @@ export type Snapshot<T> = INTERNAL_Snapshot<T>
 interface TaskStore {
   templates: Message[]
   variables: Variable[]
+  parameter: Parameter
+}
+
+const defaultParameter: Parameter = {
+  model: "",
+  temperature: 0,
+  frequencyPenalty: 0,
+  presencePenalty: 0,
+  maxTokens: 0,
+  topP: 0,
+  stopSequences: [],
+  extra: {},
 }
 
 const init: TaskStore = {
   templates: [],
   variables: [],
+  parameter: defaultParameter,
 }
 
 export const taskStore = proxy<TaskStore>(init)
 
-export const useTaskStoreTemplatesActions = () => ({
+export const useTemplatesActions = () => ({
   append: (template: Message[]) => {
     taskStore.templates = [...taskStore.templates, ...template]
   },
@@ -43,11 +57,11 @@ export const useTaskStoreTemplatesActions = () => ({
   },
 })
 
-export const useTaskVariablesActions = () => ({
+export const useVariablesActions = () => ({
   append: (value: Variable[]) => {
     taskStore.variables = [...taskStore.variables, ...value]
   },
-  updateVariableContent: (index: number, value: string) => {
+  updateContent: (index: number, value: string) => {
     const variable = taskStore.variables[index]
 
     if (variable) {
@@ -56,7 +70,18 @@ export const useTaskVariablesActions = () => ({
   },
 })
 
-export const useTaskStoreTemplates = () => useSnapshot(taskStore).templates
-export const useTaskStoreTemplateByIndex = (index: number) =>
-  useSnapshot(taskStore.templates)[index]
-export const useTaskStoreVariables = () => useSnapshot(taskStore).variables
+export const useParameterActions = () => ({
+  append: (value: Parameter) => {
+    taskStore.parameter = value
+  },
+  updateParameter: <T extends keyof Parameter>(key: T, value: Parameter[T]) => {
+    taskStore.parameter[key] = value
+  },
+  updateModel: (value: string) => {
+    taskStore.parameter.model = value
+  }
+})
+
+export const useTemplates = () => useSnapshot(taskStore).templates
+export const useVariables = () => useSnapshot(taskStore).variables
+export const useParameter = () => useSnapshot(taskStore).parameter

@@ -2,9 +2,8 @@
 
 import { FormProvider } from "react-hook-form"
 import { z } from "zod"
-import { inviteMemberToTeamAction } from "~/app/(protected)/[workspace]/[task]/settings/actions"
 import useZodForm from "~/common/form"
-import { useAction } from "~/trpc/client"
+
 
 const schema = z.object({
   email: z.string().email(),
@@ -15,7 +14,7 @@ interface Props {
 }
 
 export default function InviteTeamForm({ teamName }: Props) {
-  const mutation = useAction(inviteMemberToTeamAction)
+  // const mutation = useAction(inviteMemberToTeamAction)
   const form = useZodForm({
     schema,
   })
@@ -28,10 +27,10 @@ export default function InviteTeamForm({ teamName }: Props) {
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit((data) => {
-              mutation.mutate({
-                teamName,
-                email: data.email,
-              })
+              // mutation.mutate({
+              //   teamName,
+              //   email: data.email,
+              // })
             })}
           >
             <div>
